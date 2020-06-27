@@ -25,9 +25,8 @@ namespace Mocker.Functions
             string route, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            var response = await ProcessSomething(req, route);
 
-            return response;
+            return await ProcessSomething(req, route);
         }
 
         [FunctionName(nameof(Mock))]
@@ -35,12 +34,11 @@ namespace Mocker.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "mock")] HttpRequest req, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
-            var response = await ProcessSomething(req, null);
 
-            return response;
+            return await ProcessSomething(req, null);
         }
 
-        private async Task<HttpResponseMessage> ProcessSomething(HttpRequest req, string route)
+        private async Task<HttpResponseMessage> ProcessSomething(HttpRequest req, string? route)
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var httpRequestDetails = new HttpRequestDetails(new HttpMethod(req.Method), route, body,
