@@ -9,11 +9,11 @@ namespace Mocker.Infrastructure.Tests.Unit
 {
     public class HttpMockRepositoryTests
     {
-        private readonly InMemoryMockRuleRepository _sut;
+        private readonly InMemoryHttpMockRuleRepository _sut;
 
         public HttpMockRepositoryTests()
         {
-            _sut = new InMemoryMockRuleRepository();
+            _sut = new InMemoryHttpMockRuleRepository();
         }
 
         [Fact]

@@ -5,11 +5,11 @@ using System.Net.Http;
 
 namespace Mocker.Infrastructure
 {
-    public class InMemoryMockRuleRepository : IMockHttpRuleRepository
+    public class InMemoryHttpMockRuleRepository : IMockHttpRuleRepository
     {
         public List<HttpMockRule> Mocks { get; }
 
-        public InMemoryMockRuleRepository()
+        public InMemoryHttpMockRuleRepository()
         {
             Mocks = new List<HttpMockRule>();
         }

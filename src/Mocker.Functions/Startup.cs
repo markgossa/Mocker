@@ -12,7 +12,7 @@ namespace Mocker.Functions
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddSingleton<IHttpMockEngine, HttpMockEngine>();
-            builder.Services.AddSingleton<IMockHttpRuleRepository, InMemoryMockRuleRepository>();
+            builder.Services.AddSingleton<IMockHttpRuleRepository, InMemoryHttpMockRuleRepository>();
         }
     }
 }
