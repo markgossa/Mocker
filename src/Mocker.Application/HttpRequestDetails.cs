@@ -9,10 +9,10 @@ namespace Mocker.Application
         public string? Route { get; }
         public string? Body { get; }
         public Dictionary<string, string>? Headers { get; }
-        public string? QueryString { get; }
+        public IDictionary<string, string>? QueryString { get; }
 
         public HttpRequestDetails(HttpMethod method, string? route, string? body, 
-            Dictionary<string, string>? headers, string? queryString)
+            Dictionary<string, string>? headers, IDictionary<string, string>? queryString)
         {
             Method = method;
             Route = route;

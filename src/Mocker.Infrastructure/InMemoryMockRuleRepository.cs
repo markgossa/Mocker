@@ -20,8 +20,9 @@ namespace Mocker.Infrastructure
 
         public IEnumerable<HttpMockRule> GetAll() => Mocks;
 
-        public IEnumerable<HttpMockRule> Find(HttpMethod httpMethod, Dictionary<string, string> queryString, 
-            string body, string route) => Mocks.Where(m => m.HttpRequestFilter?.Method == httpMethod
+        public IEnumerable<HttpMockRule> Find(HttpMethod httpMethod, IDictionary<string, string> queryString, 
+            string body, string route) => 
+            Mocks.Where(m => m.HttpRequestFilter?.Method == httpMethod
                 && m.HttpRequestFilter?.QueryString == queryString
                 && m.HttpRequestFilter?.Body == body
                 && m.HttpRequestFilter?.Route == route);

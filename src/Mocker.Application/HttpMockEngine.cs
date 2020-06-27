@@ -14,10 +14,17 @@ namespace Mocker.Application
             _ruleRepository = ruleRepository;
         }
 
-        public HttpMockAction Process(HttpRequestDetails httpRequestDetails) => _ruleRepository.GetAll()?
-                .FirstOrDefault(r => r?.HttpRequestFilter?.Body == httpRequestDetails.Body
-                    && r?.HttpRequestFilter?.Method == httpRequestDetails.Method
-                    && r?.HttpRequestFilter?.Route == httpRequestDetails.Route)?
-                .HttpMockResponse ?? new HttpMockAction(HttpStatusCode.OK, string.Empty);
+        //public HttpMockAction Process(HttpRequestDetails httpRequestDetails) => _ruleRepository.GetAll()?
+        //        .FirstOrDefault(r => r?.HttpRequestFilter?.Body == httpRequestDetails.Body
+        //            && r?.HttpRequestFilter?.Method == httpRequestDetails.Method
+        //            && r?.HttpRequestFilter?.Route == httpRequestDetails.Route)?
+        //        .HttpMockResponse ?? new HttpMockAction(HttpStatusCode.OK, string.Empty);
+
+        public HttpMockAction Process(HttpRequestDetails httpRequestDetails)
+        {
+            return _ruleRepository.Find(httpRequestDetails.Method, httpRequestDetails.QueryString, 
+                httpRequestDetails.Body, httpRequestDetails.Route)?.FirstOrDefault()?.HttpMockResponse 
+                ?? new HttpMockAction(HttpStatusCode.OK, string.Empty);
+        }
     }
 }

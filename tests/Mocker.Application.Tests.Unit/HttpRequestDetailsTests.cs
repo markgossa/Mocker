@@ -13,7 +13,10 @@ namespace Mocker.Application.Tests.Unit
             var route = "route1";
             var body = "Hello world!";
             var headers = new Dictionary<string, string>();
-            var queryString = "?name=mark";
+            var queryString = new Dictionary<string, string>()
+            {
+                { "name", "mark" }
+            };
 
             var actual = new HttpRequestDetails(httpMethod, route, body,
                 headers, queryString);

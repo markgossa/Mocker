@@ -23,7 +23,7 @@ namespace Mocker.Application.Tests.Unit
         public void WhenNoRequestFilterReturnsDefaultResponse()
         {
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, string.Empty, string.Empty, 
-                new Dictionary<string, string>(), string.Empty);
+                new Dictionary<string, string>(), null);
 
             var actual = _sut.Process(httpRequestDetails);
 
@@ -38,7 +38,8 @@ namespace Mocker.Application.Tests.Unit
         {
             var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
             const string inputBody = "Hello world!";
-            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
+            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
                     new HttpFilter(HttpMethod.Get, inputBody),
@@ -47,7 +48,7 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, inputBody,
-                new Dictionary<string, string>(), string.Empty);
+                new Dictionary<string, string>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
@@ -60,7 +61,8 @@ namespace Mocker.Application.Tests.Unit
         public void ReturnsCorrectResponseBasedOnMethod()
         {
             var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
-            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
+            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
                     new HttpFilter(HttpMethod.Get, string.Empty),
@@ -69,7 +71,7 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, string.Empty,
-                new Dictionary<string, string>(), string.Empty);
+                new Dictionary<string, string>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
@@ -84,7 +86,8 @@ namespace Mocker.Application.Tests.Unit
             var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
             const string inputBody = "Hello world";
             const string route = "getStuff";
-            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
+            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string,string>>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
                     new HttpFilter(HttpMethod.Get, inputBody, route, null),
@@ -93,7 +96,7 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, inputBody,
-                new Dictionary<string, string>(), string.Empty);
+                new Dictionary<string, string>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
@@ -101,5 +104,29 @@ namespace Mocker.Application.Tests.Unit
             Assert.Equal(new Dictionary<string, string>(), actual.Headers);
             Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
         }
+
+        //[Fact]
+        //public void ReturnsFirstMatchIfTwoMatches()
+        //{
+        //    var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
+        //    const string inputBody = "Hello world";
+        //    const string route = "getStuff";
+        //    _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
+        //    {
+        //        new HttpMockRule(
+        //            new HttpFilter(HttpMethod.Get, inputBody, route, null),
+        //            httpMockResponse
+        //        )
+        //    });
+
+        //    var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, inputBody,
+        //        new Dictionary<string, string>(), string.Empty);
+        //    var actual = _sut.Process(httpRequestDetails);
+
+        //    Assert.Equal(httpMockResponse.Body, actual.Body);
+        //    Assert.Equal(0, actual.Delay);
+        //    Assert.Equal(new Dictionary<string, string>(), actual.Headers);
+        //    Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
+        //}
     }
 }

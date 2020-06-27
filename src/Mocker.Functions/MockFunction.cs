@@ -4,9 +4,11 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Mocker.Application;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Mocker.Functions
 {
@@ -42,7 +44,7 @@ namespace Mocker.Functions
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var httpRequestDetails = new HttpRequestDetails(new HttpMethod(req.Method), route, body,
-                new Dictionary<string, string>(), req.QueryString.ToString());
+                new Dictionary<string, string>(), req.GetQueryParameterDictionary());
 
             var mockResponse = _httpMockEngine.Process(httpRequestDetails);
 
@@ -52,5 +54,10 @@ namespace Mocker.Functions
             };
             return response;
         }
+
+        //private static NameValueCollection ConvertQueryStringToDictionary(QueryString queryString)
+        //{
+        //    return HttpUtility.ParseQueryString(queryString.ToString());
+        //}
     }
 }
