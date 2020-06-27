@@ -2,18 +2,18 @@
 {
     public class HttpMockRule : MockRule
     {
-        public HttpRequestFilter? HttpRequestFilter { get; }
-        public HttpMockResponse? HttpMockResponse { get; }
+        public HttpFilter? HttpRequestFilter { get; }
+        public HttpMockAction? HttpMockResponse { get; }
 
         public HttpMockRule()
         {
         }
 
-        public HttpMockRule(HttpMockResponse httpMockResponse) : this(new HttpRequestFilter(), httpMockResponse)
+        public HttpMockRule(HttpMockAction httpMockResponse) : this(new HttpFilter(), httpMockResponse)
         {
         }
 
-        public HttpMockRule(HttpRequestFilter httpRequestFilter, HttpMockResponse httpMockResponse)
+        public HttpMockRule(HttpFilter httpRequestFilter, HttpMockAction httpMockResponse)
         {
             HttpRequestFilter = httpRequestFilter;
             HttpMockResponse = httpMockResponse;

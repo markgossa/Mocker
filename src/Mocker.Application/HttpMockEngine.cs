@@ -7,18 +7,17 @@ namespace Mocker.Application
 {
     public class HttpMockEngine : IHttpMockEngine
     {
-        private readonly IMockRuleRepository _mockRuleRepository;
+        private readonly IMockHttpRuleRepository _ruleRepository;
 
-        public HttpMockEngine(IMockRuleRepository mockRuleRepository)
+        public HttpMockEngine(IMockHttpRuleRepository ruleRepository)
         {
-            _mockRuleRepository = mockRuleRepository;
+            _ruleRepository = ruleRepository;
         }
 
-        public HttpMockResponse Process(HttpRequestDetails httpRequestDetails) => _mockRuleRepository.GetAllMocks()?
-                .Select(r => r as HttpMockRule)?
+        public HttpMockAction Process(HttpRequestDetails httpRequestDetails) => _ruleRepository.GetAll()?
                 .FirstOrDefault(r => r?.HttpRequestFilter?.Body == httpRequestDetails.Body
                     && r?.HttpRequestFilter?.Method == httpRequestDetails.Method
                     && r?.HttpRequestFilter?.Route == httpRequestDetails.Route)?
-                .HttpMockResponse ?? new HttpMockResponse(HttpStatusCode.OK, string.Empty);
+                .HttpMockResponse ?? new HttpMockAction(HttpStatusCode.OK, string.Empty);
     }
 }

@@ -11,8 +11,8 @@ namespace Mocker.Application
         public Dictionary<string, string>? Headers { get; }
         public string? QueryString { get; }
 
-        public HttpRequestDetails(HttpMethod method, string route, string body, 
-            Dictionary<string, string> headers, string queryString)
+        public HttpRequestDetails(HttpMethod method, string? route, string? body, 
+            Dictionary<string, string>? headers, string? queryString)
         {
             Method = method;
             Route = route;

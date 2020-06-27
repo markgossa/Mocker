@@ -16,7 +16,7 @@ namespace Mocker.Domain.Tests.Unit
         [Fact]
         public void CreatesValidHttpMock()
         {
-            var httpMockResponse = new HttpMockResponse(HttpStatusCode.OK, "hello world");
+            var httpMockResponse = new HttpMockAction(HttpStatusCode.OK, "hello world");
             var actual = new HttpMockRule(httpMockResponse);
 
             Assert.Equal(httpMockResponse, actual.HttpMockResponse);

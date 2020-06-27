@@ -1,21 +1,29 @@
 ﻿using Mocker.Domain;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 
 namespace Mocker.Infrastructure
 {
-    public class InMemoryMockRuleRepository : IMockRuleRepository
+    public class InMemoryMockRuleRepository : IMockHttpRuleRepository
     {
-        public List<MockRule> Mocks { get; }
+        public List<HttpMockRule> Mocks { get; }
 
         public InMemoryMockRuleRepository()
         {
-            Mocks = new List<MockRule>();
+            Mocks = new List<HttpMockRule>();
         }
 
-        public void Add(MockRule mock) => Mocks.Add(mock);
+        public void Add(HttpMockRule mock) => Mocks.Add(mock);
 
-        public void Remove(MockRule mock) => Mocks.Remove(mock);
+        public void Remove(HttpMockRule mock) => Mocks.Remove(mock);
 
-        public List<MockRule> GetAllMocks() => Mocks;
+        public IEnumerable<HttpMockRule> GetAll() => Mocks;
+
+        public IEnumerable<HttpMockRule> Find(HttpMethod httpMethod, Dictionary<string, string> queryString, 
+            string body, string route) => Mocks.Where(m => m.HttpRequestFilter?.Method == httpMethod
+                && m.HttpRequestFilter?.QueryString == queryString
+                && m.HttpRequestFilter?.Body == body
+                && m.HttpRequestFilter?.Route == route);
     }
 }

@@ -9,9 +9,9 @@ namespace Mocker.Domain.Tests.Unit
         [Fact]
         public void ChecksForInvalidHttpMockRequest()
         {
-            var actual = new HttpRequestFilter();
+            var actual = new HttpFilter();
 
-            Assert.IsType<HttpRequestFilter>(actual);
+            Assert.IsType<HttpFilter>(actual);
         }
 
         [Fact]
@@ -23,13 +23,13 @@ namespace Mocker.Domain.Tests.Unit
             };
 
             var httpMethodFilter = HttpMethod.Get;
-            var actual = new HttpRequestFilter(httpMethodFilter, httpQueryFilter);
+            var actual = new HttpFilter(httpMethodFilter, httpQueryFilter);
             //actual.RouteFilter = "route1";
 
             //actual.PostBodyFilter = "{\"name\": \"Mark\"}";
 
             Assert.Equal(httpMethodFilter, actual.Method);
-            Assert.Equal(httpQueryFilter, actual.QueryStringFilter);
+            Assert.Equal(httpQueryFilter, actual.QueryString);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Mocker.Domain.Tests.Unit
             var httpMethodFilter = HttpMethod.Post;
             var httpPostBodyFilter = "{\"name\": \"Mark\"}";
 
-            var actual = new HttpRequestFilter(httpMethodFilter, httpPostBodyFilter);
+            var actual = new HttpFilter(httpMethodFilter, httpPostBodyFilter);
             //actual.RouteFilter = "route1";
 
 

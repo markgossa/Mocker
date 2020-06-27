@@ -11,11 +11,11 @@ namespace Mocker.Application.Tests.Unit
     public class HttpMockEngineTests
     {
         private readonly HttpMockEngine _sut;
-        private Mock<IMockRuleRepository> _mockMockRuleRepository;
+        private Mock<IMockHttpRuleRepository> _mockMockRuleRepository;
 
         public HttpMockEngineTests()
         {
-            _mockMockRuleRepository = new Mock<IMockRuleRepository>();
+            _mockMockRuleRepository = new Mock<IMockHttpRuleRepository>();
             _sut = new HttpMockEngine(_mockMockRuleRepository.Object);
         }
 
@@ -34,14 +34,14 @@ namespace Mocker.Application.Tests.Unit
         }
 
         [Fact]
-        public void ReturnsCorrectResponseForGetWithBody()
+        public void ReturnsCorrectResponseBasedOnMethodAndBody()
         {
-            var httpMockResponse = new HttpMockResponse(HttpStatusCode.NotFound, "Can't find it!");
+            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
             const string inputBody = "Hello world!";
-            _mockMockRuleRepository.Setup(m => m.GetAllMocks()).Returns(new List<MockRule>()
+            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
-                    new HttpRequestFilter(HttpMethod.Get, inputBody),
+                    new HttpFilter(HttpMethod.Get, inputBody),
                     httpMockResponse
                 )
             });
@@ -57,13 +57,13 @@ namespace Mocker.Application.Tests.Unit
         }
 
         [Fact]
-        public void ReturnsCorrectResponseForGetWithNoBody()
+        public void ReturnsCorrectResponseBasedOnMethod()
         {
-            var httpMockResponse = new HttpMockResponse(HttpStatusCode.NotFound, "Can't find it!");
-            _mockMockRuleRepository.Setup(m => m.GetAllMocks()).Returns(new List<MockRule>()
+            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
+            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
-                    new HttpRequestFilter(HttpMethod.Get, string.Empty),
+                    new HttpFilter(HttpMethod.Get, string.Empty),
                     httpMockResponse
                 )
             });
@@ -79,15 +79,15 @@ namespace Mocker.Application.Tests.Unit
         }
 
         [Fact]
-        public void ReturnsCorrectResponseForGetWithBodyAndRoute()
+        public void ReturnsCorrectResponseBasedOnMethodBodyAndRoute()
         {
-            var httpMockResponse = new HttpMockResponse(HttpStatusCode.NotFound, "Can't find it!");
+            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
             const string inputBody = "Hello world";
             const string route = "getStuff";
-            _mockMockRuleRepository.Setup(m => m.GetAllMocks()).Returns(new List<MockRule>()
+            _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
             {
                 new HttpMockRule(
-                    new HttpRequestFilter(HttpMethod.Get, inputBody){ Route = route },
+                    new HttpFilter(HttpMethod.Get, inputBody, route, null),
                     httpMockResponse
                 )
             });
