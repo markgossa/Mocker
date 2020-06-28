@@ -41,7 +41,7 @@ namespace Mocker.Functions
         private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route = null)
         {
             var httpRequestObject = new HttpRequestObject(req.Body, new HttpMethod(req.Method),
-                new Dictionary<string, string>(req.GetQueryParameterDictionary()), route);
+                new Dictionary<string, string>(req.GetQueryParameterDictionary()), req.Headers, route);
 
             return await _httpRequestProcessor.ProcessAsync(httpRequestObject);
         }

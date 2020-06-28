@@ -15,6 +15,7 @@ namespace Mocker.Functions
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddSingleton<IHttpMockEngine, HttpMockEngine>();
+            builder.Services.AddSingleton<IHttpRequestProcessor, HttpRequestProcessor>();
             builder.Services.AddSingleton<IMockHttpRuleRepository, InMemoryHttpMockRuleRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
         }

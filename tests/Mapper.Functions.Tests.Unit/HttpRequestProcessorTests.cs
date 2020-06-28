@@ -51,7 +51,7 @@ namespace Mapper.Functions.Tests.Unit
 
         private void SetUpHttpMockEngineMock()
         {
-            var headers = new Dictionary<string, IEnumerable<string>>()
+            var headers = new Dictionary<string, List<string>>()
             {
                 { "responseHeader1", _headerValues }
             };

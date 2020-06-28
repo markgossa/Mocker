@@ -33,7 +33,7 @@ namespace Mocker.Functions.Models
             return response;
         }
 
-        private void AddHeaders(Dictionary<string, IEnumerable<string>> newHeaders, HttpResponseMessage response)
+        private void AddHeaders(Dictionary<string, List<string>> newHeaders, HttpResponseMessage response)
         {
             foreach (var header in newHeaders)
             {

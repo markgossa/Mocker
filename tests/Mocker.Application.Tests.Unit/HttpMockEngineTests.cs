@@ -9,8 +9,18 @@ namespace Mocker.Application.Tests.Unit
 {
     public class HttpMockEngineTests
     {
+        private const string _route = "route1";
+        private const string _body = "hello world";
+        private const string _queryKey = "name";
+        private const string _queryValue = "mark";
+
+        private readonly Dictionary<string, string> _query = new Dictionary<string, string>()
+        {
+            { _queryKey, _queryValue}
+        };
+
         private readonly HttpMockEngine _sut;
-        private Mock<IMockHttpRuleRepository> _mockMockRuleRepository;
+        private readonly Mock<IMockHttpRuleRepository> _mockMockRuleRepository;
 
         public HttpMockEngineTests()
         {
@@ -21,141 +31,84 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public void WhenNoRequestFilterReturnsDefaultResponse()
         {
-            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, string.Empty, string.Empty, 
-                new Dictionary<string, IEnumerable<string>>(), null);
-
-            var actual = _sut.Process(httpRequestDetails);
+            var actual = _sut.Process(BuildHttpRequestDetails());
 
             Assert.Equal(string.Empty, actual.Body);
             Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
+            Assert.Equal(new Dictionary<string, List<string>>(), actual.Headers);
             Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         }
 
         [Fact]
-        public void ReturnsCorrectResponseBasedOnMethodAndBody()
+        public void MakesCorrectCallToRepository()
         {
-            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
-            const string inputBody = "Hello world!";
+            _sut.Process(BuildHttpRequestDetails());
+
+            _mockMockRuleRepository.Verify(m => m.Find(It.Is<HttpMethod>(h => h == HttpMethod.Get),
+                It.Is<Dictionary<string, string>>(q => q.Count == 1 && q.ContainsKey(_queryKey) && q.ContainsValue(_queryValue)),
+                It.Is<string>(s => s == _body),
+                It.Is<string>(r => r == _route)));
+        }
+
+        [Fact]
+        public void ReturnsFirstMatchingRuleFromRepositoryIfMultipleMatchesFound()
+        {
             _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
                 It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
-            {
-                new HttpMockRule(
-                    new HttpFilter(HttpMethod.Get, inputBody),
-                    httpMockResponse
-                )
-            });
+                {
+                    new HttpMockRule(
+                        new HttpFilter(HttpMethod.Get, _body, _route, _query),
+                        new HttpMockAction(HttpStatusCode.OK, _body)
+                    ),
+                    new HttpMockRule(
+                        new HttpFilter(HttpMethod.Get, _body, _route, _query),
+                        new HttpMockAction(HttpStatusCode.OK, "body")
+                    )
+                });
 
-            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, inputBody,
-                new Dictionary<string, IEnumerable<string>>(), null);
+            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, _route, _body,
+                new Dictionary<string, List<string>>(), _query);
+
             var actual = _sut.Process(httpRequestDetails);
 
-            Assert.Equal(httpMockResponse.Body, actual.Body);
-            Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
-            Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
+            Assert.Equal(_body, actual.Body);
         }
 
         [Fact]
-        public void ReturnsCorrectResponseBasedOnMethod()
+        public void ReturnsMatchingRuleIfRequestContainsRuleSingleHeader()
         {
-            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
-            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
+            var filterHeaders = new Dictionary<string, List<string>>()
             {
-                new HttpMockRule(
-                    new HttpFilter(HttpMethod.Get, string.Empty),
-                    httpMockResponse
-                )
-            });
-
-            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, string.Empty,
-                new Dictionary<string, IEnumerable<string>>(), null);
-            var actual = _sut.Process(httpRequestDetails);
-
-            Assert.Equal(httpMockResponse.Body, actual.Body);
-            Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
-            Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
-        }
-
-        [Fact]
-        public void ReturnsCorrectResponseBasedOnMethodBodyAndRoute()
-        {
-            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
-            const string inputBody = "Hello world";
-            const string route = "getStuff";
-            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string,string>>(),
-                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
-            {
-                new HttpMockRule(
-                    new HttpFilter(HttpMethod.Get, inputBody, route, null),
-                    httpMockResponse
-                )
-            });
-
-            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, inputBody,
-                new Dictionary<string, IEnumerable<string>>(), null);
-            var actual = _sut.Process(httpRequestDetails);
-
-            Assert.Equal(httpMockResponse.Body, actual.Body);
-            Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
-            Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
-        }
-
-        [Fact]
-        public void ReturnsCorrectResponseBasedOnQueryString()
-        {
-            var matchingQueryString = new Dictionary<string, string>()
-            {
-                { "name", "mark" },
-                { "age", "10" }
+                { "authValue", new List<string>(){ "password" } }
             };
 
-            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
             _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
                 It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
-            {
-                new HttpMockRule(
-                    new HttpFilter(HttpMethod.Post, null, null, matchingQueryString),
-                    httpMockResponse
-                )
-            });
+                {
+                    new HttpMockRule(
+                        new HttpFilter(HttpMethod.Get, _body, _route, _query),
+                        new HttpMockAction(HttpStatusCode.OK, "I don't have headers")
+                    ),
+                    new HttpMockRule(
+                        new HttpFilter(HttpMethod.Get, _body, _route, _query, filterHeaders),
+                        new HttpMockAction(HttpStatusCode.OK, _body)
+                    )
+                });
 
-            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Post, null, null,
-                new Dictionary<string, IEnumerable<string>>(), matchingQueryString);
+            var receivedHeaders = new Dictionary<string, List<string>>(filterHeaders)
+            {
+                { "additionalHeader", new List<string> { "value" } }
+            };
+
+            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, _route, _body,
+                receivedHeaders, _query);
+
             var actual = _sut.Process(httpRequestDetails);
 
-            Assert.Equal(httpMockResponse.Body, actual.Body);
-            Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
-            Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
+            Assert.Equal(_body, actual.Body);
         }
 
-
-        //[Fact]
-        //public void ReturnsFirstMatchIfTwoMatches()
-        //{
-        //    var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
-        //    const string inputBody = "Hello world";
-        //    const string route = "getStuff";
-        //    _mockMockRuleRepository.Setup(m => m.GetAll()).Returns(new List<HttpMockRule>()
-        //    {
-        //        new HttpMockRule(
-        //            new HttpFilter(HttpMethod.Get, inputBody, route, null),
-        //            httpMockResponse
-        //        )
-        //    });
-
-        //    var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, inputBody,
-        //        new Dictionary<string, string>(), string.Empty);
-        //    var actual = _sut.Process(httpRequestDetails);
-
-        //    Assert.Equal(httpMockResponse.Body, actual.Body);
-        //    Assert.Equal(0, actual.Delay);
-        //    Assert.Equal(new Dictionary<string, string>(), actual.Headers);
-        //    Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
-        //}
+        private HttpRequestDetails BuildHttpRequestDetails() => new HttpRequestDetails(HttpMethod.Get, _route, _body,
+                new Dictionary<string, List<string>>(), _query);
     }
 }

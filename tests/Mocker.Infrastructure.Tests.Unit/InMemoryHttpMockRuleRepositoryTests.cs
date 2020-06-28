@@ -7,11 +7,11 @@ using Xunit;
 
 namespace Mocker.Infrastructure.Tests.Unit
 {
-    public class HttpMockRepositoryTests
+    public class InMemoryHttpMockRuleRepositoryTests
     {
         private readonly InMemoryHttpMockRuleRepository _sut;
 
-        public HttpMockRepositoryTests()
+        public InMemoryHttpMockRuleRepositoryTests()
         {
             _sut = new InMemoryHttpMockRuleRepository();
         }
@@ -36,19 +36,6 @@ namespace Mocker.Infrastructure.Tests.Unit
 
             Assert.DoesNotContain(actual, m => m == httpMock);
         }
-
-        //[Fact]
-        //public void MockHttpRepositoryUpdatesMockHttpResponses()
-        //{
-        //    var httpMock = new HttpMock();
-        //    _sut.Add(httpMock);
-
-        //    var updatedHttpMock = new HttpMock(new HttpMockResponse(HttpStatusCode.OK, string.Empty));
-        //    _sut.Update(updatedHttpMock);
-        //    var actual = _sut.GetAllMocks();
-
-        //    Assert.DoesNotContain(actual, m => m == httpMock);
-        //}
 
         [Fact]
         public void MockHttpRepositoryFindsHttpMockRulesByMultipleParameters()
@@ -90,14 +77,14 @@ namespace Mocker.Infrastructure.Tests.Unit
                 new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!")
             );
 
-            var queryString2 = new Dictionary<string, string>()
+            var query2 = new Dictionary<string, string>()
             {
                 { "content-type", "application/json" },
                 { "code", "password2" }
             };
 
             var httpMock2 = new HttpMockRule(
-                new HttpFilter(HttpMethod.Get, body, route, queryString2),
+                new HttpFilter(HttpMethod.Get, body, route, query2),
                 new HttpMockAction(HttpStatusCode.OK, "Found it!")
             );
 
@@ -108,6 +95,14 @@ namespace Mocker.Infrastructure.Tests.Unit
 
             Assert.Single(actual);
             Assert.Contains(actual, m => m == httpMock);
+        }
+
+        [Fact]
+        public void MockHttpRepositoryReturnsEmptyListIfNoMatches()
+        {
+            var actual = _sut.Find(HttpMethod.Get, null, "hello world", null);
+
+            Assert.Empty(actual);
         }
     }
 }

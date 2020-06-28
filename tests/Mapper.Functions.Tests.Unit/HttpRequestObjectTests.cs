@@ -1,4 +1,6 @@
-﻿using Mocker.Functions.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
+using Mocker.Functions.Models;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
@@ -10,7 +12,7 @@ namespace Mapper.Functions.Tests.Unit
     public class HttpRequestObjectTests
     {
         [Fact]
-        public void CreatesValidHttpRequestObject()
+        public void CreatesValidHttpRequestObjectWithHeaders()
         {
             var bodyStream = new MemoryStream(Encoding.Default.GetBytes("hello world"));
             var method = HttpMethod.Get;
@@ -20,12 +22,18 @@ namespace Mapper.Functions.Tests.Unit
                 { "name", "mark" }
             };
 
-            var actual = new HttpRequestObject(bodyStream, method, query, route);
+            var headers = new Dictionary<string, StringValues>()
+            {
+                { "name", new StringValues("mark") }
+            };
+
+            var actual = new HttpRequestObject(bodyStream, method, query, new HeaderDictionary(headers), route);
 
             Assert.Equal(bodyStream, actual.BodyStream);
             Assert.Equal(method, actual.Method);
             Assert.Equal(route, actual.Route);
             Assert.Equal(query, actual.Query);
+            Assert.Equal(headers, actual.Headers);
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Mocker.Domain.Tests.Unit
         {
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";
-            var headers = new Dictionary<string, IEnumerable<string>>()
+            var headers = new Dictionary<string, List<string>>()
             {
                 { "header1", new List<string> { "value" } }
             };
@@ -40,7 +40,7 @@ namespace Mocker.Domain.Tests.Unit
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";
             var delay = 500;
-            var headers = new Dictionary<string, IEnumerable<string>>()
+            var headers = new Dictionary<string, List<string>>()
             {
                 { "header1", new List<string> { "value" } }
             };

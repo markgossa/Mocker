@@ -12,7 +12,7 @@ namespace Mocker.Application.Tests.Unit
             var httpMethod = HttpMethod.Post;
             var route = "route1";
             var body = "Hello world!";
-            var headers = new Dictionary<string, IEnumerable<string>>();
+            var headers = new Dictionary<string, List<string>>();
             var queryString = new Dictionary<string, string>()
             {
                 { "name", "mark" }
