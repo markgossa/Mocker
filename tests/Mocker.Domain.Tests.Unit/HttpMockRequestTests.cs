@@ -29,7 +29,7 @@ namespace Mocker.Domain.Tests.Unit
             //actual.PostBodyFilter = "{\"name\": \"Mark\"}";
 
             Assert.Equal(httpMethodFilter, actual.Method);
-            Assert.Equal(httpQueryFilter, actual.QueryString);
+            Assert.Equal(httpQueryFilter, actual.Query);
         }
 
         [Fact]

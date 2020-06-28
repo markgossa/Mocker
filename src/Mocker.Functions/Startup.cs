@@ -2,7 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Mocker.Application;
 using Mocker.Functions;
+using Mocker.Functions.Contracts;
+using Mocker.Functions.Models;
 using Mocker.Infrastructure;
+using System.Threading.Tasks;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Mocker.Functions
@@ -13,6 +16,7 @@ namespace Mocker.Functions
         {
             builder.Services.AddSingleton<IHttpMockEngine, HttpMockEngine>();
             builder.Services.AddSingleton<IMockHttpRuleRepository, InMemoryHttpMockRuleRepository>();
+            builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
         }
     }
 }

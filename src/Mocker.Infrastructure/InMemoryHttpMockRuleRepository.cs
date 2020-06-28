@@ -1,4 +1,5 @@
-﻿using Mocker.Domain;
+﻿using Mocker.Application;
+using Mocker.Domain;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -20,10 +21,10 @@ namespace Mocker.Infrastructure
 
         public IEnumerable<HttpMockRule> GetAll() => Mocks;
 
-        public IEnumerable<HttpMockRule> Find(HttpMethod httpMethod, IDictionary<string, string> queryString, 
-            string body, string route) => 
+        public IEnumerable<HttpMockRule> Find(HttpMethod httpMethod, Dictionary<string, string>? queryString, 
+            string? body, string? route) => 
             Mocks.Where(m => m.HttpRequestFilter?.Method == httpMethod
-                && m.HttpRequestFilter?.QueryString == queryString
+                && m.HttpRequestFilter?.Query == queryString
                 && m.HttpRequestFilter?.Body == body
                 && m.HttpRequestFilter?.Route == route);
     }

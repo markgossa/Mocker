@@ -12,7 +12,7 @@ namespace Mocker.Application.Tests.Unit
             var httpMethod = HttpMethod.Post;
             var route = "route1";
             var body = "Hello world!";
-            var headers = new Dictionary<string, string>();
+            var headers = new Dictionary<string, IEnumerable<string>>();
             var queryString = new Dictionary<string, string>()
             {
                 { "name", "mark" }
@@ -25,7 +25,7 @@ namespace Mocker.Application.Tests.Unit
             Assert.Equal(route, actual.Route);
             Assert.Equal(body, actual.Body);
             Assert.Equal(headers, actual.Headers);
-            Assert.Equal(queryString, actual.QueryString);
+            Assert.Equal(queryString, actual.Query);
         }
     }
 }

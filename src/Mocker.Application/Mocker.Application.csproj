@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Mocker.Domain\Mocker.Domain.csproj" />
-    <ProjectReference Include="..\Mocker.Infrastructure\Mocker.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

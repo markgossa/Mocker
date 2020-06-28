@@ -6,7 +6,7 @@ namespace Mocker.Domain
     public class HttpFilter
     {
         public HttpMethod? Method { get; }
-        public IDictionary<string, string>? QueryString { get; }
+        public Dictionary<string, string>? Query { get; }
         public string? Body { get; }
         public string? Route { get; }
 
@@ -14,22 +14,20 @@ namespace Mocker.Domain
         {
         }
 
-        public HttpFilter(HttpMethod? httpMethod, Dictionary<string, string>? queryString)
+        public HttpFilter(HttpMethod? httpMethod, Dictionary<string, string>? query) : this(httpMethod, null, null, query)
         {
-            Method = httpMethod;
-            QueryString = queryString;
         }
 
         public HttpFilter(HttpMethod? httpMethod, string? body) : this(httpMethod, body, null, null)
         {
         }
 
-        public HttpFilter(HttpMethod? httpMethod, string? body, string? route, IDictionary<string, string>? queryString)
+        public HttpFilter(HttpMethod? httpMethod, string? body, string? route, Dictionary<string, string>? query)
         {
             Method = httpMethod;
             Body = body;
             Route = route;
-            QueryString = queryString;
+            Query = query;
         }
     }
 }

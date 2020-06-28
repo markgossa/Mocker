@@ -5,20 +5,20 @@ namespace Mocker.Application
 {
     public class HttpRequestDetails
     {
-        public HttpMethod? Method { get; }
+        public HttpMethod Method { get; }
         public string? Route { get; }
         public string? Body { get; }
-        public Dictionary<string, string>? Headers { get; }
-        public IDictionary<string, string>? QueryString { get; }
+        public Dictionary<string, IEnumerable<string>>? Headers { get; }
+        public Dictionary<string, string>? Query { get; }
 
         public HttpRequestDetails(HttpMethod method, string? route, string? body, 
-            Dictionary<string, string>? headers, IDictionary<string, string>? queryString)
+            Dictionary<string, IEnumerable<string>>? headers, Dictionary<string, string>? queryString)
         {
             Method = method;
             Route = route;
             Body = body;
             Headers = headers;
-            QueryString = queryString;
+            Query = queryString;
         }
     }
 }

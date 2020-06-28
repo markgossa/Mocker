@@ -50,7 +50,6 @@ namespace Mocker.Infrastructure.Tests.Unit
         //    Assert.DoesNotContain(actual, m => m == httpMock);
         //}
 
-
         [Fact]
         public void MockHttpRepositoryFindsHttpMockRulesByMultipleParameters()
         {
@@ -76,9 +75,9 @@ namespace Mocker.Infrastructure.Tests.Unit
         }
 
         [Fact]
-        public void MockHttpRepositoryFindsHttpMockRulesByQueryString()
+        public void MockHttpRepositoryFindsHttpMockRulesByQuery()
         {
-            var queryString = new Dictionary<string, string>()
+            var query = new Dictionary<string, string>()
             {
                 { "content-type", "application/json" },
                 { "code", "password1" }
@@ -87,7 +86,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             const string route = "route1";
             const string body = "Hello world!";
             var httpMock = new HttpMockRule(
-                new HttpFilter(HttpMethod.Get, body, route, queryString),
+                new HttpFilter(HttpMethod.Get, body, route, query),
                 new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!")
             );
 
@@ -105,7 +104,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             _sut.Add(httpMock);
             _sut.Add(httpMock2);
 
-            var actual = _sut.Find(HttpMethod.Get, queryString, body, route);
+            var actual = _sut.Find(HttpMethod.Get, query, body, route);
 
             Assert.Single(actual);
             Assert.Contains(actual, m => m == httpMock);

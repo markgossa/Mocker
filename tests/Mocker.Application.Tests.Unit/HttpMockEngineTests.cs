@@ -1,5 +1,4 @@
 ﻿using Mocker.Domain;
-using Mocker.Infrastructure;
 using Moq;
 using System.Collections.Generic;
 using System.Net;
@@ -23,13 +22,13 @@ namespace Mocker.Application.Tests.Unit
         public void WhenNoRequestFilterReturnsDefaultResponse()
         {
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, string.Empty, string.Empty, 
-                new Dictionary<string, string>(), null);
+                new Dictionary<string, IEnumerable<string>>(), null);
 
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(string.Empty, actual.Body);
             Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, string>(), actual.Headers);
+            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
             Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         }
 
@@ -48,12 +47,12 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, inputBody,
-                new Dictionary<string, string>(), null);
+                new Dictionary<string, IEnumerable<string>>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
             Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, string>(), actual.Headers);
+            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
             Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
         }
 
@@ -71,12 +70,12 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, null, string.Empty,
-                new Dictionary<string, string>(), null);
+                new Dictionary<string, IEnumerable<string>>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
             Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, string>(), actual.Headers);
+            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
             Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
         }
 
@@ -96,14 +95,44 @@ namespace Mocker.Application.Tests.Unit
             });
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, inputBody,
-                new Dictionary<string, string>(), null);
+                new Dictionary<string, IEnumerable<string>>(), null);
             var actual = _sut.Process(httpRequestDetails);
 
             Assert.Equal(httpMockResponse.Body, actual.Body);
             Assert.Equal(0, actual.Delay);
-            Assert.Equal(new Dictionary<string, string>(), actual.Headers);
+            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
             Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
         }
+
+        [Fact]
+        public void ReturnsCorrectResponseBasedOnQueryString()
+        {
+            var matchingQueryString = new Dictionary<string, string>()
+            {
+                { "name", "mark" },
+                { "age", "10" }
+            };
+
+            var httpMockResponse = new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!");
+            _mockMockRuleRepository.Setup(m => m.Find(It.IsAny<HttpMethod>(), It.IsAny<Dictionary<string, string>>(),
+                It.IsAny<string>(), It.IsAny<string>())).Returns(new List<HttpMockRule>()
+            {
+                new HttpMockRule(
+                    new HttpFilter(HttpMethod.Post, null, null, matchingQueryString),
+                    httpMockResponse
+                )
+            });
+
+            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Post, null, null,
+                new Dictionary<string, IEnumerable<string>>(), matchingQueryString);
+            var actual = _sut.Process(httpRequestDetails);
+
+            Assert.Equal(httpMockResponse.Body, actual.Body);
+            Assert.Equal(0, actual.Delay);
+            Assert.Equal(new Dictionary<string, IEnumerable<string>>(), actual.Headers);
+            Assert.Equal(httpMockResponse.StatusCode, actual.StatusCode);
+        }
+
 
         //[Fact]
         //public void ReturnsFirstMatchIfTwoMatches()
