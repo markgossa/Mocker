@@ -7,13 +7,10 @@ namespace Mocker.Domain
     {
         public string? Body { get; }
         public Dictionary<string, List<string>>? Headers { get; }
+        public bool IgnoreHeaders { get; }
         public HttpMethod? Method { get; }
         public Dictionary<string, string>? Query { get; }
         public string? Route { get; }
-
-        public HttpFilter()
-        {
-        }
 
         public HttpFilter(HttpMethod? httpMethod, Dictionary<string, string>? query) : this(httpMethod, null, null, query)
         {
@@ -29,13 +26,19 @@ namespace Mocker.Domain
         }
 
         public HttpFilter(HttpMethod? httpMethod, string? body, string? route, Dictionary<string, string>? query,
-            Dictionary<string, List<string>>? headers)
+            Dictionary<string, List<string>>? headers) : this(httpMethod, body, route, query, headers, headers is null)
+        {
+        }
+
+        public HttpFilter(HttpMethod? httpMethod, string? body, string? route, Dictionary<string, string>? query,
+            Dictionary<string, List<string>>? headers, bool ignoreHeaders)
         {
             Method = httpMethod;
             Body = body;
             Route = route;
             Query = query;
             Headers = headers;
+            IgnoreHeaders = ignoreHeaders;
         }
     }
 }

@@ -22,20 +22,20 @@ namespace Mocker.Functions.Models
         {
             var httpRequestDetails = await _mapper.Map(httpRequestObject);
 
-            var mockResponse = _httpMockEngine.Process(httpRequestDetails);
-            var response = new HttpResponseMessage(mockResponse.StatusCode)
+            var httpAction = _httpMockEngine.Process(httpRequestDetails);
+            var response = new HttpResponseMessage(httpAction.StatusCode)
             {
-                Content = new StringContent(mockResponse.Body)
+                Content = new StringContent(httpAction.Body)
             };
 
-            AddHeaders(mockResponse.Headers, response);
+            AddHeaders(httpAction.Headers, response);
 
             return response;
         }
 
-        private void AddHeaders(Dictionary<string, List<string>> newHeaders, HttpResponseMessage response)
+        private void AddHeaders(Dictionary<string, List<string>> headersToAdd, HttpResponseMessage response)
         {
-            foreach (var header in newHeaders)
+            foreach (var header in headersToAdd)
             {
                 response.Content.Headers.Add(header.Key, string.Join(",", header.Value));
             }

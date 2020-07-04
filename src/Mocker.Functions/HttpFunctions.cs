@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Mocker.Functions
 {
-    public class MockHttpFunctions
+    public class HttpFunctions
     {
         private readonly IHttpRequestProcessor _httpRequestProcessor;
 
-        public MockHttpFunctions(IHttpRequestProcessor httpMockEngine)
+        public HttpFunctions(IHttpRequestProcessor httpMockEngine)
         {
             _httpRequestProcessor = httpMockEngine;
         }

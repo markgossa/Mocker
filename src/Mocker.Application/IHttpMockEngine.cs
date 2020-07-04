@@ -4,6 +4,6 @@ namespace Mocker.Application
 {
     public interface IHttpMockEngine
     {
-        HttpMockAction Process(HttpRequestDetails httpRequestDetails);
+        HttpAction Process(HttpRequestDetails httpRequestDetails);
     }
 }

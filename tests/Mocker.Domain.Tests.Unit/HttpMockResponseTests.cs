@@ -11,7 +11,7 @@ namespace Mocker.Domain.Tests.Unit
         {
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";
-            var actual = new HttpMockAction(statusCode, body);
+            var actual = new HttpAction(statusCode, body);
 
             Assert.Equal(statusCode, actual.StatusCode);
             Assert.Equal(body, actual.Body);
@@ -27,7 +27,7 @@ namespace Mocker.Domain.Tests.Unit
                 { "header1", new List<string> { "value" } }
             };
 
-            var actual = new HttpMockAction(statusCode, body, headers);
+            var actual = new HttpAction(statusCode, body, headers);
 
             Assert.Equal(statusCode, actual.StatusCode);
             Assert.Equal(body, actual.Body);
@@ -45,7 +45,7 @@ namespace Mocker.Domain.Tests.Unit
                 { "header1", new List<string> { "value" } }
             };
 
-            var actual = new HttpMockAction(statusCode, body, headers, delay);
+            var actual = new HttpAction(statusCode, body, headers, delay);
 
             Assert.Equal(statusCode, actual.StatusCode);
             Assert.Equal(body, actual.Body);

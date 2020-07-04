@@ -18,7 +18,6 @@ namespace Mapper.Functions.Tests.Unit
         const string _body = "hello world";
         const HttpStatusCode _statusCode = HttpStatusCode.OK;
         const int _delay = 0;
-        private readonly List<string> _headerValues = new List<string> { "value" };
 
         private readonly HttpRequestProcessor _sut;
         private readonly Mock<IHttpMockEngine> _mockHttpMockEngine;
@@ -32,9 +31,15 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
-        public async Task HttpRequestProcessorReturnsHttpResponseMessageAsync()
+        public async Task HttpRequestProcessorReturnsHttpResponseMessageAsyncMultipleHeaders()
         {
-            SetUpHttpMockEngineMock();
+            var headers = new Dictionary<string, List<string>>()
+            {
+                { "responseHeader1", new List<string> { "value" } },
+                { "auth", new List<string> { "value2" } },
+            };
+
+            SetUpHttpMockEngineMock(headers);
 
             var httpRequestObject = new HttpRequestObject(new MemoryStream(), HttpMethod.Get,
                 new Dictionary<string, string>(), null);
@@ -45,19 +50,16 @@ namespace Mapper.Functions.Tests.Unit
 
             Assert.Equal(_statusCode, actual.StatusCode);
             Assert.Equal(_body, actualBody);
-            Assert.True(actualHeaders.TryGetValue("responseHeader1", out var value));
-            Assert.Equal(_headerValues, value);
-        }
 
-        private void SetUpHttpMockEngineMock()
-        {
-            var headers = new Dictionary<string, List<string>>()
+            foreach (var header in headers)
             {
-                { "responseHeader1", _headerValues }
-            };
-
-            _mockHttpMockEngine.Setup(m => m.Process(It.IsAny<HttpRequestDetails>()))
-                .Returns(new HttpMockAction(_statusCode, _body, headers, _delay));
+                Assert.True(actualHeaders.TryGetValue(header.Key, out var value));
+                Assert.Equal(header.Value, value);
+            }
         }
+
+        private void SetUpHttpMockEngineMock(Dictionary<string, List<string>> headers) => 
+            _mockHttpMockEngine.Setup(m => m.Process(It.IsAny<HttpRequestDetails>()))
+                .Returns(new HttpAction(_statusCode, _body, headers, _delay));
     }
 }

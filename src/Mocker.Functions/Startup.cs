@@ -16,7 +16,7 @@ namespace Mocker.Functions
         {
             builder.Services.AddSingleton<IHttpMockEngine, HttpMockEngine>();
             builder.Services.AddSingleton<IHttpRequestProcessor, HttpRequestProcessor>();
-            builder.Services.AddSingleton<IMockHttpRuleRepository, InMemoryHttpMockRuleRepository>();
+            builder.Services.AddSingleton<IHttpRuleRepository, InMemoryHttpRuleRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
         }
     }

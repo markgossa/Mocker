@@ -9,17 +9,18 @@ namespace Mocker.Infrastructure.Tests.Unit
 {
     public class InMemoryHttpMockRuleRepositoryTests
     {
-        private readonly InMemoryHttpMockRuleRepository _sut;
+        private readonly InMemoryHttpRuleRepository _sut;
 
         public InMemoryHttpMockRuleRepositoryTests()
         {
-            _sut = new InMemoryHttpMockRuleRepository();
+            _sut = new InMemoryHttpRuleRepository();
         }
 
         [Fact]
         public void MockHttpRepositorySavesMockHttpResponses()
         {
-            var httpMock = new HttpMockRule();
+            var httpMock = BuildSimpleHttpRule();
+
             _sut.Add(httpMock);
             var actual = _sut.GetAll();
 
@@ -29,7 +30,7 @@ namespace Mocker.Infrastructure.Tests.Unit
         [Fact]
         public void MockHttpRepositoryDeletesMockHttpResponses()
         {
-            var httpMock = new HttpMockRule();
+            var httpMock = BuildSimpleHttpRule();
             _sut.Add(httpMock);
             _sut.Remove(httpMock);
             var actual = _sut.GetAll();
@@ -42,14 +43,14 @@ namespace Mocker.Infrastructure.Tests.Unit
         {
             const string route = "route1";
             const string body = "Hello world!";
-            var httpMock = new HttpMockRule(
+            var httpMock = new HttpRule(
                 new HttpFilter(HttpMethod.Get, body, route, null),
-                new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!")
+                new HttpAction(HttpStatusCode.NotFound, "Can't find it!")
             );
 
-            var httpMock2 = new HttpMockRule(
+            var httpMock2 = new HttpRule(
                 new HttpFilter(HttpMethod.Get, "Hello London!", route, null),
-                new HttpMockAction(HttpStatusCode.OK, "Found it!")
+                new HttpAction(HttpStatusCode.OK, "Found it!")
             );
 
             _sut.Add(httpMock);
@@ -72,9 +73,9 @@ namespace Mocker.Infrastructure.Tests.Unit
 
             const string route = "route1";
             const string body = "Hello world!";
-            var httpMock = new HttpMockRule(
+            var httpMock = new HttpRule(
                 new HttpFilter(HttpMethod.Get, body, route, query),
-                new HttpMockAction(HttpStatusCode.NotFound, "Can't find it!")
+                new HttpAction(HttpStatusCode.NotFound, "Can't find it!")
             );
 
             var query2 = new Dictionary<string, string>()
@@ -83,9 +84,9 @@ namespace Mocker.Infrastructure.Tests.Unit
                 { "code", "password2" }
             };
 
-            var httpMock2 = new HttpMockRule(
+            var httpMock2 = new HttpRule(
                 new HttpFilter(HttpMethod.Get, body, route, query2),
-                new HttpMockAction(HttpStatusCode.OK, "Found it!")
+                new HttpAction(HttpStatusCode.OK, "Found it!")
             );
 
             _sut.Add(httpMock);
@@ -104,5 +105,8 @@ namespace Mocker.Infrastructure.Tests.Unit
 
             Assert.Empty(actual);
         }
+
+        private static HttpRule BuildSimpleHttpRule() => new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
+                        new HttpAction(HttpStatusCode.OK, string.Empty));
     }
 }
