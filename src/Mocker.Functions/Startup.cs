@@ -1,10 +1,13 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Mocker.Application;
+using Mocker.Application.Contracts;
+using Mocker.Application.Models;
+using Mocker.Application.Services;
 using Mocker.Functions;
 using Mocker.Functions.Contracts;
 using Mocker.Functions.Models;
-using Mocker.Infrastructure;
+using Mocker.Functions.Services;
+using Mocker.Infrastructure.Services;
 using System.Threading.Tasks;
 
 [assembly: FunctionsStartup(typeof(Startup))]

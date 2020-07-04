@@ -1,6 +1,7 @@
-﻿using Mocker.Domain;
+﻿using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
 
-namespace Mocker.Application
+namespace Mocker.Application.Contracts
 {
     public interface IHttpMockEngine
     {

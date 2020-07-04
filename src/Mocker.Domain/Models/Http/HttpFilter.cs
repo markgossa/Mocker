@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 
-namespace Mocker.Domain
+namespace Mocker.Domain.Models.Http
 {
     public class HttpFilter
     {

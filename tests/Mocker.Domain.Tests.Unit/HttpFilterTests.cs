@@ -1,3 +1,4 @@
+using Mocker.Domain.Models.Http;
 using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;

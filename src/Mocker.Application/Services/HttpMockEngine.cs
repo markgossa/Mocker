@@ -1,9 +1,11 @@
-﻿using Mocker.Domain;
+﻿using Mocker.Application.Contracts;
+using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
-namespace Mocker.Application
+namespace Mocker.Application.Services
 {
     public class HttpMockEngine : IHttpMockEngine
     {
@@ -36,7 +38,7 @@ namespace Mocker.Application
             _ruleRepository.Find(httpRequestDetails.Method, httpRequestDetails.Query, httpRequestDetails.Body, httpRequestDetails.Route);
 
         private HttpAction FindMatchingRuleThatIgnoresOrMatchesHeaders(HttpRequestDetails httpRequestDetails, IEnumerable<HttpRule> matchingRules) => matchingRules
-            .Where(r => (HttpFilterIgnoresHeaders(r) || HttpRequestDetailsContainsRuleHeaders(r, httpRequestDetails)))
+            .Where(r => HttpFilterIgnoresHeaders(r) || HttpRequestDetailsContainsRuleHeaders(r, httpRequestDetails))
             .FirstOrDefault()?.HttpAction ?? BuildDefaultHttpAction();
 
         private bool HttpFilterIgnoresHeaders(HttpRule httpRule) => httpRule.HttpFilter.IgnoreHeaders;

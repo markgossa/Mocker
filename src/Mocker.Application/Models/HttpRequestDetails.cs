@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net.Http;
 
-namespace Mocker.Application
+namespace Mocker.Application.Models
 {
     public class HttpRequestDetails
     {
@@ -11,7 +11,7 @@ namespace Mocker.Application
         public Dictionary<string, string>? Query { get; }
         public string? Route { get; }
 
-        public HttpRequestDetails(HttpMethod method, string? route, string? body, 
+        public HttpRequestDetails(HttpMethod method, string? route, string? body,
             Dictionary<string, List<string>> headers, Dictionary<string, string>? queryString)
         {
             Body = body;

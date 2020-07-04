@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Mocker.Domain.Models.Http;
+using System.Net;
 using Xunit;
 
 namespace Mocker.Domain.Tests.Unit

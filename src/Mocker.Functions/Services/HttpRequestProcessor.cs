@@ -1,17 +1,19 @@
-﻿using Mocker.Application;
+﻿using Mocker.Application.Contracts;
+using Mocker.Application.Models;
 using Mocker.Functions.Contracts;
+using Mocker.Functions.Models;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Mocker.Functions.Models
+namespace Mocker.Functions.Services
 {
     public class HttpRequestProcessor : IHttpRequestProcessor
     {
         private readonly IHttpMockEngine _httpMockEngine;
         private readonly IMapper<HttpRequestObject, Task<HttpRequestDetails>> _mapper;
 
-        public HttpRequestProcessor(IHttpMockEngine httpMockEngine, 
+        public HttpRequestProcessor(IHttpMockEngine httpMockEngine,
             IMapper<HttpRequestObject, Task<HttpRequestDetails>> mapper)
         {
             _httpMockEngine = httpMockEngine;

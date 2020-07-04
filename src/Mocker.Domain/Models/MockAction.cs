@@ -1,4 +1,4 @@
-﻿namespace Mocker.Domain
+﻿namespace Mocker.Domain.Models
 {
     public abstract class MockAction
     {

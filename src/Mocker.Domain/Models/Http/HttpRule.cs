@@ -1,4 +1,4 @@
-﻿namespace Mocker.Domain
+﻿namespace Mocker.Domain.Models.Http
 {
     public class HttpRule : MockRule
     {

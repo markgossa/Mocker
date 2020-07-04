@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 
-namespace Mocker.Domain
+namespace Mocker.Domain.Models.Http
 {
     public class HttpAction : MockAction
     {
@@ -10,7 +10,7 @@ namespace Mocker.Domain
 
         public HttpAction(HttpStatusCode statusCode, string body) : this(statusCode, body,
             new Dictionary<string, List<string>>())
-        {           
+        {
         }
 
         public HttpAction(HttpStatusCode statusCode, string body, Dictionary<string, List<string>> headers)

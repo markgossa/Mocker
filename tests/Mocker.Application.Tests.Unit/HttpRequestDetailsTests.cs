@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Mocker.Application.Models;
+using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
 

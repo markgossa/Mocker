@@ -1,8 +1,8 @@
-﻿using Mocker.Domain;
+﻿using Mocker.Domain.Models.Http;
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace Mocker.Application
+namespace Mocker.Application.Contracts
 {
     public interface IHttpRuleRepository
     {
