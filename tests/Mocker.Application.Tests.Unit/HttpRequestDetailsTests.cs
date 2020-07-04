@@ -1,4 +1,5 @@
 ﻿using Mocker.Application.Models;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using Xunit;
@@ -27,6 +28,7 @@ namespace Mocker.Application.Tests.Unit
             Assert.Equal(body, actual.Body);
             Assert.Equal(headers, actual.Headers);
             Assert.Equal(queryString, actual.Query);
+            Assert.InRange(actual.Timestamp, DateTime.UtcNow.AddMilliseconds(-10), DateTime.UtcNow);
         }
     }
 }

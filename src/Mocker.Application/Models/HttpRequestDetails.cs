@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
 namespace Mocker.Application.Models
@@ -10,6 +12,7 @@ namespace Mocker.Application.Models
         public HttpMethod Method { get; }
         public Dictionary<string, string>? Query { get; }
         public string? Route { get; }
+        public DateTime Timestamp { get; }
 
         public HttpRequestDetails(HttpMethod method, string? route, string? body,
             Dictionary<string, List<string>> headers, Dictionary<string, string>? queryString)
@@ -19,6 +22,7 @@ namespace Mocker.Application.Models
             Method = method;
             Query = queryString;
             Route = route;
+            Timestamp = DateTime.UtcNow;
         }
     }
 }
