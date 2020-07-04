@@ -3,6 +3,7 @@ using Mocker.Application.Models;
 using Mocker.Domain.Models.Http;
 using Mocker.Functions.Contracts;
 using Mocker.Functions.Models;
+using Mocker.Functions.Services;
 using Moq;
 using System.Collections.Generic;
 using System.IO;

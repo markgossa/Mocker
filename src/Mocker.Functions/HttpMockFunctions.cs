@@ -10,32 +10,32 @@ using System.Threading.Tasks;
 
 namespace Mocker.Functions
 {
-    public class HttpFunctions
+    public class HttpMockFunctions
     {
         private readonly IHttpRequestProcessor _httpRequestProcessor;
 
-        public HttpFunctions(IHttpRequestProcessor httpMockEngine)
+        public HttpMockFunctions(IHttpRequestProcessor httpMockEngine)
         {
             _httpRequestProcessor = httpMockEngine;
         }
 
+        [FunctionName(nameof(Mock))]
+        public async Task<HttpResponseMessage> Mock(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "")] HttpRequest request, ILogger log)
+        {
+            log.LogInformation("C# HTTP trigger function processed a request.");
+
+            return await ProcessHttpRequest(request);
+        }
+
         [FunctionName(nameof(MockWithRoute))]
         public async Task<HttpResponseMessage> MockWithRoute(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "mock/{route}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "{route}")] HttpRequest request,
             string route, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             return await ProcessHttpRequest(request, route);
-        }
-
-        [FunctionName(nameof(Mock))]
-        public async Task<HttpResponseMessage> Mock(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "mock")] HttpRequest request, ILogger log)
-        {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            return await ProcessHttpRequest(request);
         }
 
         private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route = null)
