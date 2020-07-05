@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Mocker.Application.Services
 {
-    public class HttpMockHistoryService
+    public class HttpMockHistoryService : IHttpMockHistoryService
     {
         private readonly IHttpMockHistoryRepository _httpRequestDetailsRepository;
 
@@ -20,10 +20,21 @@ namespace Mocker.Application.Services
 
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
-            var matchingRequests = await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter);
+            List<HttpRequestDetails> matchingRequests;
+            if (httpMockHistoryFilter.Body is null && httpMockHistoryFilter.Route is null)
+            {
+                matchingRequests = await _httpRequestDetailsRepository.FindByMethodAsync(httpMockHistoryFilter.Method);
+            }
+            else
+            {
+                matchingRequests = await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter);
+            }
 
-            return matchingRequests.Where(r => r.Timestamp > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame)).ToList();
+            return matchingRequests.Where(IsHttpRequestWithinTimeFrame(httpMockHistoryFilter)).ToList();
         }
+
+        private static Func<HttpRequestDetails, bool> IsHttpRequestWithinTimeFrame(HttpMockHistoryFilter httpMockHistoryFilter) => r => 
+            r.Timestamp > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame);
 
         public async Task DeleteAllAsync() => await _httpRequestDetailsRepository.DeleteAllAsync();
     }

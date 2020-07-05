@@ -23,17 +23,20 @@ namespace Mapper.Functions.Tests.Unit
 
         private readonly HttpRequestProcessor _sut;
         private readonly Mock<IHttpMockEngine> _mockHttpMockEngine;
+        private readonly Mock<IHttpMockHistoryService> _mockHttpMockHistoryService;
         private readonly Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>> _mockMapper;
 
         public HttpRequestProcessorTests()
         {
             _mockHttpMockEngine = new Mock<IHttpMockEngine>();
+            _mockHttpMockHistoryService = new Mock<IHttpMockHistoryService>();
             _mockMapper = new Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>>();
-            _sut = new HttpRequestProcessor(_mockHttpMockEngine.Object, _mockMapper.Object);
+            _sut = new HttpRequestProcessor(_mockHttpMockEngine.Object, _mockHttpMockHistoryService.Object,
+                _mockMapper.Object);
         }
 
         [Fact]
-        public async Task HttpRequestProcessorReturnsHttpResponseMessageAsyncMultipleHeaders()
+        public async Task HttpRequestProcessorReturnsHttpResponseMessageMultipleHeaders()
         {
             var headers = new Dictionary<string, List<string>>()
             {
@@ -42,10 +45,7 @@ namespace Mapper.Functions.Tests.Unit
             };
 
             SetUpHttpMockEngineMock(headers);
-
-            var httpRequestObject = new HttpRequestObject(new MemoryStream(), HttpMethod.Get,
-                new Dictionary<string, string>(), null);
-            var actual = await _sut.ProcessAsync(httpRequestObject);
+            var actual = await _sut.ProcessAsync(BuildHttpRequestObject());
 
             var actualBody = await actual.Content.ReadAsStringAsync();
             var actualHeaders = actual.Content.Headers.ToDictionary(a => a.Key, a => a.Value);
@@ -59,6 +59,31 @@ namespace Mapper.Functions.Tests.Unit
                 Assert.Equal(header.Value, value);
             }
         }
+        
+        [Fact]
+        public async Task HttpRequestProcessorLogsDataToHttpMockHistoryService()
+        {
+            const string route = "route1";
+            const string body = "body1";
+
+            SetUpHttpMockEngineMock(new Dictionary<string, List<string>>());
+
+            var method = HttpMethod.Get;
+            _mockMapper.Setup(m => m.Map(It.IsAny<HttpRequestObject>()))
+                .Returns(Task.FromResult(new HttpRequestDetails(method, route, body,
+                new Dictionary<string, List<string>>(), new Dictionary<string, string>())));
+
+            await _sut.ProcessAsync(BuildHttpRequestObject());
+
+            _mockHttpMockHistoryService.Verify(m => m.AddAsync(It.Is<HttpRequestDetails>(
+                r => r.Body == body
+                && r.Route == route
+                && r.Method == method)));
+        }
+
+        private static HttpRequestObject BuildHttpRequestObject() =>
+                    new HttpRequestObject(new MemoryStream(), HttpMethod.Get,
+                        new Dictionary<string, string>(), null);
 
         private void SetUpHttpMockEngineMock(Dictionary<string, List<string>> headers) => 
             _mockHttpMockEngine.Setup(m => m.Process(It.IsAny<HttpRequestDetails>()))

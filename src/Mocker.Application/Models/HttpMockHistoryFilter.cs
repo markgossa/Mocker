@@ -6,8 +6,8 @@ namespace Mocker.Application.Models
     public class HttpMockHistoryFilter
     {
         public HttpMethod Method { get; }
-        public string Route { get; }
-        public string Body { get; }
+        public string? Route { get; }
+        public string? Body { get; }
         public TimeSpan TimeFrame { get; }
 
         public HttpMockHistoryFilter(HttpMethod method, string route, string body)
@@ -15,7 +15,7 @@ namespace Mocker.Application.Models
         {
         }
         
-        public HttpMockHistoryFilter(HttpMethod method, string route, string body, TimeSpan? timeFrame)
+        public HttpMockHistoryFilter(HttpMethod method, string? route, string? body, TimeSpan? timeFrame)
         {
             Method = method;
             Route = route;

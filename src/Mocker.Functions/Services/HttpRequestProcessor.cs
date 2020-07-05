@@ -11,18 +11,22 @@ namespace Mocker.Functions.Services
     public class HttpRequestProcessor : IHttpRequestProcessor
     {
         private readonly IHttpMockEngine _httpMockEngine;
+        private readonly IHttpMockHistoryService _httpMockHistoryService;
         private readonly IMapper<HttpRequestObject, Task<HttpRequestDetails>> _mapper;
 
-        public HttpRequestProcessor(IHttpMockEngine httpMockEngine,
+        public HttpRequestProcessor(IHttpMockEngine httpMockEngine, IHttpMockHistoryService httpMockHistoryService,
             IMapper<HttpRequestObject, Task<HttpRequestDetails>> mapper)
         {
             _httpMockEngine = httpMockEngine;
+            _httpMockHistoryService = httpMockHistoryService;
             _mapper = mapper;
         }
 
         public async Task<HttpResponseMessage> ProcessAsync(HttpRequestObject httpRequestObject)
         {
             var httpRequestDetails = await _mapper.Map(httpRequestObject);
+
+            await _httpMockHistoryService.AddAsync(httpRequestDetails);
 
             var httpAction = _httpMockEngine.Process(httpRequestDetails);
             var response = new HttpResponseMessage(httpAction.StatusCode)
