@@ -26,7 +26,7 @@ namespace Mocker.Functions.Services
         {
             var httpRequestDetails = await _mapper.Map(httpRequestObject);
 
-            await _httpMockHistoryService.AddAsync(httpRequestDetails);
+            var loggingTask = _httpMockHistoryService.AddAsync(httpRequestDetails);
 
             var httpAction = _httpMockEngine.Process(httpRequestDetails);
             var response = new HttpResponseMessage(httpAction.StatusCode)
@@ -35,6 +35,8 @@ namespace Mocker.Functions.Services
             };
 
             AddHeaders(httpAction.Headers, response);
+
+            await loggingTask;
 
             return response;
         }
