@@ -1,5 +1,6 @@
 ﻿using Mocker.Application.Contracts;
 using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;

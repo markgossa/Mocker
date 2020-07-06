@@ -1,5 +1,4 @@
 ﻿using Mocker.Application.Contracts;
-using Mocker.Application.Models;
 using Mocker.Application.Services;
 using Mocker.Domain.Models.Http;
 using Moq;

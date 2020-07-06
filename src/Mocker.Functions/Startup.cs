@@ -2,8 +2,8 @@
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Mocker.Application.Contracts;
-using Mocker.Application.Models;
 using Mocker.Application.Services;
+using Mocker.Domain.Models.Http;
 using Mocker.Functions;
 using Mocker.Functions.Contracts;
 using Mocker.Functions.Models;

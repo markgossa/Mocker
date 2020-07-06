@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Http;
 
-namespace Mocker.Application.Models
+namespace Mocker.Domain.Models.Http
 {
     public class HttpRequestDetails
     {
@@ -22,6 +22,18 @@ namespace Mocker.Application.Models
             Query = queryString;
             Route = route;
             Timestamp = DateTime.UtcNow;
+        }
+
+        public HttpRequestDetails(HttpMethod method, string? route, string? body,
+            Dictionary<string, List<string>> headers, Dictionary<string, string>? queryString,
+            DateTime timestamp)
+        {
+            Body = body;
+            Headers = headers;
+            Method = method;
+            Query = queryString;
+            Route = route;
+            Timestamp = timestamp;
         }
     }
 }

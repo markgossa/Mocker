@@ -1,6 +1,7 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using Mocker.Application.Contracts;
 using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
 using Mocker.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
@@ -45,7 +46,8 @@ namespace Mocker.Infrastructure.Services
         {
             return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
                 r.Method == httpMethod.ToString())
-            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), null))
+            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), null,
+                r.ReceivedTime))
             .ToList();
         });
 
@@ -56,7 +58,8 @@ namespace Mocker.Infrastructure.Services
                     && r.Route == (httpMockHistoryFilter.Route ?? string.Empty)
                     && r.Body == (httpMockHistoryFilter.Body ?? string.Empty)
                     && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
-                .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), null))
+                .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), 
+                    null, r.ReceivedTime))
                 .ToList();
             });
     }

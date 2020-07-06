@@ -1,5 +1,4 @@
-﻿using Mocker.Application.Models;
-using Mocker.Domain.Models.Http;
+﻿using Mocker.Domain.Models.Http;
 
 namespace Mocker.Application.Contracts
 {

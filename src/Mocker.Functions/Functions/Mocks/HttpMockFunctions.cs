@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Mocker.Functions
+namespace Mocker.Functions.Functions.Mocks
 {
     public class HttpMockFunctions
     {
@@ -21,7 +21,8 @@ namespace Mocker.Functions
 
         [FunctionName(nameof(Mock))]
         public async Task<HttpResponseMessage> Mock(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "")] HttpRequest request, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
+            "patch", "trace", Route = "")] HttpRequest request, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
@@ -30,7 +31,8 @@ namespace Mocker.Functions
 
         [FunctionName(nameof(MockWithRoute))]
         public async Task<HttpResponseMessage> MockWithRoute(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "{route}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
+            "patch", "trace", Route = "{route}")] HttpRequest request,
             string route, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");

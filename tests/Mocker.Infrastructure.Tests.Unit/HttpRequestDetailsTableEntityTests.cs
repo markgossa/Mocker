@@ -1,5 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
-using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
 using Mocker.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
