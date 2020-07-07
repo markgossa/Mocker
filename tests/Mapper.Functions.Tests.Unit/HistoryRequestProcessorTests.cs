@@ -54,6 +54,48 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
+        public async Task ReturnsBadResponseIfInvalidTimeframePassed()
+        {
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" },
+                { "timeframe", "invalid" }
+            };
+
+            var actual = await _sut.ProcessAsync(query);
+
+            Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
+            Assert.Equal("Please pass a valid timeframe to search for", await actual.Content.ReadAsStringAsync());
+        }
+
+        [Fact]
+        public async Task ReturnsOkResponseIfNoTimeframePassed()
+        {
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" }
+            };
+
+            var actual = await _sut.ProcessAsync(query);
+
+            Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+        }
+
+        [Fact]
+        public async Task ReturnsOkResponseIfValidTimeframePassed()
+        {
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" },
+                { "timeframe", "00:00:10" }
+            };
+
+            var actual = await _sut.ProcessAsync(query);
+
+            Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+        }
+
+        [Fact]
         public async Task CallsHttpMockHistoryServiceWithMethodOnly()
         {
             _mockHttpMockHistoryService.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
@@ -110,6 +152,5 @@ namespace Mapper.Functions.Tests.Unit
             _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
                 f => f.TimeFrame == TimeSpan.Parse(_timeframe))));
         }
-
     }
 }

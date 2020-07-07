@@ -1,7 +1,7 @@
 ﻿using Mocker.Application.Contracts;
 using Mocker.Application.Models;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,33 +22,54 @@ namespace Mocker.Functions.Services
 
         public async Task<HttpResponseMessage> ProcessAsync(Dictionary<string, string> query)
         {
-            if (!ValidateQuery(query, out var method))
-            { 
-                return BuildBadRequestMessage();
+            if (!ValidateMethodQuery(query, out var method) || method is null)
+            {
+                return BuildBadRequestMessage("Please pass a valid HTTP method to search for");
             }
 
-            await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, query.GetValueOrDefault("route"), 
-                query.GetValueOrDefault("body")));
+            if (!ValidateTimeframeQuery(query, out var timeframe))
+            {
+                return BuildBadRequestMessage("Please pass a valid timeframe to search for");
+            }
+
+            await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, query.GetValueOrDefault("route"),
+                query.GetValueOrDefault("body"), timeframe));
 
             return new HttpResponseMessage();
         }
 
-        private bool ValidateQuery(Dictionary<string, string> query, [NotNullWhen(true)] out HttpMethod? method)
+        private bool ValidateMethodQuery(Dictionary<string, string> query, out HttpMethod? method)
         {
-            var queryContainsMethod = query.TryGetValue("method", out var value);
-            var result = queryContainsMethod && _httpMethods.Any(m => m == value);
+            var queryContainsMethod = query.TryGetValue("method", out var methodValue);
+            var result = !string.IsNullOrWhiteSpace(methodValue) && queryContainsMethod && _httpMethods.Any(m => m == methodValue);
 
-            method = result && value != null ? new HttpMethod(value) : null;
+            method = result ? new HttpMethod(methodValue) : null;
 
             return result;
         }
 
-        private HttpResponseMessage BuildBadRequestMessage() => new HttpResponseMessage()
+        private bool ValidateTimeframeQuery(Dictionary<string, string> query, out TimeSpan? timeframe)
         {
-            Content = new StringContent("Please pass a valid HTTP method to search for"),
+            timeframe = null;
+            if (query.TryGetValue("timeframe", out var timeframeString))
+            {
+                if (TimeSpan.TryParse(timeframeString, out var timeframeValue))
+                {
+                    timeframe = timeframeValue;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private HttpResponseMessage BuildBadRequestMessage(string content) => new HttpResponseMessage()
+        {
+            Content = new StringContent(content),
             StatusCode = HttpStatusCode.BadRequest
         };
-
-
     }
 }
