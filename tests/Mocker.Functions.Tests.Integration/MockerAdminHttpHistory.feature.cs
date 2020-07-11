@@ -28,7 +28,7 @@ namespace Mocker.Functions.Tests.Integration
         
         private Xunit.Abstractions.ITestOutputHelper _testOutputHelper;
         
-#line 1 "MockerAdmin.feature"
+#line 1 "MockerAdminHttpHistory.feature"
 #line hidden
         
         public MockerAdminFeature(MockerAdminFeature.FixtureData fixtureData, Mocker_Functions_Tests_Integration_XUnitAssemblyFixture assemblyFixture, Xunit.Abstractions.ITestOutputHelper testOutputHelper)
@@ -40,8 +40,7 @@ namespace Mocker.Functions.Tests.Integration
         public static void FeatureSetup()
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MockerAdmin", "\tIn order to avoid silly mistakes\r\n\tAs a math idiot\r\n\tI want to be told the sum o" +
-                    "f two numbers", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "MockerAdmin", null, ProgrammingLanguage.CSharp, ((string[])(null)));
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -78,9 +77,9 @@ namespace Mocker.Functions.Tests.Integration
         
         public virtual void FeatureBackground()
         {
-#line 6
+#line 3
 #line hidden
-#line 7
+#line 4
  testRunner.Given("There is no HTTP history", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
         }
@@ -90,17 +89,23 @@ namespace Mocker.Functions.Tests.Integration
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Adds and retrieves HTTP history based on HTTP method")]
+        [Xunit.SkippableTheoryAttribute(DisplayName="Adds and retrieves HTTP history based on HTTP method")]
         [Xunit.TraitAttribute("FeatureTitle", "MockerAdmin")]
         [Xunit.TraitAttribute("Description", "Adds and retrieves HTTP history based on HTTP method")]
-        [Xunit.TraitAttribute("Category", "mytag")]
-        public virtual void AddsAndRetrievesHTTPHistoryBasedOnHTTPMethod()
+        [Xunit.InlineDataAttribute("1", "DELETE", "", new string[0])]
+        [Xunit.InlineDataAttribute("3", "GET", "", new string[0])]
+        [Xunit.InlineDataAttribute("1", "PATCH", "4", new string[0])]
+        [Xunit.InlineDataAttribute("1", "POST", "5", new string[0])]
+        [Xunit.InlineDataAttribute("10", "PUT", "6", new string[0])]
+        public virtual void AddsAndRetrievesHTTPHistoryBasedOnHTTPMethod(string count, string httpMethod, string data, string[] exampleTags)
         {
-            string[] tagsOfScenario = new string[] {
-                    "mytag"};
+            string[] tagsOfScenario = exampleTags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("count", count);
+            argumentsOfScenario.Add("httpMethod", httpMethod);
+            argumentsOfScenario.Add("data", data);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Adds and retrieves HTTP history based on HTTP method", null, tagsOfScenario, argumentsOfScenario);
-#line 10
+#line 6
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -120,17 +125,17 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 6
+#line 3
 this.FeatureBackground();
 #line hidden
-#line 11
- testRunner.Given("I have called the HTTP mock using a GET HTTP method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 7
+ testRunner.Given(string.Format("I have sent {0} to the HTTP mock using the {1} HTTP method {2} times", data, httpMethod, count), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 12
- testRunner.When("I query for that request by HTTP method", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 8
+ testRunner.When(string.Format("I query for those {0} requests by HTTP method", httpMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 13
- testRunner.Then("the result should be returned with the correct request count", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 9
+ testRunner.Then(string.Format("the result should have {0} {1} requests with correct {2}", count, httpMethod, data), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

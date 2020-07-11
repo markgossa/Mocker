@@ -60,7 +60,8 @@ namespace Mocker.Functions.Services
         private bool ValidateMethodQuery(Dictionary<string, string> query, out HttpMethod? method)
         {
             var queryContainsMethod = query.TryGetValue("method", out var methodValue);
-            var result = !string.IsNullOrWhiteSpace(methodValue) && queryContainsMethod && _httpMethods.Any(m => m == methodValue);
+            var result = !string.IsNullOrWhiteSpace(methodValue) && queryContainsMethod 
+                && _httpMethods.Any(m => m.ToLower() == methodValue.ToLower());
 
             method = result ? new HttpMethod(methodValue) : null;
 
