@@ -22,13 +22,13 @@ namespace Mapper.Functions.Tests.Unit
 
         private readonly HttpRequestProcessor _sut;
         private readonly Mock<IHttpMockEngine> _mockHttpMockEngine;
-        private readonly Mock<IHttpMockHistoryService> _mockHttpMockHistoryService;
+        private readonly Mock<IHttpHistoryService> _mockHttpMockHistoryService;
         private readonly Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>> _mockMapper;
 
         public HttpRequestProcessorTests()
         {
             _mockHttpMockEngine = new Mock<IHttpMockEngine>();
-            _mockHttpMockHistoryService = new Mock<IHttpMockHistoryService>();
+            _mockHttpMockHistoryService = new Mock<IHttpHistoryService>();
             _mockMapper = new Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>>();
             _sut = new HttpRequestProcessor(_mockHttpMockEngine.Object, _mockHttpMockHistoryService.Object,
                 _mockMapper.Object);

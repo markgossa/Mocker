@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Mocker.Application.Contracts
 {
-    public interface IHttpMockHistoryService
+    public interface IHttpHistoryService
     {
         Task AddAsync(HttpRequestDetails httpRequestDetails);
 

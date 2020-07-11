@@ -1,21 +1,25 @@
 ﻿using Mocker.Application.Contracts;
 using Mocker.Application.Models;
+using Mocker.Domain.Models.Http;
+using Mocker.Functions.Contracts;
+using Mocker.Functions.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Mocker.Functions.Services
 {
-    public class HistoryRequestProcessor
+    public class HistoryQueryProcessor : IHistoryQueryProcessor
     {
         private readonly string[] _httpMethods = new string[] {"get", "post", "put", "delete", "head",
             "options", "patch", "trace" };
-        private readonly IHttpMockHistoryService _httpMockHistoryService;
+        private readonly IHttpHistoryService _httpMockHistoryService;
 
-        public HistoryRequestProcessor(IHttpMockHistoryService httpMockHistoryService)
+        public HistoryQueryProcessor(IHttpHistoryService httpMockHistoryService)
         {
             _httpMockHistoryService = httpMockHistoryService;
         }
@@ -32,11 +36,26 @@ namespace Mocker.Functions.Services
                 return BuildBadRequestMessage("Please pass a valid timeframe to search for");
             }
 
-            await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, query.GetValueOrDefault("route"),
+            var httpHistory = await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, query.GetValueOrDefault("route"),
                 query.GetValueOrDefault("body"), timeframe));
-
-            return new HttpResponseMessage();
+            var httpHistoryItems = MapToHttpHistoryItems(httpHistory);
+            
+            return new HttpResponseMessage()
+            {
+                Content = new StringContent(JsonSerializer.Serialize(httpHistoryItems))
+            };
         }
+
+        private IEnumerable<HttpHistoryItem>? MapToHttpHistoryItems(List<HttpRequestDetails> httpHistory)
+            => httpHistory?.Select(h => new HttpHistoryItem()
+            {
+                Body = h.Body,
+                Headers = h.Headers,
+                Method = h.Method.ToString(),
+                Query = h.Query,
+                Route = h.Route,
+                Timestamp = h.Timestamp
+            });
 
         private bool ValidateMethodQuery(Dictionary<string, string> query, out HttpMethod? method)
         {

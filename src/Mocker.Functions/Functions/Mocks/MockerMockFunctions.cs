@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 
 namespace Mocker.Functions.Functions.Mocks
 {
-    public class HttpMockFunctions
+    public class MockerMockFunctions
     {
         private readonly IHttpRequestProcessor _httpRequestProcessor;
 
-        public HttpMockFunctions(IHttpRequestProcessor httpMockEngine)
+        public MockerMockFunctions(IHttpRequestProcessor httpMockEngine)
         {
             _httpRequestProcessor = httpMockEngine;
         }
@@ -22,17 +22,7 @@ namespace Mocker.Functions.Functions.Mocks
         [FunctionName(nameof(Mock))]
         public async Task<HttpResponseMessage> Mock(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
-            "patch", "trace", Route = "")] HttpRequest request, ILogger log)
-        {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            return await ProcessHttpRequest(request);
-        }
-
-        [FunctionName(nameof(MockWithRoute))]
-        public async Task<HttpResponseMessage> MockWithRoute(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
-            "patch", "trace", Route = "{route}")] HttpRequest request,
+            "patch", "trace", Route = "{route?}")] HttpRequest request,
             string route, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
@@ -40,7 +30,7 @@ namespace Mocker.Functions.Functions.Mocks
             return await ProcessHttpRequest(request, route);
         }
 
-        private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route = null)
+        private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route)
         {
             var httpRequestObject = new HttpRequestObject(req.Body, new HttpMethod(req.Method),
                 new Dictionary<string, string>(req.GetQueryParameterDictionary()), req.Headers, route);

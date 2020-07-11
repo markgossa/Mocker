@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Mocker.Application.Services
 {
-    public class HttpMockHistoryService : IHttpMockHistoryService
+    public class HttpHistoryService : IHttpHistoryService
     {
         private readonly IHttpMockHistoryRepository _httpRequestDetailsRepository;
 
-        public HttpMockHistoryService(IHttpMockHistoryRepository httpRequestDetailsRepository)
+        public HttpHistoryService(IHttpMockHistoryRepository httpRequestDetailsRepository)
         {
             _httpRequestDetailsRepository = httpRequestDetailsRepository;
         }

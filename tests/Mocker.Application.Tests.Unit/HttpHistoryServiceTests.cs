@@ -11,19 +11,19 @@ using Xunit;
 
 namespace Mocker.Application.Tests.Unit
 {
-    public class HttpMockHistoryServiceTests
+    public class HttpHistoryServiceTests
     {
         private const string route = "route1";
         private const string body = "body1";
         private readonly HttpMethod method = HttpMethod.Get;
 
-        private readonly HttpMockHistoryService _sut;
-        private readonly Mock<IHttpMockHistoryRepository> _mockHttpMockHistoryRepository;
+        private readonly HttpHistoryService _sut;
+        private readonly Mock<IHttpMockHistoryRepository> _mockHttpHistoryRepository;
 
-        public HttpMockHistoryServiceTests()
+        public HttpHistoryServiceTests()
         {
-            _mockHttpMockHistoryRepository = new Mock<IHttpMockHistoryRepository>();
-            _sut = new HttpMockHistoryService(_mockHttpMockHistoryRepository.Object);
+            _mockHttpHistoryRepository = new Mock<IHttpMockHistoryRepository>();
+            _sut = new HttpHistoryService(_mockHttpHistoryRepository.Object);
         }
 
         [Fact]
@@ -34,20 +34,20 @@ namespace Mocker.Application.Tests.Unit
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, route, body, headers, queryString);
             await _sut.AddAsync(httpRequestDetails);
 
-            _mockHttpMockHistoryRepository.Verify(m => m.AddAsync(It.Is<HttpRequestDetails>(h => h == httpRequestDetails)));
+            _mockHttpHistoryRepository.Verify(m => m.AddAsync(It.Is<HttpRequestDetails>(h => h == httpRequestDetails)));
         }
 
         [Fact]
         public async Task FindsHttpRequestDetailsByMethodRouteAndBody()
         {
             var expected = BuildHttpRequestDetailsList();
-            _mockHttpMockHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
                 .Returns(Task.FromResult(expected));
 
             var httpMockHistoryFilter = new HttpMockHistoryFilter(method, route, body, TimeSpan.FromSeconds(30));
             var actual = await _sut.FindAsync(httpMockHistoryFilter);
 
-            _mockHttpMockHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
+            _mockHttpHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
 
             Assert.Equal(expected[0].Method, actual[0].Method);
             Assert.Equal(expected[0].Route, actual[0].Route);
@@ -58,13 +58,13 @@ namespace Mocker.Application.Tests.Unit
         public async Task FindsHttpRequestDetailsByMethodOnly()
         {
             var expected = BuildHttpRequestDetailsList();
-            _mockHttpMockHistoryRepository.Setup(m => m.FindByMethodAsync(It.IsAny<HttpMethod>()))
+            _mockHttpHistoryRepository.Setup(m => m.FindByMethodAsync(It.IsAny<HttpMethod>()))
                 .Returns(Task.FromResult(expected));
 
             var httpMockHistoryFilter = new HttpMockHistoryFilter(method, null, null, TimeSpan.FromSeconds(30));
             var actual = await _sut.FindAsync(httpMockHistoryFilter);
 
-            _mockHttpMockHistoryRepository.Verify(m => m.FindByMethodAsync(It.Is<HttpMethod>(h => h == method)));
+            _mockHttpHistoryRepository.Verify(m => m.FindByMethodAsync(It.Is<HttpMethod>(h => h == method)));
 
             Assert.Equal(expected.Count, actual.Count);
 
@@ -79,7 +79,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task FindsHttpRequestDetailsByMethodRouteAndBodyDoesNotThrowIfNoneFound()
         {
-            _mockHttpMockHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
                 .Returns(Task.FromResult(new List<HttpRequestDetails>()));
 
             var httpMockHistoryFilter = new HttpMockHistoryFilter(method, route, body, TimeSpan.FromSeconds(30));
@@ -89,7 +89,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task FindsHttpRequestDetailsByMethodOnlyDoesNotThrowIfNoneFound()
         {
-            _mockHttpMockHistoryRepository.Setup(m => m.FindByMethodAsync(It.IsAny<HttpMethod>()))
+            _mockHttpHistoryRepository.Setup(m => m.FindByMethodAsync(It.IsAny<HttpMethod>()))
                 .Returns(Task.FromResult(new List<HttpRequestDetails>()));
 
             var httpMockHistoryFilter = new HttpMockHistoryFilter(method, null, null, TimeSpan.FromSeconds(30));
@@ -102,14 +102,14 @@ namespace Mocker.Application.Tests.Unit
             var httpMockHistoryFilter = new HttpMockHistoryFilter(method, route, body, TimeSpan.FromMilliseconds(10));
 
             var expected = BuildHttpRequestDetailsList();
-            _mockHttpMockHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
                 .Returns(Task.FromResult(expected));
 
             await Task.Delay(20);
 
             var actual = await _sut.FindAsync(httpMockHistoryFilter);
 
-            _mockHttpMockHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
+            _mockHttpHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
 
             Assert.Empty(actual);
         }
@@ -117,11 +117,11 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task DeletesAllHttpRequestDetails()
         {
-            _mockHttpMockHistoryRepository.Setup(m => m.DeleteAllAsync());
+            _mockHttpHistoryRepository.Setup(m => m.DeleteAllAsync());
 
             await _sut.DeleteAllAsync();
 
-            _mockHttpMockHistoryRepository.Verify(m => m.DeleteAllAsync());
+            _mockHttpHistoryRepository.Verify(m => m.DeleteAllAsync());
         }
 
         private List<HttpRequestDetails> BuildHttpRequestDetailsList() => new List<HttpRequestDetails>()

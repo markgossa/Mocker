@@ -11,10 +11,10 @@ namespace Mocker.Functions.Services
     public class HttpRequestProcessor : IHttpRequestProcessor
     {
         private readonly IHttpMockEngine _httpMockEngine;
-        private readonly IHttpMockHistoryService _httpMockHistoryService;
+        private readonly IHttpHistoryService _httpMockHistoryService;
         private readonly IMapper<HttpRequestObject, Task<HttpRequestDetails>> _mapper;
 
-        public HttpRequestProcessor(IHttpMockEngine httpMockEngine, IHttpMockHistoryService httpMockHistoryService,
+        public HttpRequestProcessor(IHttpMockEngine httpMockEngine, IHttpHistoryService httpMockHistoryService,
             IMapper<HttpRequestObject, Task<HttpRequestDetails>> mapper)
         {
             _httpMockEngine = httpMockEngine;
