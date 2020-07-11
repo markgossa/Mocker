@@ -1,5 +1,6 @@
 ﻿using Mocker.Domain.Models.Http;
 using System.Net;
+using System.Net.Http;
 using Xunit;
 
 namespace Mocker.Domain.Tests.Unit
@@ -9,10 +10,11 @@ namespace Mocker.Domain.Tests.Unit
         [Fact]
         public void CreatesValidMockRule()
         {
-            var httpMockResponse = new HttpAction(HttpStatusCode.OK, "hello world");
-            var actual = new HttpRule(httpMockResponse);
+            var httpAction = new HttpAction(HttpStatusCode.OK, "hello world");
+            var httpFilter = new HttpFilter(HttpMethod.Delete, "body");
+            var actual = new HttpRule(httpFilter, httpAction);
 
-            Assert.Equal(httpMockResponse, actual.HttpAction);
+            Assert.Equal(httpAction, actual.HttpAction);
         }
     }
 }
