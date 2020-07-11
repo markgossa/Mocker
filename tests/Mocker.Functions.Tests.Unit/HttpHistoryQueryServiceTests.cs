@@ -14,17 +14,17 @@ using Xunit;
 
 namespace Mapper.Functions.Tests.Unit
 {
-    public class HistoryQueryProcessorTests
+    public class HttpHistoryQueryServiceTests
     {
         private const string _body = "hello world!";
         private const string _route = "api";
         private const string _timeframe = "00:00:10";
-        private readonly HistoryQueryProcessor _sut;
+        private readonly HttpHistoryQueryService _sut;
         private readonly Mock<IHttpHistoryService> _mockHttpMockHistoryService = new Mock<IHttpHistoryService>();
 
-        public HistoryQueryProcessorTests()
+        public HttpHistoryQueryServiceTests()
         {
-            _sut = new HistoryQueryProcessor(_mockHttpMockHistoryService.Object);
+            _sut = new HttpHistoryQueryService(_mockHttpMockHistoryService.Object);
         }
 
         [Fact]
@@ -35,7 +35,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "hello", "world" }
             };
 
-            var actual = await _sut.ProcessAsync(query);
+            var actual = await _sut.ExecuteQueryAsync(query);
 
             Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
             Assert.Equal("Please pass a valid HTTP method to search for", await actual.Content.ReadAsStringAsync());
@@ -49,7 +49,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "method", "world" }
             };
 
-            var actual = await _sut.ProcessAsync(query);
+            var actual = await _sut.ExecuteQueryAsync(query);
 
             Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
             Assert.Equal("Please pass a valid HTTP method to search for", await actual.Content.ReadAsStringAsync());
@@ -64,7 +64,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "timeframe", "invalid" }
             };
 
-            var actual = await _sut.ProcessAsync(query);
+            var actual = await _sut.ExecuteQueryAsync(query);
 
             Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
             Assert.Equal("Please pass a valid timeframe to search for", await actual.Content.ReadAsStringAsync());
@@ -78,7 +78,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "method", "get" }
             };
 
-            var actual = await _sut.ProcessAsync(query);
+            var actual = await _sut.ExecuteQueryAsync(query);
 
             Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         }
@@ -92,7 +92,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "timeframe", "00:00:10" }
             };
 
-            var actual = await _sut.ProcessAsync(query);
+            var actual = await _sut.ExecuteQueryAsync(query);
 
             Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         }
@@ -108,7 +108,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "method", "get" }
             };
 
-            await _sut.ProcessAsync(query);
+            await _sut.ExecuteQueryAsync(query);
 
             _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
                 f => f.Method == HttpMethod.Get
@@ -129,7 +129,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "body", _body }
             };
 
-            await _sut.ProcessAsync(query);
+            await _sut.ExecuteQueryAsync(query);
 
             _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
                 f => f.Method == HttpMethod.Get
@@ -149,7 +149,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "timeframe", _timeframe}
             };
 
-            await _sut.ProcessAsync(query);
+            await _sut.ExecuteQueryAsync(query);
 
             _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
                 f => f.TimeFrame == TimeSpan.Parse(_timeframe))));
@@ -174,7 +174,7 @@ namespace Mapper.Functions.Tests.Unit
                 { "timeframe", _timeframe}
             };
 
-            var response = await _sut.ProcessAsync(query);
+            var response = await _sut.ExecuteQueryAsync(query);
             var responseData = await response.Content.ReadAsStringAsync();
             var actual = JsonSerializer.Deserialize<List<HttpHistoryItem>>(responseData);
 

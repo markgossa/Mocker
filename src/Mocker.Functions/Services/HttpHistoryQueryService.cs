@@ -13,18 +13,18 @@ using System.Threading.Tasks;
 
 namespace Mocker.Functions.Services
 {
-    public class HistoryQueryProcessor : IHistoryQueryProcessor
+    public class HttpHistoryQueryService : IHttpHistoryQueryService
     {
         private readonly string[] _httpMethods = new string[] {"get", "post", "put", "delete", "head",
             "options", "patch", "trace" };
         private readonly IHttpHistoryService _httpMockHistoryService;
 
-        public HistoryQueryProcessor(IHttpHistoryService httpMockHistoryService)
+        public HttpHistoryQueryService(IHttpHistoryService httpMockHistoryService)
         {
             _httpMockHistoryService = httpMockHistoryService;
         }
 
-        public async Task<HttpResponseMessage> ProcessAsync(Dictionary<string, string> query)
+        public async Task<HttpResponseMessage> ExecuteQueryAsync(Dictionary<string, string> query)
         {
             if (!ValidateMethodQuery(query, out var method) || method is null)
             {
@@ -36,8 +36,8 @@ namespace Mocker.Functions.Services
                 return BuildBadRequestMessage("Please pass a valid timeframe to search for");
             }
 
-            var httpHistory = await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, query.GetValueOrDefault("route"),
-                query.GetValueOrDefault("body"), timeframe));
+            var httpHistory = await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, 
+                query.GetValueOrDefault("route"), query.GetValueOrDefault("body"), timeframe));
             var httpHistoryItems = MapToHttpHistoryItems(httpHistory);
             
             return new HttpResponseMessage()

@@ -23,7 +23,7 @@ namespace Mocker.Functions
             builder.Services.AddSingleton<IHttpHistoryService, HttpHistoryService>();
             builder.Services.AddSingleton<IHttpRequestProcessor, HttpRequestProcessor>();
             builder.Services.AddSingleton<IHttpRuleRepository, InMemoryHttpRuleRepository>();
-            builder.Services.AddSingleton<IHistoryQueryProcessor, HistoryQueryProcessor>();
+            builder.Services.AddSingleton<IHttpHistoryQueryService, HttpHistoryQueryService>();
             builder.Services.AddSingleton<IHttpMockHistoryRepository, HttpMockHistoryTableRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
             builder.Services.AddSingleton(typeof(CloudTableClient), BuildCloudTableClient());

@@ -25,7 +25,6 @@ namespace Mocker.Functions.Services
         public async Task<HttpResponseMessage> ProcessAsync(HttpRequestObject httpRequestObject)
         {
             var httpRequestDetails = await _mapper.Map(httpRequestObject);
-
             var loggingTask = _httpMockHistoryService.AddAsync(httpRequestDetails);
 
             var httpAction = _httpMockEngine.Process(httpRequestDetails);

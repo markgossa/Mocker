@@ -8,19 +8,19 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Mocker.Functions.Functions.Mocks
+namespace Mocker.Functions.Functions.Http.Mocker
 {
-    public class MockerMockFunctions
+    public class HttpMockerFunctions
     {
         private readonly IHttpRequestProcessor _httpRequestProcessor;
 
-        public MockerMockFunctions(IHttpRequestProcessor httpMockEngine)
+        public HttpMockerFunctions(IHttpRequestProcessor httpMockEngine)
         {
             _httpRequestProcessor = httpMockEngine;
         }
 
-        [FunctionName(nameof(Mock))]
-        public async Task<HttpResponseMessage> Mock(
+        [FunctionName(nameof(HttpMocker))]
+        public async Task<HttpResponseMessage> HttpMocker(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
             "patch", "trace", Route = "{route?}")] HttpRequest request,
             string route, ILogger log)

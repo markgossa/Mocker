@@ -9,14 +9,14 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Mocker.Functions.Functions.Mocks
+namespace Mocker.Functions.Functions.Http.MockerAdmin
 {
-    public class MockerAdminHistoryHttpFunctions
+    public class HttpMockerAdminHistoryFunctions
     {
-        private readonly IHistoryQueryProcessor _historyRequestProcessor;
+        private readonly IHttpHistoryQueryService _historyRequestProcessor;
         private readonly IHttpHistoryService _httpHistoryService;
 
-        public MockerAdminHistoryHttpFunctions(IHistoryQueryProcessor httpHistoryRequestProcessor,
+        public HttpMockerAdminHistoryFunctions(IHttpHistoryQueryService httpHistoryRequestProcessor,
             IHttpHistoryService httpHistoryService)
         {
             _historyRequestProcessor = httpHistoryRequestProcessor;
@@ -25,17 +25,17 @@ namespace Mocker.Functions.Functions.Mocks
 
         [FunctionName(nameof(GetHttpHistory))]
         public async Task<HttpResponseMessage> GetHttpHistory(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "MockerAdmin/http/history")] HttpRequest request, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "mockeradmin/http/history")] HttpRequest request, ILogger log)
         {
             log.LogInformation("MockerAdmin processed a request to query HTTP history");
             var query = request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
 
-            return await _historyRequestProcessor.ProcessAsync(query);
+            return await _historyRequestProcessor.ExecuteQueryAsync(query);
         }
 
         [FunctionName(nameof(DeleteHttpHistory))]
         public async Task<IActionResult> DeleteHttpHistory(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "MockerAdmin/http/history")] HttpRequest request, ILogger log)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "mockeradmin/http/history")] HttpRequest request, ILogger log)
         {
             log.LogInformation("MockerAdmin processed a request to delete all HTTP history");
             await _httpHistoryService.DeleteAllAsync();

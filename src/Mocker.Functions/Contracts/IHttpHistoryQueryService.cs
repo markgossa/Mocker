@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace Mocker.Functions.Contracts
 {
-    public interface IHistoryQueryProcessor
+    public interface IHttpHistoryQueryService
     {
-        Task<HttpResponseMessage> ProcessAsync(Dictionary<string, string> query);
+        Task<HttpResponseMessage> ExecuteQueryAsync(Dictionary<string, string> query);
     }
 }
