@@ -67,7 +67,7 @@ namespace Mocker.Infrastructure.Tests.Unit
         [Fact]
         public void CreatesHttpRequestDetailsTableEntityWithNullProperties()
         {
-            var actual = BuildHttpRequestDetailsTableEntityWithNullProperties();
+            var actual = BuildHttpRequestDetailsTableEntityWithHeadersAndMethod();
 
             Assert.Equal(_method.ToString(), actual.Method);
             Assert.Null(actual.Route);
@@ -81,7 +81,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             new HttpRequestDetailsTableEntity(
                 new HttpRequestDetails(_method, _route, _body, _headers, _query));
 
-        private HttpRequestDetailsTableEntity BuildHttpRequestDetailsTableEntityWithNullProperties() =>
+        private HttpRequestDetailsTableEntity BuildHttpRequestDetailsTableEntityWithHeadersAndMethod() =>
             new HttpRequestDetailsTableEntity(
                 new HttpRequestDetails(_method, null, null, _headers, null));
     }

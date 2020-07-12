@@ -1,8 +1,11 @@
-﻿using Mocker.Functions.Models;
+﻿using Microsoft.AspNetCore.Http;
+using Mocker.Functions.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
@@ -34,44 +37,102 @@ namespace Mocker.Functions.Tests.Integration
         {
             for (var i = 0; i < count; i++)
             {
-                if (method == "DELETE")
-                {
-                    await _httpClient.DeleteAsync(_mockerBaseUrl);
-                }
-                else if (method == "GET")
-                {
-                    await _httpClient.GetAsync(_mockerBaseUrl);
-                }
-                else if (method == "PATCH")
-                {
-                    await _httpClient.PatchAsync(_mockerBaseUrl, new StringContent(data));
-                }
-                else if (method == "POST")
-                {
-                    await _httpClient.PostAsync(_mockerBaseUrl, new StringContent(data));
-                }
-                else if (method == "PUT")
-                {
-                    await _httpClient.PutAsync(_mockerBaseUrl, new StringContent(data));
-                }
+                await SendRequest(data, method, null, null);
             }
         }
 
         [When(@"I query for those (.*) requests by HTTP method")]
         public async Task WhenIQueryForThatRequestByHTTPMethod(string method)
         {
-            var uri = new UriBuilder(_mockerAdminHttpHistoryUrl);
-            var query = HttpUtility.ParseQueryString(uri.Query);
-            query["method"] = method;
-            uri.Query = query.ToString();
+            var query = new NameValueCollection
+            {
+                { "method", method }
+            };
+
+            await QueryForRequests(query);
+        }
+
+        [When(@"I query for those (.*) requests by HTTP method and body (.*)")]
+        public async Task WhenIQueryForThatRequestByHTTPMethod(string method, string body)
+        {
+            var query = new NameValueCollection
+            {
+                { "method", method },
+                { "body", body }
+            };
+
+            await QueryForRequests(query);
+        }
+
+        [Then(@"the result should have (.*) requests")]
+        public void ThenTheResultShouldBeReturnedWithTheCorrectCount(int expectedCount) => 
+            Assert.Equal(expectedCount, _httpHistory.Count);
+
+        [Given(@"I have sent a (.*) request to the HTTP mock with header key (.*) and value (.*)")]
+        public async Task GivenIHaveSentARequestToTheHTTPMockWithHeaderValue(string method, string headerKey, string headerValue) =>
+            await SendRequest("hello world!", method, headerKey, headerValue);
+
+        [When(@"I query for that request by (.*) method and header key (.*) and value (.*)")]
+        public async Task WhenIQueryForThatRequestByHTTPMethodAndHeaderValueAsync(string method, string headerKey, string headerValue)
+        {
+            var query = new NameValueCollection
+            {
+                { "method", method },
+                { headerKey, headerValue }
+            };
+
+            await QueryForRequests(query);
+        }
+
+        [Then(@"the result should have one (.*) request with header key (.*) and value (.*)")]
+        public void ThenTheResultShouldHaveOneRequestWithHeaderKeyAndValue(string method, string headerKey, string headerValue)
+        {
+            Assert.Single(_httpHistory);
+            Assert.Equal(method, _httpHistory.First().Method);
+            Assert.Equal(headerValue, _httpHistory.First().Headers[headerKey][0]);
+        }
+
+        private async Task SendRequest(string data, string method, string headerKey, string headerValue)
+        {
+            var request = new HttpRequestMessage(new HttpMethod(method), _mockerBaseUrl);
+
+            if (!string.IsNullOrWhiteSpace(headerKey) && !string.IsNullOrWhiteSpace(headerValue))
+            {
+                request.Headers.Add(headerKey, new List<string>() { headerValue });
+            }
+
+            if (method != HttpMethod.Delete.ToString() && method != HttpMethod.Get.ToString())
+            {
+                request.Content = new StringContent(data);
+            }
+
+            await _httpClient.SendAsync(request);
+        }
+
+        private async Task QueryForRequests(NameValueCollection query)
+        {
+            var queryString = ConvertToQueryString(query);
+
+            var uri = new UriBuilder(_mockerAdminHttpHistoryUrl)
+            {
+                Query = queryString.ToString()
+            };
 
             var response = await _httpClient.GetAsync(uri.ToString());
             var json = await response.Content.ReadAsStringAsync();
             _httpHistory = JsonSerializer.Deserialize<List<HttpHistoryItem>>(json);
         }
 
-        [Then(@"the result should have (.*) (.*) requests with correct (.*)")]
-        public void ThenTheResultShouldBeReturnedWithTheCorrectCount(int expectedCount, string method,
-            string data) => Assert.Equal(expectedCount, _httpHistory.Count(h => h.Method == method && h.Body == data));
+        private static string ConvertToQueryString(NameValueCollection query)
+        {
+            var items = new List<string>();
+            foreach (string name in query)
+            {
+                items.Add(string.Concat(name, "=", HttpUtility.UrlEncode(query[name])));
+            }
+
+            var queryString = string.Join("&", items.ToArray());
+            return queryString;
+        }
     }
 }

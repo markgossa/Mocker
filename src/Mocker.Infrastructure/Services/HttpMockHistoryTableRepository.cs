@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Mocker.Infrastructure.Services
@@ -25,9 +26,6 @@ namespace Mocker.Infrastructure.Services
         {
             var insertOperation = TableOperation.Insert(new HttpRequestDetailsTableEntity(httpRequestDetails));
             await _table.ExecuteAsync(insertOperation);
-
-            var result = await FindByMethodAsync(httpRequestDetails.Method);
-            var result2 = await FindAsync(new HttpMockHistoryFilter(httpRequestDetails.Method, httpRequestDetails.Route, httpRequestDetails.Body));
         }
 
         public async Task DeleteAllAsync()
@@ -46,21 +44,25 @@ namespace Mocker.Infrastructure.Services
         {
             return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
                 r.Method == httpMethod.ToString())
-            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), null,
-                r.ReceivedTime))
+            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body,
+            DeserializeHeaders(r.Headers), null, r.ReceivedTime))
             .ToList();
         });
 
+        private Dictionary<string, List<string>> DeserializeHeaders(string? json) =>
+            JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json)
+                ?? new Dictionary<string, List<string>>();
+
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter) => await Task.Run(() =>
-            {
-                return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
-                    r.Method == httpMockHistoryFilter.Method.ToString()
-                    && r.Route == (httpMockHistoryFilter.Route ?? string.Empty)
-                    && r.Body == (httpMockHistoryFilter.Body ?? string.Empty)
-                    && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
-                .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(), 
-                    null, r.ReceivedTime))
-                .ToList();
-            });
+        {
+            return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
+            r.Method == httpMockHistoryFilter.Method.ToString()
+            //&& r.Route == (httpMockHistoryFilter.Route ?? string.Empty)
+            && r.Body == (httpMockHistoryFilter.Body)
+            && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
+            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(),
+            null, r.ReceivedTime))
+            .ToList();
+        });
     }
 }
