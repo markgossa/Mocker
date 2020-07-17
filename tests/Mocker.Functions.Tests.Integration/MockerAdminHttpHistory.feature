@@ -19,14 +19,24 @@ Scenario: Saves and retrieves HTTP history by HTTP method
 	| 1     | TRACE      | 9    |
 
 Scenario: Saves and retrieves HTTP history by HTTP method and body
-	Given I have sent <body> to the HTTP mock using the <httpMethod> HTTP method <count> times
-	When I query for those <httpMethod> requests by HTTP method and body <body>
+	Given I have sent <body1> to the HTTP mock using the <httpMethod> HTTP method <count> times
+	And I have sent <body2> to the HTTP mock using the <httpMethod> HTTP method <count> times
+	When I query for those <httpMethod> requests by HTTP method and body <body1>
 	Then the result should have <count> requests
 	Examples:
-	| count | httpMethod | body |
-	| 3     | GET        |      |
-	| 1     | POST       | 4    |
-	| 2     | OPTIONS    | 8    |
+	| count | httpMethod | body1 | body2 |
+	| 1     | POST       | 4     | 6     |
+	| 2     | OPTIONS    | 8     | 9     |
+
+Scenario: Saves and retrieves HTTP history by HTTP method and JSON body
+	Given I have sent <body1> to the HTTP mock using the <httpMethod> HTTP method <count> times
+	And I have sent <body2> to the HTTP mock using the <httpMethod> HTTP method <count> times
+	When I query for those <httpMethod> requests by HTTP method and body <body1>
+	Then the result should have <count> requests
+	Examples:
+	| count | httpMethod | body1                             | body2                                       |
+	| 1     | POST       | {"name": "mark"}                  | {"name": "markg"}                           |
+	| 2     | OPTIONS    | {"name": "mark","gender": "male"} | {"name": "mark","favouriteTeam": "Chelsea"} |
 
 Scenario: Saves and retrieves HTTP history by header
 	Given I have sent a <httpMethod> request to the HTTP mock with header key <headerKey> and value <headerValue1>

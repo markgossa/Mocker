@@ -40,29 +40,21 @@ namespace Mocker.Infrastructure.Services
             await Task.WhenAll(deleteTasks);
         }
 
-        public async Task<List<HttpRequestDetails>> FindByMethodAsync(HttpMethod httpMethod) => await Task.Run(() =>
-        {
-            return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
-                r.Method == httpMethod.ToString())
-            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body,
-            DeserializeHeaders(r.Headers), null, r.ReceivedTime))
-            .ToList();
-        });
-
         private Dictionary<string, List<string>> DeserializeHeaders(string? json) =>
             JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json)
                 ?? new Dictionary<string, List<string>>();
 
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter) => await Task.Run(() =>
         {
-            return _table.CreateQuery<HttpRequestDetailsTableEntity>().Where(r =>
-            r.Method == httpMockHistoryFilter.Method.ToString()
-            //&& r.Route == (httpMockHistoryFilter.Route ?? string.Empty)
-            && r.Body == (httpMockHistoryFilter.Body)
-            && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
-            .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, new Dictionary<string, List<string>>(),
-            null, r.ReceivedTime))
-            .ToList();
+            return _table.CreateQuery<HttpRequestDetailsTableEntity>()
+                .Where(r =>
+                    r.Method == httpMockHistoryFilter.Method.ToString()
+                    && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
+                //.Where(r => (string.IsNullOrWhiteSpace(httpMockHistoryFilter.Route) || r.Route == httpMockHistoryFilter.Route)
+                //    && (string.IsNullOrWhiteSpace(httpMockHistoryFilter.Body) || r.Body == httpMockHistoryFilter.Body))
+                .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, DeserializeHeaders(r.Headers),
+                    null, r.ReceivedTime))
+                .ToList();
         });
     }
 }

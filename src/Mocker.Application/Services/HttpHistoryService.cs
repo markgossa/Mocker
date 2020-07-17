@@ -21,21 +21,23 @@ namespace Mocker.Application.Services
 
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
-            List<HttpRequestDetails> matchingRequests;
-            if (httpMockHistoryFilter.Body is null && httpMockHistoryFilter.Route is null)
-            {
-                matchingRequests = await _httpRequestDetailsRepository.FindByMethodAsync(httpMockHistoryFilter.Method);
-            }
-            else
-            {
-                matchingRequests = await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter);
-            }
+            var httpRequestDetails = (await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter)).ToList();
 
-            return matchingRequests.Where(IsHttpRequestWithinTimeFrame(httpMockHistoryFilter)).ToList();
+            return httpRequestDetails
+                .Where(r => IsMatchingBody(httpMockHistoryFilter, r)
+                && IsMatchingHeader(httpMockHistoryFilter, r)
+                && IsMatchingRoute(httpMockHistoryFilter, r))
+                .ToList();
         }
 
-        private static Func<HttpRequestDetails, bool> IsHttpRequestWithinTimeFrame(HttpMockHistoryFilter httpMockHistoryFilter) => r => 
-            r.Timestamp > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame);
+        private bool IsMatchingRoute(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails r) =>
+            httpMockHistoryFilter.Route is null || httpMockHistoryFilter.Route == r.Route;
+
+        private bool IsMatchingHeader(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails r) => 
+            httpMockHistoryFilter.Headers is null || httpMockHistoryFilter.Headers == r.Headers;
+
+        private static bool IsMatchingBody(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
+            httpMockHistoryFilter.Body is null || request.Body == httpMockHistoryFilter.Body;
 
         public async Task DeleteAllAsync() => await _httpRequestDetailsRepository.DeleteAllAsync();
     }

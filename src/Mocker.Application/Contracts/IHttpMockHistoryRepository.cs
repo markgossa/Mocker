@@ -10,7 +10,6 @@ namespace Mocker.Application.Contracts
     {
         Task AddAsync(HttpRequestDetails httpRequestDetails);
         Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter);
-        Task<List<HttpRequestDetails>> FindByMethodAsync(HttpMethod httpMethod);
         Task DeleteAllAsync();
     }
 }

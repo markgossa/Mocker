@@ -36,14 +36,53 @@ namespace Mocker.Functions.Services
                 return BuildBadRequestMessage("Please pass a valid timeframe to search for");
             }
 
+            if (!ValidateHeaderQuery(query, out var headers))
+            {
+                return BuildBadRequestMessage("Please pass a valid header in the query string to search " +
+                    "for e.g. header=key1=value1,key2=value2");
+            }
+
             var httpHistory = await _httpMockHistoryService.FindAsync(new HttpMockHistoryFilter(method, 
-                query.GetValueOrDefault("route"), query.GetValueOrDefault("body"), timeframe));
+                query.GetValueOrDefault("route"), query.GetValueOrDefault("body"), timeframe, headers));
             var httpHistoryItems = MapToHttpHistoryItems(httpHistory);
             
             return new HttpResponseMessage()
             {
                 Content = new StringContent(JsonSerializer.Serialize(httpHistoryItems))
             };
+        }
+
+        private bool ValidateHeaderQuery(Dictionary<string, string> query, out Dictionary<string, List<string>>? headers)
+        {
+            headers = null;
+            if (query.TryGetValue("headers", out var headersString))
+            {
+                if (string.IsNullOrWhiteSpace(headersString))
+                {
+                    return false;
+                }
+
+                headers = ConvertToHeaders(headersString);
+
+                return !headers.Values.Any(v => v.Any(a => string.IsNullOrWhiteSpace(a)));
+            }
+
+            return true;
+        }
+
+        private Dictionary<string, List<string>> ConvertToHeaders(string headers)
+        {
+            var headersDictionary = new Dictionary<string, List<string>>();
+            foreach (var header in headers.Split(','))
+            {
+                var headerParts = header.Split('=');
+                if (headerParts.Count() % 2 == 0)
+                {
+                    headersDictionary.Add(headerParts[0], new List<string>() { headerParts[1] });
+                }
+            }
+
+            return headersDictionary;
         }
 
         private IEnumerable<HttpHistoryItem>? MapToHttpHistoryItems(List<HttpRequestDetails> httpHistory)

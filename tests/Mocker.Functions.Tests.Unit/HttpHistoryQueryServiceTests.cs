@@ -28,7 +28,7 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
-        public async Task ReturnsBadResponseIfNoMethodPassed()
+        public async Task ReturnsBadResponseIfNoMethod()
         {
             var query = new Dictionary<string, string>()
             {
@@ -42,7 +42,7 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
-        public async Task ReturnsBadResponseIfInvalidMethodPassed()
+        public async Task ReturnsBadResponseIfInvalidMethod()
         {
             var query = new Dictionary<string, string>()
             {
@@ -56,7 +56,7 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
-        public async Task ReturnsBadResponseIfInvalidTimeframePassed()
+        public async Task ReturnsBadResponseIfInvalidTimeframe()
         {
             var query = new Dictionary<string, string>()
             {
@@ -68,6 +68,41 @@ namespace Mapper.Functions.Tests.Unit
 
             Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
             Assert.Equal("Please pass a valid timeframe to search for", await actual.Content.ReadAsStringAsync());
+        }
+
+        [Theory]
+        [InlineData("header1=")]
+        [InlineData("")]
+        public async Task ReturnsBadResponseIfInvalidHeader(string headerData)
+        {
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" },
+                { "headers", headerData }
+            };
+
+            var actual = await _sut.ExecuteQueryAsync(query);
+
+            Assert.Equal(HttpStatusCode.BadRequest, actual.StatusCode);
+            Assert.Equal("Please pass a valid header in the query string to search for e.g. header=key1=value1,key2=value2",
+                await actual.Content.ReadAsStringAsync());
+        }
+
+        [Theory]
+        [InlineData("header1")]
+        [InlineData("key1=value1")]
+        [InlineData("key1=value1,key2=value2")]
+        public async Task ReturnsOkResponseWithValidHeaders(string headerData)
+        {
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" },
+                { "headers", headerData }
+            };
+
+            var actual = await _sut.ExecuteQueryAsync(query);
+
+            Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
         }
 
         [Fact]
@@ -138,7 +173,7 @@ namespace Mapper.Functions.Tests.Unit
         }
 
         [Fact]
-        public async Task QueriesHttpMockHistoryServiceWithTimeFrameIfSpecified()
+        public async Task QueriesHttpMockHistoryServiceWithTimeFrame()
         {
             _mockHttpMockHistoryService.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
                 .Returns(Task.FromResult(new List<HttpRequestDetails>()));
@@ -153,6 +188,31 @@ namespace Mapper.Functions.Tests.Unit
 
             _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
                 f => f.TimeFrame == TimeSpan.Parse(_timeframe))));
+        }
+
+        [Fact]
+        public async Task QueriesHttpMockHistoryServiceWithHeaders()
+        {
+            _mockHttpMockHistoryService.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+                .Returns(Task.FromResult(new List<HttpRequestDetails>()));
+
+            var expectedHeaders = new Dictionary<string, List<string>>()
+            {
+                { "key1", new List<string>(){ "value1" } },
+                { "key2", new List<string>(){ "value2" } }
+            };
+
+            var query = new Dictionary<string, string>()
+            {
+                { "method", "get" },
+                { "headers", "key1=value1,key2=value2"}
+            };
+
+            await _sut.ExecuteQueryAsync(query);
+
+            _mockHttpMockHistoryService.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(
+                f => f.Headers["key1"][0] == "value1"
+                && f.Headers["key2"][0] == "value2")));
         }
 
         [Fact]
