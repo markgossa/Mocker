@@ -187,6 +187,96 @@ namespace Mocker.Application.Tests.Unit
         }
 
         [Fact]
+        public async Task FindsHttpRequestDetailsWithTheSameMultipleHeaders()
+        {
+            var header1 = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header2", new List<string>() { "hey2!" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var headerToSearchFor = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header2", new List<string>() { "hey2!" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var expected = BuildHttpRequestDetailsList(header1, headerToSearchFor, null);
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+                .Returns(Task.FromResult(expected));
+
+            var httpMockHistoryFilter = new HttpMockHistoryFilter(_method, null, null, TimeSpan.FromSeconds(30), headerToSearchFor);
+            var actual = await _sut.FindAsync(httpMockHistoryFilter);
+
+            _mockHttpHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
+
+            Assert.Equal(2, actual.Count);
+            Assert.Equal(_method, actual[0].Method);
+        }
+
+        [Fact]
+        public async Task FindsHttpRequestDetailsWithTheDifferentKeyMultipleHeaders()
+        {
+            var header1 = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header4", new List<string>() { "hey2!" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var headerToSearchFor = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header2", new List<string>() { "hey2!" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var expected = BuildHttpRequestDetailsList(header1, headerToSearchFor, null);
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+                .Returns(Task.FromResult(expected));
+
+            var httpMockHistoryFilter = new HttpMockHistoryFilter(_method, null, null, TimeSpan.FromSeconds(30), headerToSearchFor);
+            var actual = await _sut.FindAsync(httpMockHistoryFilter);
+
+            _mockHttpHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
+
+            Assert.Single(actual);
+            Assert.Equal(_method, actual[0].Method);
+        }
+
+        [Fact]
+        public async Task FindsHttpRequestDetailsWithTheDifferentValueMultipleHeaders()
+        {
+            var header1 = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header2", new List<string>() { "hey2#" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var headerToSearchFor = new Dictionary<string, List<string>>()
+            {
+                {"header1", new List<string>() { "hey1!" } },
+                {"header2", new List<string>() { "hey2!" } },
+                {"header3", new List<string>() { "hey3!" } }
+            };
+
+            var expected = BuildHttpRequestDetailsList(header1, headerToSearchFor, null);
+            _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))
+                .Returns(Task.FromResult(expected));
+
+            var httpMockHistoryFilter = new HttpMockHistoryFilter(_method, null, null, TimeSpan.FromSeconds(30), headerToSearchFor);
+            var actual = await _sut.FindAsync(httpMockHistoryFilter);
+
+            _mockHttpHistoryRepository.Verify(m => m.FindAsync(It.Is<HttpMockHistoryFilter>(h => h == httpMockHistoryFilter)));
+
+            Assert.Single(actual);
+            Assert.Equal(_method, actual[0].Method);
+        }
+
+        [Fact]
         public async Task FindsHttpRequestDetailsAndDoesNotThrowIfNoneFound()
         {
             _mockHttpHistoryRepository.Setup(m => m.FindAsync(It.IsAny<HttpMockHistoryFilter>()))

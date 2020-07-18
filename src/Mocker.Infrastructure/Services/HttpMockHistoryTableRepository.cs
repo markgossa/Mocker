@@ -50,8 +50,6 @@ namespace Mocker.Infrastructure.Services
                 .Where(r =>
                     r.Method == httpMockHistoryFilter.Method.ToString()
                     && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
-                //.Where(r => (string.IsNullOrWhiteSpace(httpMockHistoryFilter.Route) || r.Route == httpMockHistoryFilter.Route)
-                //    && (string.IsNullOrWhiteSpace(httpMockHistoryFilter.Body) || r.Body == httpMockHistoryFilter.Body))
                 .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, DeserializeHeaders(r.Headers),
                     null, r.ReceivedTime))
                 .ToList();

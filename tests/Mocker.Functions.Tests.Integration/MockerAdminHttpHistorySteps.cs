@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 using Mocker.Functions.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -75,10 +77,12 @@ namespace Mocker.Functions.Tests.Integration
         [When(@"I query for that request by (.*) method and header key (.*) and value (.*)")]
         public async Task WhenIQueryForThatRequestByHTTPMethodAndHeaderValueAsync(string method, string headerKey, string headerValue)
         {
+            var headersQuery = $"{headerKey}={headerValue},Host={_mockerAdminHttpHistoryUrl.Host}:{_mockerAdminHttpHistoryUrl.Port}";
+
             var query = new NameValueCollection
             {
                 { "method", method },
-                { headerKey, headerValue }
+                { "headers", headersQuery }
             };
 
             await QueryForRequests(query);
@@ -92,9 +96,33 @@ namespace Mocker.Functions.Tests.Integration
             Assert.Equal(headerValue, _httpHistory.First().Headers[headerKey][0]);
         }
 
-        private async Task SendRequest(string data, string method, string headerKey, string headerValue)
+        [Given(@"I have made a (.*) HTTP request (.*) times to route (.*)")]
+        public async Task GivenIHaveMadeAHTTPRequestTimesToRoute(string method, int count, string route)
         {
-            var request = new HttpRequestMessage(new HttpMethod(method), _mockerBaseUrl);
+            for (var i = 0; i < count; i++)
+            {
+                await SendRequest("hello world!", method, null, null, route);
+            }
+        }
+
+        [When(@"I query for those (.*) requests by HTTP method and route (.*)")]
+        public async Task WhenIQueryForThoseRequestsByHTTPMethodAndRoute(string method, string route)
+        {
+            var query = new NameValueCollection
+            {
+                { "method", method },
+                { "route", route }
+            };
+
+            await QueryForRequests(query);
+        }
+
+        private async Task SendRequest(string data, string method, string headerKey, string headerValue,
+            string route = null)
+        {
+            var url = new Uri(_mockerBaseUrl, $"{route}" ?? null);
+
+            var request = new HttpRequestMessage(new HttpMethod(method), url);
 
             if (!string.IsNullOrWhiteSpace(headerKey) && !string.IsNullOrWhiteSpace(headerValue))
             {
@@ -103,7 +131,7 @@ namespace Mocker.Functions.Tests.Integration
 
             if (method != HttpMethod.Delete.ToString() && method != HttpMethod.Get.ToString())
             {
-                request.Content = new StringContent(data);
+                request.Content = new StringContent(data, Encoding.UTF8);
             }
 
             await _httpClient.SendAsync(request);

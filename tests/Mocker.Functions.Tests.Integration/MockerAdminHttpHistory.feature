@@ -1,4 +1,4 @@
-﻿Feature: MockerAdmin
+﻿Feature: MockerAdminHttpHistory
 
 Background: Reset the test environment
 	Given There is no HTTP history
@@ -47,6 +47,13 @@ Scenario: Saves and retrieves HTTP history by header
 	| httpMethod | headerKey | headerValue1 | headerValue2 |
 	| DELETE     | header1   | 1            | 9            |
 	| GET        | header2   | 2            | 8            |
-	| PATCH      | header3   | 3            | 7            |
-	| POST       | header4   | 4            | 6            |
-	| PUT        | header5   | 5            | 4            |
+
+Scenario: Saves and retrieves HTTP history by HTTP method and route
+	Given I have made a <httpMethod> HTTP request <count> times to route <route1>
+	And I have made a <httpMethod> HTTP request <count> times to route <route2>
+	When I query for those <httpMethod> requests by HTTP method and route <route1>
+	Then the result should have <count> requests
+	Examples:
+	| count | httpMethod | route1 | route2 |
+	| 1     | POST       | api/4  | api/6  |
+	| 2     | OPTIONS    | api/8  | api/9  |

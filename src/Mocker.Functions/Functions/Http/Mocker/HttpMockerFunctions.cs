@@ -27,7 +27,7 @@ namespace Mocker.Functions.Functions.Http.Mocker
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            return await ProcessHttpRequest(request, route);
+            return await ProcessHttpRequest(request, $"api/{route}");
         }
 
         private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route)
