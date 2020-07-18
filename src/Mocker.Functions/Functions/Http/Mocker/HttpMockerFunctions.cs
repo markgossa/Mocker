@@ -35,7 +35,7 @@ namespace Mocker.Functions.Functions.Http.Mocker
             var httpRequestObject = new HttpRequestObject(req.Body, new HttpMethod(req.Method),
                 new Dictionary<string, string>(req.GetQueryParameterDictionary()), req.Headers, route);
 
-            return await _httpRequestProcessor.ProcessAsync(httpRequestObject);
+            return await _httpRequestProcessor.ProcessRequestAsync(httpRequestObject);
         }
     }
 }

@@ -57,3 +57,12 @@ Scenario: Saves and retrieves HTTP history by HTTP method and route
 	| count | httpMethod | route1 | route2 |
 	| 1     | POST       | api/4  | api/6  |
 	| 2     | OPTIONS    | api/8  | api/9  |
+
+Scenario: Saves and retrieves HTTP history by HTTP method and correct timestamp returned
+	Given I have sent <body> to the HTTP mock using the <httpMethod> HTTP method 1 times
+	When I query for those <httpMethod> requests by HTTP method
+	Then the result should correct timestamp data
+	Examples:
+	| httpMethod | body |
+	| GET        |      |
+	| POST       | 5    |

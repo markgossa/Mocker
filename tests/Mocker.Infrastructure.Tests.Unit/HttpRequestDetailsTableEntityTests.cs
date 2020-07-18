@@ -40,7 +40,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             var actual = BuildHttpRequestDetailsTableEntity();
 
             Assert.True(Guid.TryParse(actual.PartitionKey, out _));
-            Assert.True(Guid.TryParse(actual.PartitionKey, out _));
+            Assert.True(Guid.TryParse(actual.RowKey, out _));
         }
 
         [Fact]
@@ -52,7 +52,6 @@ namespace Mocker.Infrastructure.Tests.Unit
             Assert.Equal(_route, actual.Route);
             Assert.Equal(_body, actual.Body);
             Assert.InRange(actual.ReceivedTime, DateTime.UtcNow.AddMilliseconds(-10), DateTime.UtcNow);
-            //Assert.InRange(actual.ReceivedTime, DateTime.UtcNow.AddMilliseconds(-10).ToString("s"), DateTime.UtcNow.ToString("s"));
         }
 
         [Fact]

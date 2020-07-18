@@ -117,6 +117,15 @@ namespace Mocker.Functions.Tests.Integration
             await QueryForRequests(query);
         }
 
+        [Then(@"the result should correct timestamp data")]
+        public void ThenTheResultShouldCorrectTimestampData()
+        {
+            foreach (var httpRequest in _httpHistory)
+            {
+                Assert.InRange(httpRequest.Timestamp, DateTime.UtcNow.AddSeconds(-2), DateTime.UtcNow);
+            }
+        }
+
         private async Task SendRequest(string data, string method, string headerKey, string headerValue,
             string route = null)
         {

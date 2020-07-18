@@ -21,13 +21,13 @@ namespace Mapper.Functions.Tests.Unit
         const int _delay = 0;
 
         private readonly HttpRequestProcessor _sut;
-        private readonly Mock<IHttpMockEngine> _mockHttpMockEngine;
+        private readonly Mock<IHttpRuleEngine> _mockHttpMockEngine;
         private readonly Mock<IHttpHistoryService> _mockHttpMockHistoryService;
         private readonly Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>> _mockMapper;
 
         public HttpRequestProcessorTests()
         {
-            _mockHttpMockEngine = new Mock<IHttpMockEngine>();
+            _mockHttpMockEngine = new Mock<IHttpRuleEngine>();
             _mockHttpMockHistoryService = new Mock<IHttpHistoryService>();
             _mockMapper = new Mock<IMapper<HttpRequestObject, Task<HttpRequestDetails>>>();
             _sut = new HttpRequestProcessor(_mockHttpMockEngine.Object, _mockHttpMockHistoryService.Object,
@@ -44,7 +44,7 @@ namespace Mapper.Functions.Tests.Unit
             };
 
             SetUpHttpMockEngineMock(headers);
-            var actual = await _sut.ProcessAsync(BuildHttpRequestObject());
+            var actual = await _sut.ProcessRequestAsync(BuildHttpRequestObject());
 
             var actualBody = await actual.Content.ReadAsStringAsync();
             var actualHeaders = actual.Content.Headers.ToDictionary(a => a.Key, a => a.Value);
@@ -72,7 +72,7 @@ namespace Mapper.Functions.Tests.Unit
                 .Returns(Task.FromResult(new HttpRequestDetails(method, route, body,
                 new Dictionary<string, List<string>>(), new Dictionary<string, string>())));
 
-            await _sut.ProcessAsync(BuildHttpRequestObject());
+            await _sut.ProcessRequestAsync(BuildHttpRequestObject());
 
             _mockHttpMockHistoryService.Verify(m => m.AddAsync(It.Is<HttpRequestDetails>(
                 r => r.Body == body
@@ -86,6 +86,6 @@ namespace Mapper.Functions.Tests.Unit
 
         private void SetUpHttpMockEngineMock(Dictionary<string, List<string>> headers) => 
             _mockHttpMockEngine.Setup(m => m.Process(It.IsAny<HttpRequestDetails>()))
-                .Returns(new HttpAction(_statusCode, _body, headers, _delay));
+                .Returns(Task.FromResult(new HttpAction(_statusCode, _body, headers, _delay)));
     }
 }

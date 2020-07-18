@@ -6,6 +6,6 @@ namespace Mocker.Functions.Contracts
 {
     public interface IHttpRequestProcessor
     {
-        Task<HttpResponseMessage> ProcessAsync(HttpRequestObject httpRequestObject);
+        Task<HttpResponseMessage> ProcessRequestAsync(HttpRequestObject httpRequestObject);
     }
 }

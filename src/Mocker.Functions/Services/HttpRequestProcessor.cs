@@ -10,11 +10,11 @@ namespace Mocker.Functions.Services
 {
     public class HttpRequestProcessor : IHttpRequestProcessor
     {
-        private readonly IHttpMockEngine _httpMockEngine;
+        private readonly IHttpRuleEngine _httpMockEngine;
         private readonly IHttpHistoryService _httpMockHistoryService;
         private readonly IMapper<HttpRequestObject, Task<HttpRequestDetails>> _mapper;
 
-        public HttpRequestProcessor(IHttpMockEngine httpMockEngine, IHttpHistoryService httpMockHistoryService,
+        public HttpRequestProcessor(IHttpRuleEngine httpMockEngine, IHttpHistoryService httpMockHistoryService,
             IMapper<HttpRequestObject, Task<HttpRequestDetails>> mapper)
         {
             _httpMockEngine = httpMockEngine;
@@ -22,12 +22,12 @@ namespace Mocker.Functions.Services
             _mapper = mapper;
         }
 
-        public async Task<HttpResponseMessage> ProcessAsync(HttpRequestObject httpRequestObject)
+        public async Task<HttpResponseMessage> ProcessRequestAsync(HttpRequestObject httpRequestObject)
         {
             var httpRequestDetails = await _mapper.Map(httpRequestObject);
             var loggingTask = _httpMockHistoryService.AddAsync(httpRequestDetails);
 
-            var httpAction = _httpMockEngine.Process(httpRequestDetails);
+            var httpAction = await _httpMockEngine.Process(httpRequestDetails);
             var response = new HttpResponseMessage(httpAction.StatusCode)
             {
                 Content = new StringContent(httpAction.Body)
@@ -40,8 +40,13 @@ namespace Mocker.Functions.Services
             return response;
         }
 
-        private void AddHeaders(Dictionary<string, List<string>> headersToAdd, HttpResponseMessage response)
+        private void AddHeaders(Dictionary<string, List<string>>? headersToAdd, HttpResponseMessage response)
         {
+            if (headersToAdd is null)
+            {
+                return;
+            }
+
             foreach (var header in headersToAdd)
             {
                 response.Content.Headers.Add(header.Key, string.Join(",", header.Value));

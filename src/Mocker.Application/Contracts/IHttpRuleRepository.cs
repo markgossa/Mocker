@@ -1,20 +1,18 @@
 ﻿using Mocker.Domain.Models.Http;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Mocker.Application.Contracts
 {
     public interface IHttpRuleRepository
     {
-        List<HttpRule> Mocks { get; }
+        Task AddAsync(HttpRule httpRule);
 
-        void Add(HttpRule mock);
+        Task DeleteAllAsync();
 
-        void Remove(HttpRule mock);
+        Task<List<HttpRule>> GetAllAsync();
 
-        IEnumerable<HttpRule> GetAll();
-
-        IEnumerable<HttpRule> Find(HttpMethod httpMethod, Dictionary<string, string>? queryString,
-            string? body, string? route);
+        Task<List<HttpRule>> FindAsync(HttpMethod httpMethod, string? body, string? route);
     }
 }
