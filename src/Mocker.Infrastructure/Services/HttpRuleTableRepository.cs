@@ -27,7 +27,7 @@ namespace Mocker.Infrastructure.Services
             await _table.ExecuteAsync(insertOperation);
         }
 
-        public async Task DeleteAllAsync()
+        public async Task RemoveAllAsync()
         {
             var allRows = _table.ExecuteQuery(new TableQuery<HttpRuleTableEntity>());
             var deleteTasks = new List<Task>();

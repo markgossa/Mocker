@@ -28,7 +28,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             { "AccessType", new List<string> { "Type1" } }
         };
         private readonly HttpMethod _filterMethod = HttpMethod.Get;
-        private readonly bool _filterIgnoreHeaders;
+        private const bool _filterIgnoreHeaders = false;
         private readonly HttpStatusCode _actionStatusCode = HttpStatusCode.OK;
         private readonly int _actionDelay = 500;
 

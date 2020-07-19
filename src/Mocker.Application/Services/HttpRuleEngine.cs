@@ -9,38 +9,40 @@ namespace Mocker.Application.Services
 {
     public class HttpRuleEngine : IHttpRuleEngine
     {
-        private readonly IHttpRuleRepository _ruleRepository;
+        private readonly IHttpRuleRepository _httpRuleRepository;
 
-        public HttpRuleEngine(IHttpRuleRepository ruleRepository)
+        public HttpRuleEngine(IHttpRuleRepository httpRuleRepository)
         {
-            _ruleRepository = ruleRepository;
+            _httpRuleRepository = httpRuleRepository;
         }
 
         public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails) =>
-            await FindFirstMatchingRule(httpRequestDetails) ?? BuildDefaultHttpAction();
+            await FindFirstMatchingRule(httpRequestDetails);
 
-        private async Task<HttpAction>? FindFirstMatchingRule(HttpRequestDetails httpRequestDetails)
+        private async Task<HttpAction> FindFirstMatchingRule(HttpRequestDetails httpRequestDetails)
         {
             var matchingRules = await FindAllMatchingRulesIgnoringHeaders(httpRequestDetails);
-
-            if (httpRequestDetails.Headers.Any())
+            if (matchingRules is null)
             {
-                return FindMatchingRuleThatIgnoresOrMatchesHeaders(httpRequestDetails, matchingRules);
+                return BuildDefaultHttpAction();
             }
 
-            return matchingRules?.FirstOrDefault()?.HttpAction;
+            if (httpRequestDetails.Headers.Any() && !matchingRules.FirstOrDefault().HttpFilter.IgnoreHeaders)
+            {
+                return FilterMatchingRulesBasedOnHeaders(httpRequestDetails, matchingRules);
+            }
+
+            return matchingRules.FirstOrDefault().HttpAction;
         }
+
+        private async Task<IEnumerable<HttpRule>> FindAllMatchingRulesIgnoringHeaders(HttpRequestDetails httpRequestDetails) =>
+            await _httpRuleRepository.FindAsync(httpRequestDetails.Method, httpRequestDetails.Body, httpRequestDetails.Route);
 
         private HttpAction BuildDefaultHttpAction() => new HttpAction(HttpStatusCode.OK, string.Empty);
 
-        private async Task<IEnumerable<HttpRule>> FindAllMatchingRulesIgnoringHeaders(HttpRequestDetails httpRequestDetails) =>
-            await _ruleRepository.FindAsync(httpRequestDetails.Method, httpRequestDetails.Body, httpRequestDetails.Route);
-
-        private HttpAction FindMatchingRuleThatIgnoresOrMatchesHeaders(HttpRequestDetails httpRequestDetails, IEnumerable<HttpRule> matchingRules) => matchingRules
-            .Where(r => HttpFilterIgnoresHeaders(r) || HttpRequestDetailsContainsRuleHeaders(r, httpRequestDetails))
+        private HttpAction FilterMatchingRulesBasedOnHeaders(HttpRequestDetails httpRequestDetails, IEnumerable<HttpRule> matchingRules) => matchingRules
+            .Where(r => HttpRequestDetailsContainsRuleHeaders(r, httpRequestDetails))
             .FirstOrDefault()?.HttpAction ?? BuildDefaultHttpAction();
-
-        private bool HttpFilterIgnoresHeaders(HttpRule httpRule) => httpRule.HttpFilter.IgnoreHeaders;
 
         private bool HttpRequestDetailsContainsRuleHeaders(HttpRule httpRule, HttpRequestDetails httpRequestDetails) =>
                             httpRule.HttpFilter.Headers?.Count >= 0

@@ -129,8 +129,8 @@ namespace Mocker.Application.Tests.Unit
 
             var requestHeaders = new Dictionary<string, List<string>>()
             {
-                { "authValue", new List<string>(){ "password" } },
-                { "name", new List<string>(){ "mark" } }
+                { "authValue", new List<string>(){ "password123" } },
+                { "name", new List<string>(){ "markg" } }
             };
 
             var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, _route, _body, requestHeaders, _query);

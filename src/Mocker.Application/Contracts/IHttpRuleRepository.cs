@@ -9,7 +9,7 @@ namespace Mocker.Application.Contracts
     {
         Task AddAsync(HttpRule httpRule);
 
-        Task DeleteAllAsync();
+        Task RemoveAllAsync();
 
         Task<List<HttpRule>> GetAllAsync();
 
