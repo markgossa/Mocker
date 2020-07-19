@@ -19,6 +19,7 @@ namespace Mocker.Infrastructure.Services
         public HttpRuleTableRepository(CloudTableClient tableClient)
         {
             _table = tableClient.GetTableReference(Environment.GetEnvironmentVariable("HttpRuleTable"));
+            _table.CreateIfNotExists();
         }
 
         public async Task AddAsync(HttpRule httpRule)

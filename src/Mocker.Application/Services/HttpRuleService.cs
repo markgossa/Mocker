@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Mocker.Application.Services
 {
-    public class HttpRuleService
+    public class HttpRuleService : IHttpRuleService
     {
         private readonly IHttpRuleRepository _httpRuleRepository;
 
