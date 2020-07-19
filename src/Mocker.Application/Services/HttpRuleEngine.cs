@@ -22,7 +22,7 @@ namespace Mocker.Application.Services
         private async Task<HttpAction> FindFirstMatchingRule(HttpRequestDetails httpRequestDetails)
         {
             var matchingRules = await FindAllMatchingRulesIgnoringHeaders(httpRequestDetails);
-            if (matchingRules is null)
+            if (!matchingRules.Any())
             {
                 return BuildDefaultHttpAction();
             }

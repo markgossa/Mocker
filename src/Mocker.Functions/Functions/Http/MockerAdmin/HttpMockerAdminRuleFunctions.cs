@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Mocker.Functions.Models;
 using Mocker.Functions.Services;
+using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -26,7 +27,18 @@ namespace Mocker.Functions.Functions.Http.MockerAdmin
             log.LogInformation("MockerAdmin processed a request to add an HTTP rule");
 
             var jsonRequest = await request.ReadAsStringAsync();
-            var httpRuleRequest = JsonSerializer.Deserialize<HttpRuleRequest>(jsonRequest);
+            HttpRuleRequest httpRuleRequest;
+            try
+            {
+                httpRuleRequest = JsonSerializer.Deserialize<HttpRuleRequest>(jsonRequest);
+            }
+            catch (Exception ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
+
+
+
             await _httpRuleRequestProcessor.AddAsync(httpRuleRequest);
 
             return new OkResult();

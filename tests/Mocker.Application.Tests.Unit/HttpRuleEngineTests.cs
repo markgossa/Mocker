@@ -34,6 +34,9 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task WhenNoRequestFilterReturnsDefaultResponse()
         {
+            _mockHttpRuleRepository.Setup(m => m.FindAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(),
+                It.IsAny<string>())).Returns(Task.FromResult(new List<HttpRule>()));
+
             var actual = await _sut.Process(BuildHttpRequestDetails());
 
             Assert.Equal(string.Empty, actual.Body);
@@ -45,6 +48,9 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task MakesCorrectCallToRepository()
         {
+            _mockHttpRuleRepository.Setup(m => m.FindAsync(It.IsAny<HttpMethod>(), It.IsAny<string>(),
+                It.IsAny<string>())).Returns(Task.FromResult(new List<HttpRule>()));
+
             await _sut.Process(BuildHttpRequestDetails());
 
             _mockHttpRuleRepository.Verify(m => m.FindAsync(It.Is<HttpMethod>(h => h == HttpMethod.Get),

@@ -6,7 +6,6 @@ using Moq;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -82,6 +81,33 @@ namespace Mocker.Functions.Tests.Unit
                 && h.HttpAction.Headers == expectedActionHeaders
                 && h.HttpAction.StatusCode == expectedActionStatusCode
                 )));
+        }
+
+        [Fact]
+        public void ValidateReturnsFalseIfInvalidHttpRuleRequest()
+        {
+            var newRule = new HttpRuleRequest();
+
+            var actual = _sut.Validate(newRule, out _);
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void ValidateReturnsTrueIfValidHttpRuleRequest()
+        {
+            var newRule = new HttpRuleRequest()
+            {
+                Action = new HttpRuleActionRequest
+                {
+                    StatusCode = HttpStatusCode.OK
+                },
+                Filter = new HttpRuleFilterRequest()
+            };
+
+            var actual = _sut.Validate(newRule, out _);
+
+            Assert.True(actual);
         }
     }
 }
