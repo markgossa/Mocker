@@ -1,9 +1,10 @@
-﻿using Mocker.Application.Contracts;
+﻿using Mocker.Application.Services;
 using Mocker.Domain.Models.Http;
 using Mocker.Functions.Models;
 using Mocker.Functions.Services;
 using Moq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Mocker.Functions.Tests.Unit
 {
     public class HttpRuleRequestProcessorTests
     {
-        private readonly Mock<IHttpRuleRepository> _mockHttpRuleRepository = new Mock<IHttpRuleRepository>();
+        private readonly Mock<IHttpRuleService> _mockHttpRuleRepository = new Mock<IHttpRuleService>();
         private readonly HttpRuleRequestProcessor _sut;
 
         public HttpRuleRequestProcessorTests()
@@ -108,6 +109,40 @@ namespace Mocker.Functions.Tests.Unit
             var actual = _sut.Validate(newRule, out _);
 
             Assert.True(actual);
+        }
+
+        [Fact]
+        public async Task GetsAllHttpRules()
+        {
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
+                new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
+                new HttpAction(HttpStatusCode.OK, string.Empty)) }));
+
+            var actual = await _sut.GetAllAsync();
+
+            Assert.Single(actual.Rules);
+            Assert.Equal("GET", actual.Rules.First().Filter.Method);
+        }
+
+        [Fact]
+        public async Task GetsAllHttpRulesReturnsCorrectFormat()
+        {
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
+                new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
+                new HttpAction(HttpStatusCode.OK, string.Empty)) }));
+
+            var actual = await _sut.GetAllAsync();
+
+            Assert.Single(actual.Rules);
+            Assert.IsType<HttpRuleResponse>(actual);
+        }
+
+        [Fact]
+        public async Task DeleteAllHttpRules()
+        {
+            await _sut.RemoveAllAsync();
+
+            _mockHttpRuleRepository.Verify(m => m.RemoveAllAsync());
         }
     }
 }

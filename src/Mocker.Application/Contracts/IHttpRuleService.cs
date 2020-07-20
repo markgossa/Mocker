@@ -1,4 +1,5 @@
 ﻿using Mocker.Domain.Models.Http;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Mocker.Application.Services
@@ -9,6 +10,6 @@ namespace Mocker.Application.Services
 
         Task RemoveAllAsync();
 
-        Task GetAllAsync();
+        Task<List<HttpRule>> GetAllAsync();
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Mocker.Functions.Models;
 using Mocker.Functions.Services;
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -37,22 +38,34 @@ namespace Mocker.Functions.Functions.Http.MockerAdmin
                 return new BadRequestObjectResult(ex.Message);
             }
 
-
+            if (!_httpRuleRequestProcessor.Validate(httpRuleRequest, out var validationResults))
+            {
+                return new BadRequestObjectResult(validationResults.Select(x => x.ErrorMessage));
+            }
 
             await _httpRuleRequestProcessor.AddAsync(httpRuleRequest);
 
             return new OkResult();
         }
 
-        //[FunctionName(nameof(GetHttpRules))]
-        //public async Task<HttpResponseMessage> GetHttpRules(
-        //    [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "mockeradmin/http/rules")] HttpRequest request, ILogger log)
-        //{
-        //    log.LogInformation("MockerAdmin processed a request to query HTTP rules");
-        //    var query = request.Query.ToDictionary(k => k.Key, v => v.Value.ToString());
+        [FunctionName(nameof(GetAllHttpRules))]
+        public async Task<IActionResult> GetAllHttpRules(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "mockeradmin/http/rules")] HttpRequest request, ILogger log)
+        {
+            log.LogInformation("MockerAdmin processed a request to get all HTTP rules");
 
-        //    return await _historyRequestProcessor.ExecuteQueryAsync(query);
-        //}
+            return new OkObjectResult(await _httpRuleRequestProcessor.GetAllAsync());
+        }
 
+        [FunctionName(nameof(RemoveAllHttpRules))]
+        public async Task<IActionResult> RemoveAllHttpRules(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "mockeradmin/http/rules")] HttpRequest request, ILogger log)
+        {
+            log.LogInformation("MockerAdmin processed a request to delete all HTTP rules");
+
+            await _httpRuleRequestProcessor.RemoveAllAsync();
+
+            return new OkResult();
+        }
     }
 }

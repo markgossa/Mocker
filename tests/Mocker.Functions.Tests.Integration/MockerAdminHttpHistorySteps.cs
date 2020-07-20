@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
-using Mocker.Functions.Models;
+﻿using Mocker.Functions.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -67,7 +64,7 @@ namespace Mocker.Functions.Tests.Integration
         }
 
         [Then(@"the result should have (.*) requests")]
-        public void ThenTheResultShouldBeReturnedWithTheCorrectCount(int expectedCount) => 
+        public void ThenTheResultShouldBeReturnedWithTheCorrectCount(int expectedCount) =>
             Assert.Equal(expectedCount, _httpHistory.Count);
 
         [Given(@"I have sent a (.*) request to the HTTP mock with header key (.*) and value (.*)")]
