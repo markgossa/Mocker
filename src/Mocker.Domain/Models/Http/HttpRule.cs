@@ -5,10 +5,11 @@
         public HttpFilter HttpFilter { get; }
         public HttpAction HttpAction { get; }
 
-        public HttpRule(HttpFilter httpFilter, HttpAction httpAction)
+        public HttpRule(HttpFilter httpFilter, HttpAction httpAction, int id = 0)
         {
             HttpFilter = httpFilter;
             HttpAction = httpAction;
+            Id = id;
         }
     }
 }

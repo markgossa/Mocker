@@ -37,6 +37,7 @@ namespace Mocker.Functions.Services
             {
                 var httpRule = new HttpRuleRequest()
                 {
+                    Id = rule.Id,
                     Action = new HttpRuleActionRequest
                     {
                         Body = rule.HttpAction.Body,

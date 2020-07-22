@@ -2,5 +2,6 @@
 {
     public abstract class MockRule
     {
+        public int Id { get; set; }
     }
 }

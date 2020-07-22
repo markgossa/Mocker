@@ -8,6 +8,7 @@ namespace Mocker.Infrastructure.Models
 {
     public class HttpRuleTableEntity : TableEntity
     {
+        public int Id { get; set; }
         public string? HttpFilterMethod { get; set;  }
         public string? HttpFilterBody { get; set; }
         public string? HttpFilterRoute { get; set; }
@@ -23,11 +24,11 @@ namespace Mocker.Infrastructure.Models
         {
         }
 
-        public HttpRuleTableEntity(HttpRule httpRule)
+        public HttpRuleTableEntity(HttpRule httpRule, int ruleId)
         {
             PartitionKey = Guid.NewGuid().ToString();
-            RowKey = Guid.NewGuid().ToString(); 
-            
+            RowKey = Guid.NewGuid().ToString();
+            Id = ruleId;
             HttpFilterMethod = httpRule.HttpFilter.Method?.ToString();
             HttpFilterBody = httpRule.HttpFilter.Body;
             HttpFilterRoute = httpRule.HttpFilter.Route;

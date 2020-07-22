@@ -41,12 +41,13 @@ namespace Mocker.Infrastructure.Tests.Unit
         }
 
         [Fact]
-        public void CreatesHttpRuleTableEntityWithPartitionKeyAndRowKey()
+        public void CreatesHttpRuleTableEntityWithPartitionKeyRowKeyAndId()
         {
             var actual = BuildHttpRuleTableEntity();
 
             Assert.True(Guid.TryParse(actual.PartitionKey, out _));
             Assert.True(Guid.TryParse(actual.RowKey, out _));
+            Assert.Equal(1, actual.Id);
         }
 
         [Fact]
@@ -78,7 +79,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             var httpFilter = new HttpFilter(_filterMethod, _filterBody, _filterRoute, _filterQuery, _filterHeaders, _filterIgnoreHeaders);
             var httpAction = new HttpAction(_actionStatusCode, _actionBody, _actionHeaders, _actionDelay);
             
-            return new HttpRuleTableEntity(new HttpRule(httpFilter, httpAction));
+            return new HttpRuleTableEntity(new HttpRule(httpFilter, httpAction), 1);
         }
     }
 }
