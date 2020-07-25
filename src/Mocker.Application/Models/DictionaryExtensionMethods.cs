@@ -1,30 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Mocker.Application.Models
 {
     public static class DictionaryExtensionMethods
     {
-        public static bool EqualIgnoringOrder(this Dictionary<string, List<string>>? header1, Dictionary<string, List<string>>? header2)
+        public static bool Contains(this Dictionary<string, List<string>> requestHeaders, Dictionary<string, List<string>> filterHeaders)
         {
-            var header1List = header1.OrderBy(x => x.Key).ToList();
-            var header2List = header2.OrderBy(x => x.Key).ToList();
-
-            if (header1List?.Count != header2List?.Count)
+            foreach (var filterHeader in filterHeaders)
             {
-                return false;
-            }
+                var requestHeaderContainsKey = requestHeaders.TryGetValue(filterHeader.Key, out var requestHeaderValue);
 
-            for (var i = 0; i < header1.Count(); i++)
-            {
-                if (header1List?[i].Key != header2List?[i].Key)
+                if (!requestHeaderContainsKey)
                 {
                     return false;
                 }
 
-                for (var n = 0; n < header1List?[i].Value.Count; n++)
+                for (var i = 0; i < filterHeader.Value.Count; i++)
                 {
-                    if (header1List[i].Value[n] != header2List?[i].Value[n])
+                    if (requestHeaderValue is null || requestHeaderValue[i] != filterHeader.Value[i])
                     {
                         return false;
                     }

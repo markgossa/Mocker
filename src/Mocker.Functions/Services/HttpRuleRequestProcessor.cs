@@ -19,7 +19,13 @@ namespace Mocker.Functions.Services
 
         public async Task AddAsync(HttpRuleRequest httpRuleRequest)
         {
-            var httpFilter = new HttpFilter(new HttpMethod(httpRuleRequest.Filter.Method), httpRuleRequest.Filter.Body,
+            HttpMethod? httpMethod = null;
+            if (httpRuleRequest.Filter.Method != null)
+            {
+                httpMethod = new HttpMethod(httpRuleRequest.Filter.Method);
+            }
+
+            var httpFilter = new HttpFilter(httpMethod, httpRuleRequest.Filter.Body,
                 httpRuleRequest.Filter.Route, httpRuleRequest.Filter.Query, httpRuleRequest.Filter.Headers);
 
             var httpAction = new HttpAction(httpRuleRequest.Action.StatusCode, httpRuleRequest.Action.Body,

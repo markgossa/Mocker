@@ -80,6 +80,35 @@ namespace Mocker.Functions.Tests.Unit
                 && h.HttpAction.StatusCode == expectedActionStatusCode
                 )));
         }
+        
+        [Fact]
+        public async Task AddAsyncSubmitsDataToHttpRuleRepositoryNullMethod()
+        {
+            var expectedFilterBody = "Hello world!";
+
+            var expectedActionBody = "Hey back!";
+
+            var newRule = new HttpRuleRequest()
+            {
+                Filter = new HttpRuleFilterRequest()
+                {
+                    Body = expectedFilterBody,
+                },
+
+                Action = new HttpRuleActionRequest()
+                {
+                    Body = expectedActionBody,
+                }
+            };
+
+            await _sut.AddAsync(newRule);
+
+            _mockHttpRuleRepository.Verify(m => m.AddAsync(It.Is<HttpRule>(
+                h => h.HttpFilter.Body == expectedFilterBody
+                && h.HttpFilter.Method == null
+                && h.HttpAction.Body == expectedActionBody
+                )));
+        }
 
         [Fact]
         public void ValidateReturnsFalseIfInvalidHttpRuleRequest()

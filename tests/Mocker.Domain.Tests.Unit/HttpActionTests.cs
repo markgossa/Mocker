@@ -5,10 +5,10 @@ using Xunit;
 
 namespace Mocker.Domain.Tests.Unit
 {
-    public class HttpMockResponseTests
+    public class HttpActionTests
     {
         [Fact]
-        public void CreatesValidHttpMockResponse()
+        public void CreatesValidHttpAction()
         {
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";
@@ -19,7 +19,18 @@ namespace Mocker.Domain.Tests.Unit
         }
 
         [Fact]
-        public void CreatesValidHttpMockResponseWithHeaders()
+        public void CreatesValidHttpActionWithDefaultStatusCode()
+        {
+            var statusCode = default(HttpStatusCode);
+            var body = "{\"name\": \"Mark\"}";
+            var actual = new HttpAction(statusCode, body);
+
+            Assert.Equal(HttpStatusCode.OK, actual.StatusCode);
+            Assert.Equal(body, actual.Body);
+        }
+
+        [Fact]
+        public void CreatesValidHttpActionWithHeaders()
         {
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";
@@ -36,7 +47,7 @@ namespace Mocker.Domain.Tests.Unit
         }
 
         [Fact]
-        public void CreatesValidHttpMockResponseWithHeadersAndDelay()
+        public void CreatesValidHttpActionWithHeadersAndDelay()
         {
             var statusCode = HttpStatusCode.OK;
             var body = "{\"name\": \"Mark\"}";

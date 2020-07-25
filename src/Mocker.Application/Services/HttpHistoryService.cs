@@ -33,7 +33,7 @@ namespace Mocker.Application.Services
             httpMockHistoryFilter.Route is null || httpMockHistoryFilter.Route == r.Route;
 
         private bool IsMatchingHeader(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
-            httpMockHistoryFilter.Headers is null || request.Headers.EqualIgnoringOrder(httpMockHistoryFilter.Headers);
+            httpMockHistoryFilter.Headers is null || request.Headers.Contains(httpMockHistoryFilter.Headers);
 
         private static bool IsMatchingBody(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
             httpMockHistoryFilter.Body is null || request.Body == httpMockHistoryFilter.Body;

@@ -252,7 +252,52 @@ namespace Mocker.Application.Tests.Unit
             var requestHeaders = new Dictionary<string, List<string>>()
             {
                 { "newHeader2", new List<string>{ "value1" } },
-                { "newHeader1", new List<string>{ "value1" } }
+                { "newHeader1", new List<string>{ "value1" } },
+                { "cache-control", new List<string>{ "nocache" } },
+                { "uniqueId", new List<string>{ "id" } }
+            };
+
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+                {
+                    new HttpRule(
+                        new HttpFilter(null, null, null, null, ruleHeaders),
+                        new HttpAction(HttpStatusCode.OK, "incorrect body"),
+                        1
+                    ),
+                    new HttpRule(
+                        new HttpFilter(null, null, null, null, filterHeaders),
+                        new HttpAction(HttpStatusCode.OK, _body),
+                        2
+                    )
+                }));
+
+            var httpRequestDetails = new HttpRequestDetails(HttpMethod.Get, _route, _body, requestHeaders, _query);
+            var actual = await _sut.Process(httpRequestDetails);
+
+            Assert.Equal(_body, actual.Body);
+        }
+
+        [Fact]
+        public async Task ReturnsMatchingRuleIfRequestMatchesRuleWithOnlyHeader2()
+        {
+            var ruleHeaders = new Dictionary<string, List<string>>()
+            {
+                { "newHeader1", new List<string>{ "value1" } },
+                { "newHeader2", new List<string>{ "value2" } }
+            };
+
+            var filterHeaders = new Dictionary<string, List<string>>()
+            {
+                { "newHeader1", new List<string>{ "value1" } },
+                { "newHeader2", new List<string>{ "value1" } }
+            };
+
+            var requestHeaders = new Dictionary<string, List<string>>()
+            {
+                { "newHeader2", new List<string>{ "value1" } },
+                { "newHeader1", new List<string>{ "value1" } },
+                { "cache-control", new List<string>{ "nocache" } },
+                { "uniqueId", new List<string>{ "id" } }
             };
 
             _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()

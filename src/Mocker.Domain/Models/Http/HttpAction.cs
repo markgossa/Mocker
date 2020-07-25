@@ -21,7 +21,7 @@ namespace Mocker.Domain.Models.Http
         public HttpAction(HttpStatusCode statusCode, string? body, Dictionary<string, List<string>>? headers,
             int delay) : base(body, delay)
         {
-            StatusCode = statusCode;
+            StatusCode = statusCode == default ? HttpStatusCode.OK : statusCode;
             Headers = headers;
         }
     }

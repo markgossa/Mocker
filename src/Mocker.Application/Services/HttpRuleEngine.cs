@@ -35,8 +35,8 @@ namespace Mocker.Application.Services
             rule.HttpFilter.Route == null || rule.HttpFilter.Route == httpRequestDetails.Route;
 
         private bool IsNullOrMatchingHeader(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
-            rule.HttpFilter.Headers == null || rule.HttpFilter.Headers.EqualIgnoringOrder(httpRequestDetails.Headers);
-        
+            rule.HttpFilter.Headers == null || httpRequestDetails.Headers.Contains(rule.HttpFilter.Headers);
+
         private bool IsNullOrMatchingQuery(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
             rule.HttpFilter.Query == null || rule.HttpFilter.Query.Equals(httpRequestDetails.Query);
 

@@ -60,7 +60,13 @@ namespace Mocker.Infrastructure.Services
 
         private static HttpRule MapToHttpRule(HttpRuleTableEntity httpRuleTableEntity)
         {
-            var httpFilter = new HttpFilter(new HttpMethod(httpRuleTableEntity.HttpFilterMethod), httpRuleTableEntity.HttpFilterBody, 
+            HttpMethod? httpFilterMethod = null;
+            if (httpRuleTableEntity.HttpFilterMethod != null)
+            {
+                httpFilterMethod = new HttpMethod(httpRuleTableEntity.HttpFilterMethod);
+            }
+
+            var httpFilter = new HttpFilter(httpFilterMethod, httpRuleTableEntity.HttpFilterBody, 
                 httpRuleTableEntity.HttpFilterRoute, JsonSerializer.Deserialize<Dictionary<string, string>>(httpRuleTableEntity.HttpFilterQuery),
                 JsonSerializer.Deserialize<Dictionary<string, List<string>>>(httpRuleTableEntity.HttpFilterHeaders));
 
