@@ -31,7 +31,7 @@ namespace Mocker.Functions.Functions.Http.MockerAdmin
             HttpRuleRequest httpRuleRequest;
             try
             {
-                httpRuleRequest = JsonSerializer.Deserialize<HttpRuleRequest>(jsonRequest);
+                httpRuleRequest = JsonSerializer.Deserialize<HttpRuleRequest>(jsonRequest, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
             catch (Exception ex)
             {

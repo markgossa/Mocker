@@ -4,13 +4,12 @@ namespace Mocker.Application.Models
 {
     public static class DictionaryExtensionMethods
     {
-        public static bool Contains(this Dictionary<string, List<string>> requestHeaders, Dictionary<string, List<string>> filterHeaders)
+        public static bool Contains(this Dictionary<string, List<string>> requestHeaders, 
+            Dictionary<string, List<string>> filterHeaders)
         {
             foreach (var filterHeader in filterHeaders)
             {
-                var requestHeaderContainsKey = requestHeaders.TryGetValue(filterHeader.Key, out var requestHeaderValue);
-
-                if (!requestHeaderContainsKey)
+                if (!requestHeaders.TryGetValue(filterHeader.Key, out var requestHeaderValue))
                 {
                     return false;
                 }
@@ -21,6 +20,20 @@ namespace Mocker.Application.Models
                     {
                         return false;
                     }
+                }
+            }
+
+            return true;
+        }
+
+        public static bool IsEqualTo(this Dictionary<string, string> requestQuery, Dictionary<string, string> filterQuery)
+        {
+            foreach (var filterQueryItem in filterQuery)
+            {
+                if (!requestQuery.TryGetValue(filterQueryItem.Key, out var requestQueryValue) || 
+                    filterQueryItem.Value != requestQueryValue)
+                {
+                    return false;
                 }
             }
 

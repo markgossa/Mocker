@@ -20,7 +20,7 @@ namespace Mocker.Application.Services
 
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
-            var httpRequestDetails = (await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter)).ToList();
+            var httpRequestDetails = (await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter));
 
             return httpRequestDetails
                 .Where(r => IsMatchingBody(httpMockHistoryFilter, r)

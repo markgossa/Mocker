@@ -37,8 +37,9 @@ namespace Mocker.Application.Services
         private bool IsNullOrMatchingHeader(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
             rule.HttpFilter.Headers == null || httpRequestDetails.Headers.Contains(rule.HttpFilter.Headers);
 
-        private bool IsNullOrMatchingQuery(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
-            rule.HttpFilter.Query == null || rule.HttpFilter.Query.Equals(httpRequestDetails.Query);
+        private bool IsNullOrMatchingQuery(HttpRule rule, HttpRequestDetails httpRequestDetails) => rule.HttpFilter.Query == null
+                || (httpRequestDetails.Query != null
+                && httpRequestDetails.Query.IsEqualTo(rule.HttpFilter.Query));
 
         private HttpAction BuildDefaultHttpAction() => new HttpAction(HttpStatusCode.OK, string.Empty);
     }
