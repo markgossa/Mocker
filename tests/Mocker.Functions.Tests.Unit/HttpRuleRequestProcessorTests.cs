@@ -36,7 +36,6 @@ namespace Mocker.Functions.Tests.Unit
                 { "name", "mark" }
             };
             var expectedFilterRoute = "route1";
-            var expectedFilterIgnoreHeaders = false;
 
             var expectedActionBody = "Hey back!";
             var expectedActionDelay = 500;
@@ -53,7 +52,6 @@ namespace Mocker.Functions.Tests.Unit
                 {
                     Body = expectedFilterBody,
                     Headers = expectedFilterHeaders,
-                    IgnoreHeaders = expectedFilterIgnoreHeaders,
                     Method = expectedFilterMethod,
                     Query = expectedFilterQuery,
                     Route = expectedFilterRoute
@@ -73,7 +71,6 @@ namespace Mocker.Functions.Tests.Unit
             _mockHttpRuleRepository.Verify(m => m.AddAsync(It.Is<HttpRule>(
                 h => h.HttpFilter.Body == expectedFilterBody
                 && h.HttpFilter.Headers == expectedFilterHeaders
-                && h.HttpFilter.IgnoreHeaders == expectedFilterIgnoreHeaders
                 && h.HttpFilter.Method == new HttpMethod(expectedFilterMethod)
                 && h.HttpFilter.Query == expectedFilterQuery
                 && h.HttpFilter.Route == expectedFilterRoute

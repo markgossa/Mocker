@@ -12,7 +12,5 @@ namespace Mocker.Application.Contracts
         Task RemoveAllAsync();
 
         Task<List<HttpRule>> GetAllAsync();
-
-        Task<List<HttpRule>> FindAsync(HttpMethod httpMethod, string? body, string? route);
     }
 }

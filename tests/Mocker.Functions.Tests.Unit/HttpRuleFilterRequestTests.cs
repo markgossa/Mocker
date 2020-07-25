@@ -16,7 +16,6 @@ namespace Mocker.Functions.Tests.Unit
                 { "header2", new List<string>{ "value2", "value3" } }
             };
             
-            var expectedIgnoreHeaders = false;
             var expectedMethod = "GET";
             var expectedQuery = new Dictionary<string, string>
             {
@@ -29,7 +28,6 @@ namespace Mocker.Functions.Tests.Unit
             {
                 Body = expectedBody,
                 Headers = expectedHeaders,
-                IgnoreHeaders = expectedIgnoreHeaders,
                 Method = expectedMethod,
                 Query = expectedQuery,
                 Route = expectedRoute
@@ -37,7 +35,6 @@ namespace Mocker.Functions.Tests.Unit
 
             Assert.Equal(expectedBody, actual.Body);
             Assert.Equal(expectedHeaders, actual.Headers);
-            Assert.Equal(expectedIgnoreHeaders, actual.IgnoreHeaders);
             Assert.Equal(expectedMethod, actual.Method);
             Assert.Equal(expectedQuery, actual.Query);
             Assert.Equal(expectedRoute, actual.Route);

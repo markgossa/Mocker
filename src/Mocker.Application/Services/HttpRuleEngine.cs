@@ -1,6 +1,6 @@
 ﻿using Mocker.Application.Contracts;
 using Mocker.Domain.Models.Http;
-using System.Collections.Generic;
+using Mocker.Application.Models;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -16,36 +16,30 @@ namespace Mocker.Application.Services
             _httpRuleRepository = httpRuleRepository;
         }
 
-        public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails) =>
-            await FindFirstMatchingRule(httpRequestDetails);
+        public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails) => (await _httpRuleRepository.GetAllAsync())
+                .Where(r => IsNullOrMatchingMethod(r, httpRequestDetails)
+                    && IsNullOrMatchingBody(r, httpRequestDetails)
+                    && IsNullOrMatchingRoute(r, httpRequestDetails)
+                    && IsNullOrMatchingHeader(r, httpRequestDetails)
+                    && IsNullOrMatchingQuery(r, httpRequestDetails)
+                ).FirstOrDefault()?
+                .HttpAction ?? BuildDefaultHttpAction();
 
-        private async Task<HttpAction> FindFirstMatchingRule(HttpRequestDetails httpRequestDetails)
-        {
-            var matchingRules = await FindAllMatchingRulesIgnoringHeaders(httpRequestDetails);
-            if (!matchingRules.Any())
-            {
-                return BuildDefaultHttpAction();
-            }
+        private bool IsNullOrMatchingMethod(HttpRule rule, HttpRequestDetails httpRequestDetails) => 
+            rule.HttpFilter.Method == null || rule.HttpFilter.Method == httpRequestDetails.Method;
+        
+        private bool IsNullOrMatchingBody(HttpRule rule, HttpRequestDetails httpRequestDetails) => 
+            rule.HttpFilter.Body == null || rule.HttpFilter.Body == httpRequestDetails.Body;
 
-            if (httpRequestDetails.Headers.Any() && !matchingRules.FirstOrDefault().HttpFilter.IgnoreHeaders)
-            {
-                return FilterMatchingRulesBasedOnHeaders(httpRequestDetails, matchingRules);
-            }
+        private bool IsNullOrMatchingRoute(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
+            rule.HttpFilter.Route == null || rule.HttpFilter.Route == httpRequestDetails.Route;
 
-            return matchingRules.FirstOrDefault().HttpAction;
-        }
-
-        private async Task<IEnumerable<HttpRule>> FindAllMatchingRulesIgnoringHeaders(HttpRequestDetails httpRequestDetails) =>
-            await _httpRuleRepository.FindAsync(httpRequestDetails.Method, httpRequestDetails.Body, httpRequestDetails.Route);
+        private bool IsNullOrMatchingHeader(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
+            rule.HttpFilter.Headers == null || rule.HttpFilter.Headers.EqualIgnoringOrder(httpRequestDetails.Headers);
+        
+        private bool IsNullOrMatchingQuery(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
+            rule.HttpFilter.Query == null || rule.HttpFilter.Query.Equals(httpRequestDetails.Query);
 
         private HttpAction BuildDefaultHttpAction() => new HttpAction(HttpStatusCode.OK, string.Empty);
-
-        private HttpAction FilterMatchingRulesBasedOnHeaders(HttpRequestDetails httpRequestDetails, IEnumerable<HttpRule> matchingRules) => matchingRules
-            .Where(r => HttpRequestDetailsContainsRuleHeaders(r, httpRequestDetails))
-            .FirstOrDefault()?.HttpAction ?? BuildDefaultHttpAction();
-
-        private bool HttpRequestDetailsContainsRuleHeaders(HttpRule httpRule, HttpRequestDetails httpRequestDetails) =>
-                            httpRule.HttpFilter.Headers?.Count >= 0
-                            && httpRule.HttpFilter.Headers.Intersect(httpRequestDetails.Headers).Any();
     }
 }

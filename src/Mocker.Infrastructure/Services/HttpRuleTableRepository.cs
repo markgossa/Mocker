@@ -55,11 +55,6 @@ namespace Mocker.Infrastructure.Services
             return _httpRuleCache;
         });
 
-        public async Task<List<HttpRule>> FindAsync(HttpMethod httpMethod, string? body, string? route) => await Task.Run(() =>
-        {
-            return _httpRuleCache.Where(r => r.HttpFilter.Method == httpMethod && r.HttpFilter.Body == body && r.HttpFilter.Route == route).ToList();
-        });
-
         private List<HttpRule> PopulateHttpRuleCache() => _table.ExecuteQuery(new TableQuery<HttpRuleTableEntity>())
             .Select(r => MapToHttpRule(r)).OrderBy(r => r.Id).ToList();
 
@@ -67,7 +62,7 @@ namespace Mocker.Infrastructure.Services
         {
             var httpFilter = new HttpFilter(new HttpMethod(httpRuleTableEntity.HttpFilterMethod), httpRuleTableEntity.HttpFilterBody, 
                 httpRuleTableEntity.HttpFilterRoute, JsonSerializer.Deserialize<Dictionary<string, string>>(httpRuleTableEntity.HttpFilterQuery),
-                JsonSerializer.Deserialize<Dictionary<string, List<string>>>(httpRuleTableEntity.HttpFilterHeaders), httpRuleTableEntity.HttpFilterIgnoreHeaders);
+                JsonSerializer.Deserialize<Dictionary<string, List<string>>>(httpRuleTableEntity.HttpFilterHeaders));
 
             var httpAction = new HttpAction((HttpStatusCode)Enum.Parse(typeof(HttpStatusCode), httpRuleTableEntity.HttpActionStatusCode ?? "OK"),
                 httpRuleTableEntity.HttpActionBody, JsonSerializer.Deserialize<Dictionary<string, List<string>>>(httpRuleTableEntity.HttpActionHeaders),

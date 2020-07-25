@@ -28,7 +28,6 @@ namespace Mocker.Infrastructure.Tests.Unit
             { "AccessType", new List<string> { "Type1" } }
         };
         private readonly HttpMethod _filterMethod = HttpMethod.Get;
-        private const bool _filterIgnoreHeaders = false;
         private readonly HttpStatusCode _actionStatusCode = HttpStatusCode.OK;
         private readonly int _actionDelay = 500;
 
@@ -60,7 +59,6 @@ namespace Mocker.Infrastructure.Tests.Unit
             Assert.Equal(_filterRoute, actual.HttpFilterRoute);
             Assert.Equal(JsonSerializer.Serialize(_filterQuery), actual.HttpFilterQuery);
             Assert.Equal(JsonSerializer.Serialize(_filterHeaders), actual.HttpFilterHeaders);
-            Assert.Equal(_filterIgnoreHeaders, actual.HttpFilterIgnoreHeaders);
         }
 
         [Fact]
@@ -76,7 +74,7 @@ namespace Mocker.Infrastructure.Tests.Unit
 
         private HttpRuleTableEntity BuildHttpRuleTableEntity()
         {
-            var httpFilter = new HttpFilter(_filterMethod, _filterBody, _filterRoute, _filterQuery, _filterHeaders, _filterIgnoreHeaders);
+            var httpFilter = new HttpFilter(_filterMethod, _filterBody, _filterRoute, _filterQuery, _filterHeaders);
             var httpAction = new HttpAction(_actionStatusCode, _actionBody, _actionHeaders, _actionDelay);
             
             return new HttpRuleTableEntity(new HttpRule(httpFilter, httpAction), 1);

@@ -75,7 +75,6 @@ namespace Mocker.Functions.Tests.Integration
                 { "name", $"mark{index}" }
             };
             var expectedFilterRoute = $"route{index}";
-            var expectedFilterIgnoreHeaders = false;
 
             var expectedActionBody = $"Hey back{index}!";
             var expectedActionDelay = 500;
@@ -92,7 +91,6 @@ namespace Mocker.Functions.Tests.Integration
                 {
                     Body = expectedFilterBody,
                     Headers = expectedFilterHeaders,
-                    IgnoreHeaders = expectedFilterIgnoreHeaders,
                     Method = expectedFilterMethod,
                     Query = expectedFilterQuery,
                     Route = expectedFilterRoute

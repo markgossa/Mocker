@@ -32,39 +32,8 @@ namespace Mocker.Application.Services
         private bool IsMatchingRoute(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails r) =>
             httpMockHistoryFilter.Route is null || httpMockHistoryFilter.Route == r.Route;
 
-        private bool IsMatchingHeader(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request)
-        {
-            var sortedRequestHeaders = request.Headers?.OrderBy(x => x.Key).ToList();
-            var sortedFilterHeaders = httpMockHistoryFilter.Headers?.OrderBy(x => x.Key).ToList();
-
-            return httpMockHistoryFilter.Headers is null || IsEqualHeader(sortedRequestHeaders, sortedFilterHeaders);
-        }
-
-        private bool IsEqualHeader(List<KeyValuePair<string, List<string>>>? header1, List<KeyValuePair<string, List<string>>>? header2)
-        {
-            if (header1?.Count != header2?.Count)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < header1.Count(); i++)
-            {
-                if (header1?[i].Key != header2?[i].Key)
-                {
-                    return false;
-                }
-
-                for (var n = 0; n < header1?[i].Value.Count; n++)
-                {
-                    if (header1[i].Value[n] != header2?[i].Value[n])
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
+        private bool IsMatchingHeader(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
+            httpMockHistoryFilter.Headers is null || request.Headers.EqualIgnoringOrder(httpMockHistoryFilter.Headers);
 
         private static bool IsMatchingBody(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
             httpMockHistoryFilter.Body is null || request.Body == httpMockHistoryFilter.Body;
