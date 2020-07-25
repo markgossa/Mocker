@@ -120,7 +120,7 @@ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null
 testRunner.When(string.Format("I add a rule based on {0} method into the rule database which returns {1}", filterMethod, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 6
-testRunner.And(string.Format("I send a {0} request with body IgnoreMe", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("I send a {0} request to route null with body IgnoreMe", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
 testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
@@ -170,9 +170,58 @@ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null
 testRunner.When(string.Format("I add a rule based on {0} body into the rule database which returns {1}", filterBody, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 17
-testRunner.And(string.Format("I send a {0} request with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 18
+testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="Applies rules based on route")]
+        [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
+        [Xunit.TraitAttribute("Description", "Applies rules based on route")]
+        [Xunit.InlineDataAttribute("POST", "api/route1", "Hello back!", new string[0])]
+        [Xunit.InlineDataAttribute("PUT", "api/route66", "Hello back 66!", new string[0])]
+        public virtual void AppliesRulesBasedOnRoute(string filterMethod, string filterRoute, string responseBody, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("filterMethod", filterMethod);
+            argumentsOfScenario.Add("filterRoute", filterRoute);
+            argumentsOfScenario.Add("responseBody", responseBody);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on route", null, tagsOfScenario, argumentsOfScenario);
+#line 25
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 26
+testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 27
+testRunner.When(string.Format("I add a rule based on {0} route into the rule database which returns {1}", filterRoute, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 28
+testRunner.And(string.Format("I send a {0} request to route {1} with body HelloWorld", filterMethod, filterRoute), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 29
 testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

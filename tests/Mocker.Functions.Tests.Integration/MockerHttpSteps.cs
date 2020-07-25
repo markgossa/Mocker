@@ -39,12 +39,9 @@ namespace Mocker.Functions.Tests.Integration
                     Body = actionBody
                 }
             };
-
-            var content = JsonSerializer.Serialize(ruleRequest);
-            using var httpContent = new StringContent(content);
-            await _httpClient.PostAsync(_mockerAdminHttpRulesUrl, httpContent);
+            await AddNewRule(ruleRequest);
         }
-        
+
         [When(@"I add a rule based on (.*) body into the rule database which returns (.*)")]
         public async Task WhenIAddARuleBasedOnBodyIntoTheRuleDatabase(string filterBody, string actionBody)
         {
@@ -62,15 +59,40 @@ namespace Mocker.Functions.Tests.Integration
                 }
             };
 
-            var content = JsonSerializer.Serialize(ruleRequest);
-            using var httpContent = new StringContent(content);
-            await _httpClient.PostAsync(_mockerAdminHttpRulesUrl, httpContent);
+            await AddNewRule(ruleRequest);
         }
 
-        [When(@"I send a (.*) request with body (.*)")]
-        public async Task WhenISendARequest(string method, string body)
+        [When(@"I add a rule based on (.*) route into the rule database which returns (.*)")]
+        public async Task WhenIAddARuleBasedOnRouteIntoTheRuleDatabaseWhichReturns(string filterRoute, string actionBody)
         {
-            using var request = new HttpRequestMessage(new HttpMethod(method), _mockerBaseUrl)
+            _mockerResponseBody = actionBody;
+
+            var ruleRequest = new HttpRuleRequest
+            {
+                Filter = new HttpRuleFilterRequest
+                {
+                    Route = filterRoute
+                },
+                Action = new HttpRuleActionRequest
+                {
+                    Body = actionBody
+                }
+            };
+
+            await AddNewRule(ruleRequest);
+        }
+
+
+        [When(@"I send a (.*) request to route (.*) with body (.*)")]
+        public async Task WhenISendARequest(string method, string route, string body)
+        {
+            var url = _mockerBaseUrl;
+            if (route != "null")
+            {
+                url = new Uri(_mockerBaseUrl, route);
+            }
+
+            using var request = new HttpRequestMessage(new HttpMethod(method), url)
             {
                 Content = new StringContent(body)
             };
@@ -81,5 +103,12 @@ namespace Mocker.Functions.Tests.Integration
 
         [Then(@"I should receive a response with (.*)")]
         public void ThenIShouldReceiveAResponseWith(string expectedBody) => Assert.Equal(expectedBody, _mockerResponseBody);
+
+        private async Task AddNewRule(HttpRuleRequest ruleRequest)
+        {
+            var content = JsonSerializer.Serialize(ruleRequest);
+            var httpContent = new StringContent(content);
+            await _httpClient.PostAsync(_mockerAdminHttpRulesUrl, httpContent);
+        }
     }
 }
