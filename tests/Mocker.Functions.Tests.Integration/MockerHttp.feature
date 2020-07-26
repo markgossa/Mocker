@@ -45,8 +45,30 @@ Examples:
 Scenario: Applies rules based on query
 Given There are no HTTP rules in the rules database
 When I add a query-based rule to the rule database which returns <responseBody>
-And I send a GET request which contains the filter query
+And I send a request which contains the filter query
 Then I should receive a response with <responseBody>
 Examples:
 | responseBody |
 | Hello back!  |
+
+Scenario: Applies rules based on method and body
+Given There are no HTTP rules in the rules database
+When I add a rule filter on <filterMethod> method and <filterBody> body into the rule database which returns <responseBody>
+And I send a <filterMethod> request to route null with body <filterBody>
+Then I should receive a response with <responseBody>
+Examples:
+| filterMethod | filterBody            | responseBody    |
+| POST         | Hello, this is a POST | You sent a POST |
+| PUT          | Hello, this is a PUT  | You sent a PUT  |
+
+Scenario: Applies rules based on complex filter and ignores non matching requests
+Given There are no HTTP rules in the rules database
+When I add a complex rule which filters on method, body, headers, route and query
+And I send a GET request to route null with body HelloWorld!
+Then I should receive the default response
+
+Scenario: Applies rules based on complex filter and handles matching requests
+Given There are no HTTP rules in the rules database
+When I add a complex rule which filters on method, body, headers, route and query
+And I send a matching complex request
+Then I should receive the correct complex response with correct response properties

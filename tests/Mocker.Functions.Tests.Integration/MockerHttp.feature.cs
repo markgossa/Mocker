@@ -313,10 +313,148 @@ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null
 testRunner.When(string.Format("I add a query-based rule to the rule database which returns {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 48
-testRunner.And("I send a GET request which contains the filter query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+testRunner.And("I send a request which contains the filter query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 49
 testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableTheoryAttribute(DisplayName="Applies rules based on method and body")]
+        [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
+        [Xunit.TraitAttribute("Description", "Applies rules based on method and body")]
+        [Xunit.InlineDataAttribute("POST", "Hello, this is a POST", "You sent a POST", new string[0])]
+        [Xunit.InlineDataAttribute("PUT", "Hello, this is a PUT", "You sent a PUT", new string[0])]
+        public virtual void AppliesRulesBasedOnMethodAndBody(string filterMethod, string filterBody, string responseBody, string[] exampleTags)
+        {
+            string[] tagsOfScenario = exampleTags;
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            argumentsOfScenario.Add("filterMethod", filterMethod);
+            argumentsOfScenario.Add("filterBody", filterBody);
+            argumentsOfScenario.Add("responseBody", responseBody);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on method and body", null, tagsOfScenario, argumentsOfScenario);
+#line 54
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 55
+testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 56
+testRunner.When(string.Format("I add a rule filter on {0} method and {1} body into the rule database which retur" +
+                            "ns {2}", filterMethod, filterBody, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 57
+testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 58
+testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Applies rules based on complex filter and ignores non matching requests")]
+        [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
+        [Xunit.TraitAttribute("Description", "Applies rules based on complex filter and ignores non matching requests")]
+        public virtual void AppliesRulesBasedOnComplexFilterAndIgnoresNonMatchingRequests()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on complex filter and ignores non matching requests", null, tagsOfScenario, argumentsOfScenario);
+#line 64
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 65
+testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 66
+testRunner.When("I add a complex rule which filters on method, body, headers, route and query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 67
+testRunner.And("I send a GET request to route null with body HelloWorld!", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 68
+testRunner.Then("I should receive the default response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Applies rules based on complex filter and handles matching requests")]
+        [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
+        [Xunit.TraitAttribute("Description", "Applies rules based on complex filter and handles matching requests")]
+        public virtual void AppliesRulesBasedOnComplexFilterAndHandlesMatchingRequests()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on complex filter and handles matching requests", null, tagsOfScenario, argumentsOfScenario);
+#line 70
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 71
+testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 72
+testRunner.When("I add a complex rule which filters on method, body, headers, route and query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 73
+testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 74
+testRunner.Then("I should receive the correct complex response with correct response properties", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
