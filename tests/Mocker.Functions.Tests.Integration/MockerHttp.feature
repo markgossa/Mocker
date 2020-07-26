@@ -63,12 +63,18 @@ Examples:
 
 Scenario: Applies rules based on complex filter and ignores non matching requests
 Given There are no HTTP rules in the rules database
-When I add a complex rule which filters on method, body, headers, route and query
+When I add a complex rule which filters on method, body, headers, route and query with 0 delay
 And I send a GET request to route null with body HelloWorld!
 Then I should receive the default response
 
-Scenario: Applies rules based on complex filter and handles matching requests
+Scenario: Applies rules based on complex filter and handles matching requests with no delay
 Given There are no HTTP rules in the rules database
-When I add a complex rule which filters on method, body, headers, route and query
+When I add a complex rule which filters on method, body, headers, route and query with 0 delay
 And I send a matching complex request
-Then I should receive the correct complex response with correct response properties
+Then I should receive the correct complex response with correct response properties with 0 delay
+
+Scenario: Applies rules based on complex filter and handles matching requests with delay
+Given There are no HTTP rules in the rules database
+When I add a complex rule which filters on method, body, headers, route and query with 2000 delay
+And I send a matching complex request
+Then I should receive the correct complex response with correct response properties with 2000 delay

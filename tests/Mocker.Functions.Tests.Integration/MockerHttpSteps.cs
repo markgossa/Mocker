@@ -11,6 +11,7 @@ using TechTalk.SpecFlow;
 using Xunit;
 using Mocker.Application.Models;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Mocker.Functions.Tests.Integration
 {
@@ -21,6 +22,7 @@ namespace Mocker.Functions.Tests.Integration
         private readonly Uri _mockerBaseUrl;
         private readonly Uri _mockerAdminHttpRulesUrl;
         private HttpResponseMessage _mockerResponse;
+        private long _mockerResponseTime;
 
         public MockerHttpSteps(AppSettingsHelper settings)
         {
@@ -181,8 +183,8 @@ namespace Mocker.Functions.Tests.Integration
             await _httpClient.PostAsync(_mockerAdminHttpRulesUrl, httpContent);
         }
 
-        [When(@"I add a complex rule which filters on method, body, headers, route and query")]
-        public async Task WhenIAddAComplexRuleWhichFiltersOnMethodBodyHeadersRouteAndQuery()
+        [When(@"I add a complex rule which filters on method, body, headers, route and query with (.*) delay")]
+        public async Task WhenIAddAComplexRuleWhichFiltersOnMethodBodyHeadersRouteAndQuery(int delay)
         {
             var ruleRequest = new HttpRuleRequest
             {
@@ -204,7 +206,7 @@ namespace Mocker.Functions.Tests.Integration
                 Action = new HttpRuleActionRequest
                 {
                     Body = "Hello back!",
-                    Delay = 0,
+                    Delay = delay,
                     Headers = new Dictionary<string, List<string>>
                     {
                         { "Result", new List<string> { "success" } }
@@ -240,8 +242,8 @@ namespace Mocker.Functions.Tests.Integration
             await SendRequestAsync("POST", "api/route22", "Hello world!", headers, query);
         }
 
-        [Then(@"I should receive the correct complex response with correct response properties")]
-        public async Task ThenIShouldReceiveTheCorrectResponseWithCorrectResponseProperties()
+        [Then(@"I should receive the correct complex response with correct response properties with (.*) delay")]
+        public async Task ThenIShouldReceiveTheCorrectResponseWithCorrectResponsePropertiesWithCorrectDelay(int delay)
         {
             var expectedHeaders = new Dictionary<string, List<string>>
             {
@@ -251,6 +253,7 @@ namespace Mocker.Functions.Tests.Integration
             Assert.Equal(HttpStatusCode.Accepted, _mockerResponse.StatusCode);
             Assert.True(_mockerResponse.Headers.ToDictionary(x => x.Key, x => x.Value.ToList()).Contains(expectedHeaders));
             Assert.Equal("Hello back!", await _mockerResponse.Content.ReadAsStringAsync());
+            Assert.InRange(_mockerResponseTime, delay - 200, delay + 200);
         }
 
         private async Task SendRequestAsync(string method, string route, string body,
@@ -284,7 +287,10 @@ namespace Mocker.Functions.Tests.Integration
                 }
             };
 
+            var stopwatch = Stopwatch.StartNew();
             _mockerResponse = await _httpClient.SendAsync(request);
+            stopwatch.Stop();
+            _mockerResponseTime = stopwatch.ElapsedMilliseconds;
         }
 
         private string ConvertToQueryString(NameValueCollection query)

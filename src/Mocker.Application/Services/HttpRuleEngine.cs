@@ -16,14 +16,21 @@ namespace Mocker.Application.Services
             _httpRuleRepository = httpRuleRepository;
         }
 
-        public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails) => (await _httpRuleRepository.GetAllAsync())
+        public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails)
+        {
+            var httpAction = (await _httpRuleRepository.GetAllAsync())
                 .Where(r => IsNullOrMatchingMethod(r, httpRequestDetails)
-                    && IsNullOrMatchingBody(r, httpRequestDetails)
-                    && IsNullOrMatchingRoute(r, httpRequestDetails)
-                    && IsNullOrMatchingHeader(r, httpRequestDetails)
-                    && IsNullOrMatchingQuery(r, httpRequestDetails)
+                && IsNullOrMatchingBody(r, httpRequestDetails)
+                && IsNullOrMatchingRoute(r, httpRequestDetails)
+                && IsNullOrMatchingHeader(r, httpRequestDetails)
+                && IsNullOrMatchingQuery(r, httpRequestDetails)
                 ).FirstOrDefault()?
                 .HttpAction ?? BuildDefaultHttpAction();
+
+            await ApplyHttpActionDelay(httpAction);
+
+            return httpAction;
+        }
 
         private bool IsNullOrMatchingMethod(HttpRule rule, HttpRequestDetails httpRequestDetails) => 
             rule.HttpFilter.Method == null || rule.HttpFilter.Method == httpRequestDetails.Method;
@@ -36,6 +43,14 @@ namespace Mocker.Application.Services
 
         private bool IsNullOrMatchingHeader(HttpRule rule, HttpRequestDetails httpRequestDetails) =>
             rule.HttpFilter.Headers == null || httpRequestDetails.Headers.Contains(rule.HttpFilter.Headers);
+
+        private async Task ApplyHttpActionDelay(HttpAction httpAction)
+        {
+            if (httpAction.Delay > 0)
+            {
+                await Task.Delay(httpAction.Delay);
+            }
+        }
 
         private bool IsNullOrMatchingQuery(HttpRule rule, HttpRequestDetails httpRequestDetails) => rule.HttpFilter.Query == null
                 || (httpRequestDetails.Query != null

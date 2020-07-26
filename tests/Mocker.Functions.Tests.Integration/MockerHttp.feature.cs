@@ -404,7 +404,8 @@ this.ScenarioInitialize(scenarioInfo);
 testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 66
-testRunner.When("I add a complex rule which filters on method, body, headers, route and query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+                        " 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 67
 testRunner.And("I send a GET request to route null with body HelloWorld!", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -416,14 +417,17 @@ testRunner.Then("I should receive the default response", ((string)(null)), ((Tec
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Applies rules based on complex filter and handles matching requests")]
+        [Xunit.SkippableFactAttribute(DisplayName="Applies rules based on complex filter and handles matching requests with no delay" +
+            "")]
         [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
-        [Xunit.TraitAttribute("Description", "Applies rules based on complex filter and handles matching requests")]
-        public virtual void AppliesRulesBasedOnComplexFilterAndHandlesMatchingRequests()
+        [Xunit.TraitAttribute("Description", "Applies rules based on complex filter and handles matching requests with no delay" +
+            "")]
+        public virtual void AppliesRulesBasedOnComplexFilterAndHandlesMatchingRequestsWithNoDelay()
         {
             string[] tagsOfScenario = ((string[])(null));
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on complex filter and handles matching requests", null, tagsOfScenario, argumentsOfScenario);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on complex filter and handles matching requests with no delay" +
+                    "", null, tagsOfScenario, argumentsOfScenario);
 #line 70
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -448,13 +452,61 @@ this.ScenarioInitialize(scenarioInfo);
 testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 72
-testRunner.When("I add a complex rule which filters on method, body, headers, route and query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+                        " 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 73
 testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 74
-testRunner.Then("I should receive the correct complex response with correct response properties", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+testRunner.Then("I should receive the correct complex response with correct response properties wi" +
+                        "th 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Applies rules based on complex filter and handles matching requests with delay")]
+        [Xunit.TraitAttribute("FeatureTitle", "MockerHttp")]
+        [Xunit.TraitAttribute("Description", "Applies rules based on complex filter and handles matching requests with delay")]
+        public virtual void AppliesRulesBasedOnComplexFilterAndHandlesMatchingRequestsWithDelay()
+        {
+            string[] tagsOfScenario = ((string[])(null));
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Applies rules based on complex filter and handles matching requests with delay", null, tagsOfScenario, argumentsOfScenario);
+#line 76
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 77
+testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 78
+testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+                        " 2000 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 79
+testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+#line 80
+testRunner.Then("I should receive the correct complex response with correct response properties wi" +
+                        "th 2000 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

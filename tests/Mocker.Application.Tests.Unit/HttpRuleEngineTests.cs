@@ -3,6 +3,7 @@ using Mocker.Application.Services;
 using Mocker.Domain.Models.Http;
 using Moq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -318,6 +319,24 @@ namespace Mocker.Application.Tests.Unit
             var actual = await _sut.Process(httpRequestDetails);
 
             Assert.Equal(_body, actual.Body);
+        }
+
+        [Fact]
+        public async Task ReturnsCorrectResponseWithDelayIfSpecified()
+        {
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>
+            {
+                new HttpRule(
+                        new HttpFilter(null, null, null, null),
+                        new HttpAction(HttpStatusCode.OK, _body, null, 500)
+                    )
+            }));
+
+            var stopwatch = Stopwatch.StartNew();
+            var actual = await _sut.Process(BuildHttpRequestDetails());
+            stopwatch.Stop();
+
+            Assert.InRange(stopwatch.ElapsedMilliseconds, 480, 520);
         }
 
         private HttpRequestDetails BuildHttpRequestDetails() => new HttpRequestDetails(HttpMethod.Get, _route, _body,
