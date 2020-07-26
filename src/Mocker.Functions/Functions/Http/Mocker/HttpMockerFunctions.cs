@@ -29,7 +29,7 @@ namespace Mocker.Functions.Functions.Http.Mocker
 
             var route = ConstructRoute(routeParam1, routeParam2, routeParam3, routeParam4);
 
-            return await ProcessHttpRequest(request, $"api/{route}");
+            return await ProcessHttpRequest(request, $"{route}");
         }
 
         private string ConstructRoute(string? routeParam1, string? routeParam2, string? routeParam3, string? routeParam4)
