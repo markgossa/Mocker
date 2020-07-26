@@ -22,12 +22,24 @@ namespace Mocker.Functions.Functions.Http.Mocker
         [FunctionName(nameof(HttpMocker))]
         public async Task<HttpResponseMessage> HttpMocker(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
-            "patch", "trace", Route = "{route?}")] HttpRequest request,
-            string route, ILogger log)
+            "patch", "trace", Route = "{routeParam1:regex(^(?:(?!mockeradmin).)+$)?}/{routeParam2?}/{routeParam3?}/{routeParam4?}")] HttpRequest request,
+            string? routeParam1, string? routeParam2, string? routeParam3, string? routeParam4, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
+            var route = ConstructRoute(routeParam1, routeParam2, routeParam3, routeParam4);
+
             return await ProcessHttpRequest(request, $"api/{route}");
+        }
+
+        private string ConstructRoute(string? routeParam1, string? routeParam2, string? routeParam3, string? routeParam4)
+        {
+            var routePart1 = routeParam1 is null ? null : $"{routeParam1}";
+            var routePart2 = routeParam2 is null ? null : $"/{routeParam2}";
+            var routePart3 = routeParam3 is null ? null : $"/{routeParam3}";
+            var routePart4 = routeParam4 is null ? null : $"/{routeParam4}";
+            
+            return $"{routePart1}{routePart2}{routePart3}{routePart4}";
         }
 
         private async Task<HttpResponseMessage> ProcessHttpRequest(HttpRequest req, string? route)
