@@ -33,7 +33,7 @@ stages:
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifacts: Terraform'
         inputs:
-          pathtoPublish: 'deployment\terraform'
+          pathtoPublish: 'deployment/terraform'
           ArtifactName: 'terraform'
 
   - stage: TEST
