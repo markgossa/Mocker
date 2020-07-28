@@ -6,6 +6,10 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  - name: terraformVersion
+    value: '0.12.28'
+
 stages:
   - stage: Build
     jobs:
@@ -14,7 +18,7 @@ stages:
       - task: TerraformInstaller@0
         displayName: Install Terraform
         inputs:
-          terraformVersion: '0.12.28'
+          terraformVersion: '$(terraformVersion)'
 
       - task: TerraformCLI@0
         displayName: Terraform Init
@@ -50,6 +54,11 @@ stages:
           runOnce:
             deploy:
               steps:
+                - task: TerraformInstaller@0
+                  displayName: Install Terraform
+                  inputs:
+                    terraformVersion: '$(terraformVersion)'
+
                 - task: TerraformCLI@0
                   displayName: Terraform Init
                   inputs:
@@ -69,3 +78,11 @@ stages:
                     workingDirectory: '$(Agent.BuildDirectory)/terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
                     commandOptions: '-out tfplan'
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Apply
+                  inputs:
+                    command: 'apply'
+                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
+                    environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-auto-approve tfplan'
