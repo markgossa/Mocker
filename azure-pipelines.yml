@@ -6,20 +6,65 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- task: TerraformInstaller@0
-  displayName: Install Terraform
-  inputs:
-    terraformVersion: '0.12.28'
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      steps:
+      - task: TerraformInstaller@0
+        displayName: Install Terraform
+        inputs:
+          terraformVersion: '0.12.28'
 
-- task: TerraformCLI@0
-  displayName: Terraform Init
-  inputs:
-    command: 'init'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
-    backendType: 'azurerm'
-    backendServiceArm: 'Visual Studio Enterprise Subscription'
-    backendAzureRmResourceGroupName: 'terraform_storage_account_resource_group'
-    backendAzureRmStorageAccountName: 'terraform_storage_account_name'
-    backendAzureRmContainerName: 'mocker-terraform-state'
-    backendAzureRmKey: '$(terraform_storage_account_key)'
+      - task: TerraformCLI@0
+        displayName: Terraform Init
+        inputs:
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+          
+
+      - task: TerraformCLI@0
+        displayName: Terraform Validate
+        inputs:
+          command: 'validate'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts: Terraform'
+        inputs:
+          pathtoPublish: 'deployment\terraform'
+          ArtifactName: 'terraform'
+
+  - stage: TEST
+    # dependsOn: Build
+    # condition: |
+    #   and(
+    #     ne(variables['Build.Reason'], 'PullRequest'),
+    #     eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+    #   )
+    jobs:
+      - deployment: MockerTEST
+        environment: TEST
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: TerraformCLI@0
+                  displayName: Terraform Init
+                  inputs:
+                    command: 'init'
+                    workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+                    backendType: 'azurerm'
+                    backendServiceArm: 'Visual Studio Enterprise Subscription'
+                    backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
+                    backendAzureRmStorageAccountName: '$(terraform_storage_account_name)'
+                    backendAzureRmContainerName: 'mocker-terraform-state'
+                    backendAzureRmKey: '$(terraform_storage_account_key)'
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Plan
+                  inputs:
+                    command: 'plan'
+                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
+                    environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-out tfplan'
