@@ -348,3 +348,13 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock
+.terraform
+envSandbox.tfvars
+test.ps1
+TerraformModules
+tfplan

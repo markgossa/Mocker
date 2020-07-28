@@ -1,0 +1,25 @@
+trigger:
+  - master
+  - develop
+  - feature/*
+  
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: TerraformInstaller@0
+  displayName: Install Terraform
+  inputs:
+    terraformVersion: '0.12.28'
+
+- task: TerraformCLI@0
+  displayName: Terraform Init
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+    backendType: 'azurerm'
+    backendServiceArm: 'Visual Studio Enterprise Subscription'
+    backendAzureRmResourceGroupName: 'terraform_storage_account_resource_group'
+    backendAzureRmStorageAccountName: 'terraform_storage_account_name'
+    backendAzureRmContainerName: 'mocker-terraform-state'
+    backendAzureRmKey: '$(terraform_storage_account_key)'
