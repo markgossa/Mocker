@@ -27,7 +27,6 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
           commandOptions: '-backend=false'
           
-
       - task: TerraformCLI@0
         displayName: Terraform Validate
         inputs:
@@ -63,7 +62,7 @@ stages:
                   displayName: Terraform Init
                   inputs:
                     command: 'init'
-                    workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
                     backendType: 'azurerm'
                     backendServiceArm: 'Visual Studio Enterprise Subscription'
                     backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
