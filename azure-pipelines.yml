@@ -1,7 +1,7 @@
 trigger:
   - master
   - develop
-  - feature/*
+  - feature\*
   
 pool:
   vmImage: 'windows-latest'
@@ -21,14 +21,14 @@ stages:
         displayName: Build App
         inputs:
           command: 'build'
-          projects: '**/*.csproj'
+          projects: '**\*.csproj'
           arguments: '--configuration $(BuildConfiguration)'
 
       - task: DotNetCoreCLI@2
         displayName: Test App
         inputs:
           command: 'test'
-          projects: '**/*Tests.Unit/*.csproj'
+          projects: '**\*Tests.Unit\*.csproj'
           arguments: '--configuration $(BuildConfiguration)'
           publishTestResults: true
 
@@ -36,7 +36,7 @@ stages:
         displayName: Publish App
         inputs:
           command: 'publish'
-          projects: '**/Mocker.Functions.csproj'
+          projects: '**\Mocker.Functions.csproj'
           arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory)'
           zipAfterPublish: true
           publishWebProjects: false
@@ -56,19 +56,19 @@ stages:
         displayName: Terraform Init
         inputs:
           command: 'init'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+          workingDirectory: '$(System.DefaultWorkingDirectory)\deployment\terraform'
           commandOptions: '-backend=false'
           
       - task: TerraformCLI@0
         displayName: Terraform Validate
         inputs:
           command: 'validate'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/deployment/terraform'
+          workingDirectory: '$(System.DefaultWorkingDirectory)\deployment\terraform'
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifacts: Terraform'
         inputs:
-          pathtoPublish: 'deployment/terraform'
+          pathtoPublish: 'deployment\terraform'
           ArtifactName: 'terraform'
 
   - stage: TEST
@@ -76,7 +76,7 @@ stages:
     # condition: |
     #   and(
     #     ne(variables['Build.Reason'], 'PullRequest'),
-    #     eq(variables['Build.SourceBranch'], 'refs/heads/develop')
+    #     eq(variables['Build.SourceBranch'], 'refs\heads\develop')
     #   )
     jobs:
       - deployment: MockerTEST
@@ -94,7 +94,7 @@ stages:
                   displayName: Terraform Init
                   inputs:
                     command: 'init'
-                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
                     backendType: 'azurerm'
                     backendServiceArm: 'Visual Studio Enterprise Subscription'
                     backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
@@ -110,7 +110,7 @@ stages:
                   displayName: Terraform Plan
                   inputs:
                     command: 'plan'
-                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
                     commandOptions: '-out tfplan -var ip_address=$(ip_address)'
 
@@ -118,7 +118,7 @@ stages:
                   displayName: Terraform Apply
                   inputs:
                     command: 'apply'
-                    workingDirectory: '$(Agent.BuildDirectory)/terraform'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
                     commandOptions: '-auto-approve tfplan'
 
@@ -129,12 +129,12 @@ stages:
                     azureSubscription: 'Visual Studio Enterprise Subscription'
                     appType: 'functionApp'
                     WebAppName: 'app-mocker-automated-tests-1234'
-                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+                    packageForLinux: '$(Agent.BuildDirectory)\**\*.zip'
 
                 - task: DotNetCoreCLI@2
                   displayName: Automation Tests
                   inputs:
                     command: 'test'
-                    projects: '**/*Tests.Integration/*.csproj'
+                    projects: '**\*Tests.Integration\*.csproj'
                     arguments: '--configuration $(BuildConfiguration)'
                     publishTestResults: true
