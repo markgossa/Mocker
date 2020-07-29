@@ -18,14 +18,14 @@ stages:
     - job: Build
       steps:
       - task: DotNetCoreCLI@2
-        displayName: Build
+        displayName: Build App
         inputs:
           command: 'build'
           projects: '**/*.csproj'
           arguments: '--configuration $(BuildConfiguration)'
 
       - task: DotNetCoreCLI@2
-        displayName: Test
+        displayName: Test App
         inputs:
           command: 'test'
           projects: '**/*Tests.Unit/*.csproj'
@@ -33,7 +33,7 @@ stages:
           publishTestResults: true
 
       - task: DotNetCoreCLI@2
-        displayName: Publish
+        displayName: Publish App
         inputs:
           command: 'publish'
           projects: '**/Mocker.Functions.csproj'
@@ -121,3 +121,20 @@ stages:
                     workingDirectory: '$(Agent.BuildDirectory)/terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
                     commandOptions: '-auto-approve tfplan'
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: Deploy Mocker
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Visual Studio Enterprise Subscription'
+                    appType: 'functionApp'
+                    WebAppName: 'app-mocker-automated-tests-1234'
+                    packageForLinux: '$(System.DefaultWorkingDirectory)/**/*.zip'
+
+                - task: DotNetCoreCLI@2
+                  displayName: Automation Tests
+                  inputs:
+                    command: 'test'
+                    projects: '**/*Tests.Integration/*.csproj'
+                    arguments: '--configuration $(BuildConfiguration)'
+                    publishTestResults: true
