@@ -9,6 +9,8 @@ pool:
 variables:
   - name: terraformVersion
     value: '0.12.28'
+  - name: BuildConfiguration
+    value: Release
 
 stages:
   - stage: Build
@@ -34,7 +36,7 @@ stages:
         displayName: Publish
         inputs:
           command: 'publish'
-          projects: '**/AzureDurableFunctionsDemo1.csproj'
+          projects: '**/Mocker.Functions.csproj'
           arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory)'
           zipAfterPublish: true
           publishWebProjects: false
