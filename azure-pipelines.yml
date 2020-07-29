@@ -4,7 +4,7 @@ trigger:
   - feature/*
   
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   - name: terraformVersion
