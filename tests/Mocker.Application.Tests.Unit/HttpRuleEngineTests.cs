@@ -336,7 +336,7 @@ namespace Mocker.Application.Tests.Unit
             var actual = await _sut.Process(BuildHttpRequestDetails());
             stopwatch.Stop();
 
-            Assert.InRange(stopwatch.ElapsedMilliseconds, 480, 520);
+            Assert.InRange(stopwatch.ElapsedMilliseconds, 480, 600);
         }
 
         private HttpRequestDetails BuildHttpRequestDetails() => new HttpRequestDetails(HttpMethod.Get, _route, _body,
