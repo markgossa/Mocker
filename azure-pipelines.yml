@@ -15,6 +15,36 @@ stages:
     jobs:
     - job: Build
       steps:
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: 'build'
+          projects: '**/*.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+
+      - task: DotNetCoreCLI@2
+        displayName: Test
+        inputs:
+          command: 'test'
+          projects: '**/*Tests.Unit/*.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+          publishTestResults: true
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish
+        inputs:
+          command: 'publish'
+          projects: '**/AzureDurableFunctionsDemo1.csproj'
+          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory)'
+          zipAfterPublish: true
+          publishWebProjects: false
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts: App'
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'app'
+
       - task: TerraformInstaller@0
         displayName: Install Terraform
         inputs:
