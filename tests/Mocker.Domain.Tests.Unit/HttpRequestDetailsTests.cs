@@ -35,15 +35,16 @@ namespace Mocker.Domain.Tests.Unit
         [Fact]
         public void CreateValidHttpRequestDetailsWithDefinedTimestamp()
         {
+            var expectedTimestamp = DateTime.UtcNow.AddDays(-1);
             var actual = new HttpRequestDetails(_httpMethod, _route, _body,
-                _headers, _queryString, DateTime.UtcNow.AddDays(-1));
+                _headers, _queryString, expectedTimestamp);
 
             Assert.Equal(_httpMethod, actual.Method);
             Assert.Equal(_route, actual.Route);
             Assert.Equal(_body, actual.Body);
             Assert.Equal(_headers, actual.Headers);
             Assert.Equal(_queryString, actual.Query);
-            Assert.InRange(actual.Timestamp, DateTime.UtcNow.AddDays(-1).AddMilliseconds(-10), DateTime.UtcNow.AddDays(-1));
+            Assert.Equal(expectedTimestamp, actual.Timestamp);
         }
     }
 }
