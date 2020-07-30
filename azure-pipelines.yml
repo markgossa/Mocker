@@ -135,6 +135,6 @@ stages:
                   displayName: Automation Tests
                   inputs:
                     command: 'test'
-                    projects: '**\*Tests.Integration\*.csproj'
+                    projects: '$(Agent.BuildDirectory)\**\*Tests.Integration\*.csproj'
                     arguments: '--configuration $(BuildConfiguration)'
                     publishTestResults: true
