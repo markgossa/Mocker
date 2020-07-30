@@ -17,6 +17,7 @@ stages:
     jobs:
     - job: Build
       steps:
+      
       - task: DotNetCoreCLI@2
         displayName: Build App
         inputs:
@@ -37,7 +38,7 @@ stages:
         inputs:
           command: 'publish'
           projects: '**\Mocker.Functions.csproj'
-          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory)'
+          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
           zipAfterPublish: true
           publishWebProjects: false
 
@@ -46,8 +47,8 @@ stages:
         inputs:
           command: 'publish'
           projects: '**\Mocker.Functions.Tests.Integration.csproj'
-          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory)'
-          publishWebProjects: false          
+          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
+          zipAfterPublish: false
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifacts: App'
@@ -140,7 +141,7 @@ stages:
                     packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
 
                 - task: VSTest@2
+                  displayName: 'VsTest - testAssemblies'
                   inputs:
-                    testSelector: 'testAssemblies'
                     testAssemblyVer2: '**\*tests.integration*.dll'
                     searchFolder: '$(Agent.BuildDirectory)\app'
