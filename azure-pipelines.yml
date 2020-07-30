@@ -89,7 +89,7 @@ stages:
     #     eq(variables['Build.SourceBranch'], 'refs\heads\develop')
     #   )
     jobs:
-      - deployment: MockerTEST
+      - deployment: Test
         environment: TEST
         strategy:
           runOnce:
@@ -142,7 +142,7 @@ stages:
                     packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
 
                 - task: VSTest@2
-                  displayName: 'VsTest - testAssemblies'
+                  displayName: Run Automation Tests
                   inputs:
                     testAssemblyVer2: '**\*tests.integration*.dll'
                     searchFolder: '$(Agent.BuildDirectory)\app'
