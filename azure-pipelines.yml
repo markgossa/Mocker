@@ -49,6 +49,7 @@ stages:
           projects: '**\Mocker.Functions.Tests.Integration.csproj'
           arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
           zipAfterPublish: false
+          publishWebProjects: false
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish Artifacts: App'
