@@ -114,16 +114,16 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 4
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 5
-testRunner.When(string.Format("I add a rule based on {0} method into the rule database which returns {1}", filterMethod, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I add a rule based on {0} method into the rule database which returns {1}", filterMethod, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 6
-testRunner.And(string.Format("I send a {0} request to route null with body IgnoreMe", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("I send a {0} request to route null with body IgnoreMe", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 7
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -164,16 +164,16 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 15
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 16
-testRunner.When(string.Format("I add a rule based on {0} body into the rule database which returns {1}", filterBody, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I add a rule based on {0} body into the rule database which returns {1}", filterBody, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 17
-testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 18
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -213,16 +213,16 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 26
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 27
-testRunner.When(string.Format("I add a rule based on {0} route into the rule database which returns {1}", filterRoute, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I add a rule based on {0} route into the rule database which returns {1}", filterRoute, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 28
-testRunner.And(string.Format("I send a {0} request to route {1} with body HelloWorld", filterMethod, filterRoute), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("I send a {0} request to route {1} with body HelloWorld", filterMethod, filterRoute), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 29
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -261,16 +261,16 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 36
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 37
-testRunner.When(string.Format("I add a header-based rule to the rule database which returns {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I add a header-based rule to the rule database which returns {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 38
-testRunner.And(string.Format("I send a {0} request which contains the filter headers", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("I send a {0} request which contains the filter headers", filterMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 39
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -307,16 +307,16 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 46
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 47
-testRunner.When(string.Format("I add a query-based rule to the rule database which returns {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When(string.Format("I add a query-based rule to the rule database which returns {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 48
-testRunner.And("I send a request which contains the filter query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I send a request which contains the filter query", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 49
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -356,17 +356,17 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 55
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 56
-testRunner.When(string.Format("I add a rule filter on {0} method and {1} body into the rule database which retur" +
+ testRunner.When(string.Format("I add a rule filter on {0} method and {1} body into the rule database which retur" +
                             "ns {2}", filterMethod, filterBody, responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 57
-testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And(string.Format("I send a {0} request to route null with body {1}", filterMethod, filterBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 58
-testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then(string.Format("I should receive a response with {0}", responseBody), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -401,17 +401,17 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 65
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 66
-testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+ testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
                         " 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 67
-testRunner.And("I send a GET request to route null with body HelloWorld!", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I send a GET request to route null with body HelloWorld!", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 68
-testRunner.Then("I should receive the default response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Then("I should receive the default response", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
@@ -449,17 +449,17 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 71
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 72
-testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+ testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
                         " 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 73
-testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 74
-testRunner.Then("I should receive the correct complex response with correct response properties wi" +
+ testRunner.Then("I should receive the correct complex response with correct response properties wi" +
                         "th 0 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -495,17 +495,17 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 77
-testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("There are no HTTP rules in the rules database", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 78
-testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
+ testRunner.When("I add a complex rule which filters on method, body, headers, route and query with" +
                         " 2000 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 79
-testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("I send a matching complex request", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
 #line 80
-testRunner.Then("I should receive the correct complex response with correct response properties wi" +
+ testRunner.Then("I should receive the correct complex response with correct response properties wi" +
                         "th 2000 delay", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

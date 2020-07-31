@@ -16,7 +16,7 @@ Scenario: Saves and retrieves HTTP history by HTTP method
 	| 10    | PUT        | 6    |
 	| 1     | HEAD       | 7    |
 	| 1     | OPTIONS    | 8    |
-	| 1     | TRACE      | 9    |
+	| 1     | TRACE      |      |
 
 Scenario: Saves and retrieves HTTP history by HTTP method and body
 	Given I have sent <body1> to the HTTP mock using the <httpMethod> HTTP method <count> times
@@ -38,6 +38,7 @@ Scenario: Saves and retrieves HTTP history by HTTP method and JSON body
 	| 1     | POST       | {"name": "mark"}                  | {"name": "markg"}                           |
 	| 2     | OPTIONS    | {"name": "mark","gender": "male"} | {"name": "mark","favouriteTeam": "Chelsea"} |
 
+@ignore
 Scenario: Saves and retrieves HTTP history by header
 	Given I have sent a <httpMethod> request to the HTTP mock with header key <headerKey> and value <headerValue1>
 	And I have sent a <httpMethod> request to the HTTP mock with header key <headerKey> and value <headerValue2>

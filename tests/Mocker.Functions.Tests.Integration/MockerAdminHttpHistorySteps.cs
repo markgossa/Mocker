@@ -119,7 +119,7 @@ namespace Mocker.Functions.Tests.Integration
         {
             foreach (var httpRequest in _httpHistory)
             {
-                Assert.InRange(httpRequest.Timestamp, DateTime.UtcNow.AddSeconds(-2), DateTime.UtcNow);
+                Assert.InRange(httpRequest.Timestamp, DateTime.UtcNow.AddSeconds(-2), DateTime.UtcNow.AddSeconds(2));
             }
         }
 

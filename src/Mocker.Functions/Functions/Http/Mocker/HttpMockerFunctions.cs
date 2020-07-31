@@ -21,8 +21,8 @@ namespace Mocker.Functions.Functions.Http.Mocker
 
         [FunctionName(nameof(HttpMocker))]
         public async Task<HttpResponseMessage> HttpMocker(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", "put", "delete", "head", "options",
-            "patch", "trace", Route = "{routeParam1:regex(^(?:(?!mockeradmin).)+$)?}/{routeParam2?}/{routeParam3?}/{routeParam4?}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, 
+            Route = "{routeParam1:regex(^(?:(?!mockeradmin).)+$)?}/{routeParam2?}/{routeParam3?}/{routeParam4?}")] HttpRequest request,
             string? routeParam1, string? routeParam2, string? routeParam3, string? routeParam4, ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");

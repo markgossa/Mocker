@@ -99,7 +99,7 @@ namespace Mocker.Functions.Tests.Integration
         [Xunit.InlineDataAttribute("10", "PUT", "6", new string[0])]
         [Xunit.InlineDataAttribute("1", "HEAD", "7", new string[0])]
         [Xunit.InlineDataAttribute("1", "OPTIONS", "8", new string[0])]
-        [Xunit.InlineDataAttribute("1", "TRACE", "9", new string[0])]
+        [Xunit.InlineDataAttribute("1", "TRACE", "", new string[0])]
         public virtual void SavesAndRetrievesHTTPHistoryByHTTPMethod(string count, string httpMethod, string body, string[] exampleTags)
         {
             string[] tagsOfScenario = exampleTags;
@@ -253,18 +253,25 @@ this.FeatureBackground();
         [Xunit.SkippableTheoryAttribute(DisplayName="Saves and retrieves HTTP history by header")]
         [Xunit.TraitAttribute("FeatureTitle", "MockerAdminHttpHistory")]
         [Xunit.TraitAttribute("Description", "Saves and retrieves HTTP history by header")]
+        [Xunit.TraitAttribute("Category", "ignore")]
         [Xunit.InlineDataAttribute("DELETE", "header1", "1", "9", new string[0])]
         [Xunit.InlineDataAttribute("GET", "header2", "2", "8", new string[0])]
         public virtual void SavesAndRetrievesHTTPHistoryByHeader(string httpMethod, string headerKey, string headerValue1, string headerValue2, string[] exampleTags)
         {
-            string[] tagsOfScenario = exampleTags;
+            string[] @__tags = new string[] {
+                    "ignore"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            string[] tagsOfScenario = @__tags;
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             argumentsOfScenario.Add("httpMethod", httpMethod);
             argumentsOfScenario.Add("headerKey", headerKey);
             argumentsOfScenario.Add("headerValue1", headerValue1);
             argumentsOfScenario.Add("headerValue2", headerValue2);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Saves and retrieves HTTP history by header", null, tagsOfScenario, argumentsOfScenario);
-#line 41
+#line 42
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -287,16 +294,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 3
 this.FeatureBackground();
 #line hidden
-#line 42
+#line 43
  testRunner.Given(string.Format("I have sent a {0} request to the HTTP mock with header key {1} and value {2}", httpMethod, headerKey, headerValue1), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 43
+#line 44
  testRunner.And(string.Format("I have sent a {0} request to the HTTP mock with header key {1} and value {2}", httpMethod, headerKey, headerValue2), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 44
+#line 45
  testRunner.When(string.Format("I query for that request by {0} method and header key {1} and value {2}", httpMethod, headerKey, headerValue1), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 45
+#line 46
  testRunner.Then(string.Format("the result should have one {0} request with header key {1} and value {2}", httpMethod, headerKey, headerValue1), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -317,7 +324,7 @@ this.FeatureBackground();
             argumentsOfScenario.Add("route1", route1);
             argumentsOfScenario.Add("route2", route2);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Saves and retrieves HTTP history by HTTP method and route", null, tagsOfScenario, argumentsOfScenario);
-#line 51
+#line 52
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -340,16 +347,16 @@ this.ScenarioInitialize(scenarioInfo);
 #line 3
 this.FeatureBackground();
 #line hidden
-#line 52
+#line 53
  testRunner.Given(string.Format("I have made a {0} HTTP request {1} times to route {2}", httpMethod, count, route1), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 53
+#line 54
  testRunner.And(string.Format("I have made a {0} HTTP request {1} times to route {2}", httpMethod, count, route2), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 54
+#line 55
  testRunner.When(string.Format("I query for those {0} requests by HTTP method and route {1}", httpMethod, route1), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 55
+#line 56
  testRunner.Then(string.Format("the result should have {0} requests", count), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -368,7 +375,7 @@ this.FeatureBackground();
             argumentsOfScenario.Add("httpMethod", httpMethod);
             argumentsOfScenario.Add("body", body);
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Saves and retrieves HTTP history by HTTP method and correct timestamp returned", null, tagsOfScenario, argumentsOfScenario);
-#line 61
+#line 62
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -391,13 +398,13 @@ this.ScenarioInitialize(scenarioInfo);
 #line 3
 this.FeatureBackground();
 #line hidden
-#line 62
+#line 63
  testRunner.Given(string.Format("I have sent {0} to the HTTP mock using the {1} HTTP method 1 times", body, httpMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 63
+#line 64
  testRunner.When(string.Format("I query for those {0} requests by HTTP method", httpMethod), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 64
+#line 65
  testRunner.Then("the result should correct timestamp data", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
