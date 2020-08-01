@@ -114,13 +114,13 @@ stages:
 
                 - powershell: |
                     Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
-                    Write-Host Build agent IP: $((Invoke-WebRequest 'https://api.ipify.org').Content)/32
+                    (Invoke-WebRequest 'https://api.ipify.org').Content
                   displayName: Get build agent IP 1
 
                 - powershell: |
-                  Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
-                  Write-Host Build agent IP: $((Invoke-WebRequest 'https://api.ipify.org').Content)/32
-                displayName: Get build agent IP 2
+                    Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
+                    (Invoke-WebRequest 'https://api.ipify.org').Content
+                  displayName: Get build agent IP 2
 
                 - task: TerraformCLI@0
                   displayName: Terraform Plan
