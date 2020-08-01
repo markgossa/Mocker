@@ -22,7 +22,7 @@ stages:
         displayName: Build App
         inputs:
           command: 'build'
-          projects: '**\*.csproj'
+          projects: '**\Mocker.Functions.csproj'
           arguments: '--configuration $(BuildConfiguration)'
 
       - task: DotNetCoreCLI@2
@@ -41,6 +41,13 @@ stages:
           arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
           zipAfterPublish: true
           publishWebProjects: false
+
+      - task: DotNetCoreCLI@2
+        displayName: Build Automation Tests
+        inputs:
+          command: 'build'
+          projects: '**\Mocker.Functions.Tests.Integration.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
 
       - task: DotNetCoreCLI@2
         displayName: Publish Automation Tests
@@ -141,6 +148,7 @@ stages:
                     appType: 'functionApp'
                     WebAppName: 'app-mocker-automated-tests-1234'
                     packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
+                    AppSettings: -AzureWebJobsDisableHomepage true
 
                 - task: VSTest@2
                   displayName: Run Automation Tests

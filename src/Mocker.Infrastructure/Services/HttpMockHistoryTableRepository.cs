@@ -18,7 +18,7 @@ namespace Mocker.Infrastructure.Services
 
         public HttpMockHistoryTableRepository(CloudTableClient tableClient)
         {
-            _table = tableClient.GetTableReference(Environment.GetEnvironmentVariable("HttpHistoryTable"));
+            _table = tableClient.GetTableReference(Environment.GetEnvironmentVariable("HttpHistoryTable") ?? "MockerHttpHistory");
             _table.CreateIfNotExists();
         }
 
