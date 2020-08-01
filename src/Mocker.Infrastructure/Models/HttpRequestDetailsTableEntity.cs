@@ -8,6 +8,7 @@ namespace Mocker.Infrastructure.Models
     public class HttpRequestDetailsTableEntity : TableEntity
     {
         public string? Body { get; set; }
+        public string? BodyBlobName { get; set; }
         public string? Headers { get; set; }
         public string? Method { get; set; }
         public string? Query { get; set; }

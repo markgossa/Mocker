@@ -1,6 +1,8 @@
-﻿using Microsoft.Azure.Cosmos.Table;
+﻿using Azure.Storage.Blobs;
+using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.WindowsAzure.Storage.Blob;
 using Mocker.Application.Contracts;
 using Mocker.Application.Services;
 using Mocker.Domain.Models.Http;
@@ -29,6 +31,7 @@ namespace Mocker.Functions
             builder.Services.AddSingleton<IHttpHistoryRepository, HttpHistoryTableRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
             builder.Services.AddSingleton(typeof(CloudTableClient), BuildCloudTableClient());
+            builder.Services.AddSingleton(typeof(BlobServiceClient), BuildBlobServiceClient());
         }
 
         private CloudTableClient BuildCloudTableClient()
@@ -36,5 +39,7 @@ namespace Mocker.Functions
             var storageAccount = CloudStorageAccount.Parse(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
             return storageAccount.CreateCloudTableClient();
         }
+
+        private BlobServiceClient BuildBlobServiceClient() => new BlobServiceClient(Environment.GetEnvironmentVariable("AzureWebJobsStorage"));
     }
 }

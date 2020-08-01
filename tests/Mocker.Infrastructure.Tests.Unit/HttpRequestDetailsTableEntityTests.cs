@@ -12,6 +12,7 @@ namespace Mocker.Infrastructure.Tests.Unit
     public class HttpRequestDetailsTableEntityTests
     {
         private const string _body = "body1";
+        private const string _bodyBlobName = "966b4448-ca74-4ee0-8b85-5374a0e2e880.txt";
         private const string _route = "route1";
         private readonly Dictionary<string, List<string>> _headers = new Dictionary<string, List<string>>()
             {
@@ -51,6 +52,7 @@ namespace Mocker.Infrastructure.Tests.Unit
             Assert.Equal(_method.ToString(), actual.Method);
             Assert.Equal(_route, actual.Route);
             Assert.Equal(_body, actual.Body);
+            Assert.Equal(_bodyBlobName, actual.BodyBlobName);
             Assert.InRange(actual.ReceivedTime, DateTime.UtcNow.AddMilliseconds(-10), DateTime.UtcNow);
         }
 
@@ -77,8 +79,10 @@ namespace Mocker.Infrastructure.Tests.Unit
         }
 
         private HttpRequestDetailsTableEntity BuildHttpRequestDetailsTableEntity() => 
-            new HttpRequestDetailsTableEntity(
-                new HttpRequestDetails(_method, _route, _body, _headers, _query));
+            new HttpRequestDetailsTableEntity(new HttpRequestDetails(_method, _route, _body, _headers, _query))
+        {
+            BodyBlobName = _bodyBlobName
+        };
 
         private HttpRequestDetailsTableEntity BuildHttpRequestDetailsTableEntityWithHeadersAndMethod() =>
             new HttpRequestDetailsTableEntity(
