@@ -18,16 +18,12 @@ namespace Mocker.Application.Services
 
         public async Task AddAsync(HttpRequestDetails httpRequestDetails) => await _httpHistoryRepository.AddAsync(httpRequestDetails);
 
-        public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
-        {
-            var httpRequestDetails = (await _httpHistoryRepository.FindAsync(httpMockHistoryFilter));
-
-            return httpRequestDetails
+        public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter) => 
+            (await _httpHistoryRepository.FindAsync(httpMockHistoryFilter))
                 .Where(r => IsMatchingBody(httpMockHistoryFilter, r)
                 && IsMatchingHeader(httpMockHistoryFilter, r)
                 && IsMatchingRoute(httpMockHistoryFilter, r))
                 .ToList();
-        }
 
         private bool IsMatchingRoute(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails r) =>
             httpMockHistoryFilter.Route is null || httpMockHistoryFilter.Route == r.Route;

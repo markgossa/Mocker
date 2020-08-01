@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Microsoft.Azure.Cosmos.Table;
 using Mocker.Application.Contracts;
 using Mocker.Application.Models;
@@ -55,7 +56,8 @@ namespace Mocker.Infrastructure.Services
         private async Task AddBodyToBlobAsync(string body, string blobName)
         {
             var blobClient = _blobContainerClient.GetBlobClient(blobName);
-            await blobClient.UploadAsync(new MemoryStream(Encoding.Default.GetBytes(body)));
+            using var content = new MemoryStream(Encoding.Default.GetBytes(body));
+            await blobClient.UploadAsync(content);
         }
 
         public async Task DeleteAllAsync()
@@ -65,6 +67,10 @@ namespace Mocker.Infrastructure.Services
             foreach (var row in allRows)
             {
                 deleteTasks.Add(_table.ExecuteAsync(TableOperation.Delete(row)));
+                if (row.BodyBlobName != null)
+                {
+                    deleteTasks.Add(_blobContainerClient.DeleteBlobIfExistsAsync(row.BodyBlobName));
+                }
             }
 
             await Task.WhenAll(deleteTasks);
@@ -74,14 +80,44 @@ namespace Mocker.Infrastructure.Services
             JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json)
                 ?? new Dictionary<string, List<string>>();
 
-        public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter) => await Task.Run(() =>
+        public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
-            return _table.CreateQuery<HttpRequestDetailsTableEntity>()
+            var httpRequestDetailEntities = _table.CreateQuery<HttpRequestDetailsTableEntity>()
                 .Where(r => r.Method == httpMockHistoryFilter.Method.ToString()
-                    && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame))
-                .Select(r => new HttpRequestDetails(new HttpMethod(r.Method), r.Route, r.Body, DeserializeHeaders(r.Headers),
-                    null, r.ReceivedTime))
-                .ToList();
-        });
+                    && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame));
+
+            var httpRequestDetails = new List<HttpRequestDetails>();
+            foreach (var entity in httpRequestDetailEntities)
+            {
+                var body = await GetRequestBody(entity);
+                httpRequestDetails.Add(new HttpRequestDetails(new HttpMethod(entity.Method), entity.Route, body,
+                    DeserializeHeaders(entity.Headers), null, entity.ReceivedTime));
+            }
+
+            return httpRequestDetails;
+        }
+
+        private async Task<string?> GetRequestBody(HttpRequestDetailsTableEntity requestDetails)
+        {
+            if (requestDetails.BodyBlobName != null)
+            {
+                return await DownloadBlobAsync(requestDetails);
+            }
+
+            return requestDetails.Body;
+        }
+
+        private async Task<string> DownloadBlobAsync(HttpRequestDetailsTableEntity requestDetails)
+        {
+            var blobClient = _blobContainerClient.GetBlobClient(requestDetails.BodyBlobName);
+            BlobDownloadInfo data = await blobClient.DownloadAsync();
+            using var stream = new MemoryStream();
+            await data.Content.CopyToAsync(stream);
+            stream.Position = 0;
+            using var streamReader = new StreamReader(stream);
+            var body = await streamReader.ReadToEndAsync();
+
+            return body;
+        }
     }
 }
