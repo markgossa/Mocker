@@ -38,17 +38,6 @@ Scenario: Saves and retrieves HTTP history by HTTP method and JSON body
 	| 1     | POST       | {"name": "mark"}                  | {"name": "markg"}                           |
 	| 2     | OPTIONS    | {"name": "mark","gender": "male"} | {"name": "mark","favouriteTeam": "Chelsea"} |
 
-@ignore
-Scenario: Saves and retrieves HTTP history by header
-	Given I have sent a <httpMethod> request to the HTTP mock with header key <headerKey> and value <headerValue1>
-	And I have sent a <httpMethod> request to the HTTP mock with header key <headerKey> and value <headerValue2>
-	When I query for that request by <httpMethod> method and header key <headerKey> and value <headerValue1>
-	Then the result should have one <httpMethod> request with header key <headerKey> and value <headerValue1>
-	Examples:
-	| httpMethod | headerKey | headerValue1 | headerValue2 |
-	| DELETE     | header1   | 1            | 9            |
-	| GET        | header2   | 2            | 8            |
-
 Scenario: Saves and retrieves HTTP history by HTTP method and route
 	Given I have made a <httpMethod> HTTP request <count> times to route <route1>
 	And I have made a <httpMethod> HTTP request <count> times to route <route2>

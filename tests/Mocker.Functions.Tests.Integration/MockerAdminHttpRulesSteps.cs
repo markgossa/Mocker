@@ -42,10 +42,7 @@ namespace Mocker.Functions.Tests.Integration
         public async Task ThenRuleShouldExistInTheRuleDatabase(int count)
         {
             var response = await _httpClient.GetAsync(_mockerAdminHttpRulesUrl);
-            Console.WriteLine(response.StatusCode);
-            Console.WriteLine(response.ReasonPhrase);
             var json = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(json);
             var jsonSerializerOptions = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
             var httpRuleResponse = JsonSerializer.Deserialize<HttpRuleResponse>(json, jsonSerializerOptions);
             for (var i = 0; i < count; i++)
