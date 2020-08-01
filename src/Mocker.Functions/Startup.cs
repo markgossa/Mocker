@@ -30,7 +30,7 @@ namespace Mocker.Functions
             builder.Services.AddSingleton<IHttpMockHistoryRepository, HttpMockHistoryTableRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
             builder.Services.AddSingleton(typeof(CloudTableClient), BuildCloudTableClient());
-            builder.Services.Configure<HttpOptions>(options => options.RoutePrefix = string.Empty);
+            //builder.Services.Configure<HttpOptions>(options => options.RoutePrefix = string.Empty);
         }
 
         private CloudTableClient BuildCloudTableClient()

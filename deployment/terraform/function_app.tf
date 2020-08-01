@@ -10,5 +10,8 @@ resource "azurerm_function_app" "example" {
       ip_restriction {
         ip_address = var.ip_address
       }
+      min_tls_version = "1.2"
+      ftps_state = "Disabled"
+      
   }
 }

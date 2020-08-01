@@ -88,7 +88,7 @@ stages:
           pathtoPublish: 'deployment\terraform'
           ArtifactName: 'terraform'
 
-  - stage: TEST
+  - stage: Test
     # dependsOn: Build
     # condition: |
     #   and(
