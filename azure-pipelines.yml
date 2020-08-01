@@ -115,12 +115,7 @@ stages:
                 - powershell: |
                     Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
                     (Invoke-WebRequest 'https://api.ipify.org').Content
-                  displayName: Get build agent IP 1
-
-                - powershell: |
-                    Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
-                    (Invoke-WebRequest 'https://api.ipify.org').Content
-                  displayName: Get build agent IP 2
+                  displayName: Get build agent IP
 
                 - task: TerraformCLI@0
                   displayName: Terraform Plan
@@ -128,8 +123,7 @@ stages:
                     command: 'plan'
                     workingDirectory: '$(Agent.BuildDirectory)\terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
-                    # commandOptions: '-out tfplan -var ip_address=$(ip_address)'
-                    commandOptions: '-out tfplan -var ip_address=0.0.0.0/0'
+                    commandOptions: '-out tfplan -var ip_address=$(ip_address)'
 
                 - task: TerraformCLI@0
                   displayName: Terraform Apply
