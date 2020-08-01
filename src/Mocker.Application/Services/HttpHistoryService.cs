@@ -9,18 +9,18 @@ namespace Mocker.Application.Services
 {
     public class HttpHistoryService : IHttpHistoryService
     {
-        private readonly IHttpMockHistoryRepository _httpRequestDetailsRepository;
+        private readonly IHttpHistoryRepository _httpHistoryRepository;
 
-        public HttpHistoryService(IHttpMockHistoryRepository httpRequestDetailsRepository)
+        public HttpHistoryService(IHttpHistoryRepository httpRequestDetailsRepository)
         {
-            _httpRequestDetailsRepository = httpRequestDetailsRepository;
+            _httpHistoryRepository = httpRequestDetailsRepository;
         }
 
-        public async Task AddAsync(HttpRequestDetails httpRequestDetails) => await _httpRequestDetailsRepository.AddAsync(httpRequestDetails);
+        public async Task AddAsync(HttpRequestDetails httpRequestDetails) => await _httpHistoryRepository.AddAsync(httpRequestDetails);
 
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
-            var httpRequestDetails = (await _httpRequestDetailsRepository.FindAsync(httpMockHistoryFilter));
+            var httpRequestDetails = (await _httpHistoryRepository.FindAsync(httpMockHistoryFilter));
 
             return httpRequestDetails
                 .Where(r => IsMatchingBody(httpMockHistoryFilter, r)
@@ -38,6 +38,6 @@ namespace Mocker.Application.Services
         private static bool IsMatchingBody(HttpMockHistoryFilter httpMockHistoryFilter, HttpRequestDetails request) => 
             httpMockHistoryFilter.Body is null || request.Body == httpMockHistoryFilter.Body;
 
-        public async Task DeleteAllAsync() => await _httpRequestDetailsRepository.DeleteAllAsync();
+        public async Task DeleteAllAsync() => await _httpHistoryRepository.DeleteAllAsync();
     }
 }

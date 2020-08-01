@@ -20,11 +20,11 @@ namespace Mocker.Application.Tests.Unit
         private readonly HttpMethod _method = HttpMethod.Get;
 
         private readonly HttpHistoryService _sut;
-        private readonly Mock<IHttpMockHistoryRepository> _mockHttpHistoryRepository;
+        private readonly Mock<IHttpHistoryRepository> _mockHttpHistoryRepository;
 
         public HttpHistoryServiceTests()
         {
-            _mockHttpHistoryRepository = new Mock<IHttpMockHistoryRepository>();
+            _mockHttpHistoryRepository = new Mock<IHttpHistoryRepository>();
             _sut = new HttpHistoryService(_mockHttpHistoryRepository.Object);
         }
 

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Mocker.Application.Contracts;
 using Mocker.Application.Services;
@@ -27,10 +26,9 @@ namespace Mocker.Functions
             builder.Services.AddSingleton<IHttpRuleRepository, HttpRuleTableRepository>();
             builder.Services.AddSingleton<IHttpRuleService, HttpRuleService>();
             builder.Services.AddSingleton<IHttpHistoryQueryService, HttpHistoryQueryService>();
-            builder.Services.AddSingleton<IHttpMockHistoryRepository, HttpMockHistoryTableRepository>();
+            builder.Services.AddSingleton<IHttpHistoryRepository, HttpHistoryTableRepository>();
             builder.Services.AddSingleton<IMapper<HttpRequestObject, Task<HttpRequestDetails>>, HttpRequestDetailsMapper>();
             builder.Services.AddSingleton(typeof(CloudTableClient), BuildCloudTableClient());
-            //builder.Services.Configure<HttpOptions>(options => options.RoutePrefix = string.Empty);
         }
 
         private CloudTableClient BuildCloudTableClient()

@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace Mocker.Infrastructure.Services
 {
-    public class HttpMockHistoryTableRepository : IHttpMockHistoryRepository
+    public class HttpHistoryTableRepository : IHttpHistoryRepository
     {
         private readonly CloudTable _table;
 
-        public HttpMockHistoryTableRepository(CloudTableClient tableClient)
+        public HttpHistoryTableRepository(CloudTableClient tableClient)
         {
             _table = tableClient.GetTableReference(Environment.GetEnvironmentVariable("HttpHistoryTable") ?? "MockerHttpHistory");
             _table.CreateIfNotExists();
