@@ -15,6 +15,7 @@ namespace Mocker.Infrastructure.Models
         public string? HttpFilterHeaders { get; set; }
         public string? HttpActionStatusCode { get; set; }
         public string? HttpActionBody { get; set; }
+        public string? HttpActionBodyBlobName { get; set; }
         public string? HttpActionHeaders { get; set; }
         public int HttpActionDelay { get; set; }
 

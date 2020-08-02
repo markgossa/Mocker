@@ -358,3 +358,6 @@ envSandbox.tfvars
 test.ps1
 TerraformModules
 tfplan
+
+# Local automation test settings
+local.settings.json

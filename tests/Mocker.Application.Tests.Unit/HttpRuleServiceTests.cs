@@ -43,7 +43,7 @@ namespace Mocker.Application.Tests.Unit
         public async Task GetsAllRules()
         {
             _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
-                new List<HttpRule> { BuildHttpRule() }));
+                (IEnumerable<HttpRule>) new List<HttpRule> { BuildHttpRule() }));
 
             var rules = await _sut.GetAllAsync();
 

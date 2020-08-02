@@ -34,7 +34,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsDefaultResponseWhenNoMatchingRule()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()));
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()));
 
             var actual = await _sut.Process(BuildHttpRequestDetails());
 
@@ -47,7 +47,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectResponseWhenRuleMatchesAnyRequest()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>
             {
                 new HttpRule(
                         new HttpFilter(null, null, null, null),
@@ -66,7 +66,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task MakesCorrectCallToRepository()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()));
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>)new List<HttpRule>()));
 
             await _sut.Process(BuildHttpRequestDetails());
 
@@ -76,7 +76,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnMethodOnly()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(HttpMethod.Post, null, null, null),
@@ -99,7 +99,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnBodyOnly()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(null, "bodyFilter", null, null),
@@ -122,7 +122,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnRouteOnly()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     
                     new HttpRule(
@@ -146,7 +146,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnMethodAndBody()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
 
                     new HttpRule(
@@ -170,7 +170,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnMethodBodyAndRoute()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(HttpMethod.Delete, "body", "route11", null),
@@ -193,7 +193,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectHttpActionBasedOnQueryOnly()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(null, null, null, new Dictionary<string, string>(_query){ { "additional", "value" } }),
@@ -216,7 +216,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsFirstMatchingRuleFromRepositoryIfMultipleMatchesFound()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(HttpMethod.Get, _body, _route, _query),
@@ -258,7 +258,7 @@ namespace Mocker.Application.Tests.Unit
                 { "uniqueId", new List<string>{ "id" } }
             };
 
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(null, null, null, null, ruleHeaders),
@@ -301,7 +301,7 @@ namespace Mocker.Application.Tests.Unit
                 { "uniqueId", new List<string>{ "id" } }
             };
 
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>()
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>()
                 {
                     new HttpRule(
                         new HttpFilter(null, null, null, null, ruleHeaders),
@@ -324,7 +324,7 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task ReturnsCorrectResponseWithDelayIfSpecified()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(new List<HttpRule>
+            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult((IEnumerable<HttpRule>) new List<HttpRule>
             {
                 new HttpRule(
                         new HttpFilter(null, null, null, null),

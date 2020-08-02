@@ -141,7 +141,7 @@ namespace Mocker.Functions.Tests.Unit
         public async Task GetsAllHttpRules()
         {
             _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
-                new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
+                (IEnumerable<HttpRule>) new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
                 new HttpAction(HttpStatusCode.OK, string.Empty)) }));
 
             var actual = await _sut.GetAllAsync();
@@ -154,7 +154,7 @@ namespace Mocker.Functions.Tests.Unit
         public async Task GetsAllHttpRulesReturnsCorrectFormat()
         {
             _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
-                new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
+                (IEnumerable<HttpRule>) new List<HttpRule> { new HttpRule(new HttpFilter(HttpMethod.Get, string.Empty),
                 new HttpAction(HttpStatusCode.OK, string.Empty)) }));
 
             var actual = await _sut.GetAllAsync();

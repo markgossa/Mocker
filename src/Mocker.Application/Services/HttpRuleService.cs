@@ -18,6 +18,6 @@ namespace Mocker.Application.Services
 
         public async Task RemoveAllAsync() => await _httpRuleRepository.RemoveAllAsync();
 
-        public async Task<List<HttpRule>> GetAllAsync() => await _httpRuleRepository.GetAllAsync();
+        public async Task<IEnumerable<HttpRule>> GetAllAsync() => await _httpRuleRepository.GetAllAsync();
     }
 }

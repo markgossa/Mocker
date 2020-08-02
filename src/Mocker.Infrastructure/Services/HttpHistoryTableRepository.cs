@@ -32,25 +32,15 @@ namespace Mocker.Infrastructure.Services
         public async Task AddAsync(HttpRequestDetails httpRequestDetails)
         {
             var requestDetailsTableEntity = new HttpRequestDetailsTableEntity(httpRequestDetails);
-            await WriteBodyToBlobIfTooLarge(requestDetailsTableEntity);
-            await AddRequestToTableAsync(requestDetailsTableEntity);
-        }
-
-        private async Task WriteBodyToBlobIfTooLarge(HttpRequestDetailsTableEntity requestDetailsTableEntity)
-        {
+            var addToTableAndBlobTasks = new List<Task>();
             if (requestDetailsTableEntity.Body?.Length > 30000)
             {
                 requestDetailsTableEntity.BodyBlobName = $"{Guid.NewGuid()}.txt";
-                await AddBodyToBlobAsync(requestDetailsTableEntity.Body, requestDetailsTableEntity.BodyBlobName);
-
+                addToTableAndBlobTasks.Add(AddBodyToBlobAsync(requestDetailsTableEntity.Body, requestDetailsTableEntity.BodyBlobName));
                 requestDetailsTableEntity.Body = null;
             }
-        }
-
-        private async Task AddRequestToTableAsync(HttpRequestDetailsTableEntity requestDetailsTableEntity)
-        {
-            var insertOperation = TableOperation.Insert(requestDetailsTableEntity);
-            await _table.ExecuteAsync(insertOperation);
+            addToTableAndBlobTasks.Add(AddRequestToTableAsync(requestDetailsTableEntity));
+            await Task.WhenAll(addToTableAndBlobTasks);
         }
 
         private async Task AddBodyToBlobAsync(string body, string blobName)
@@ -58,6 +48,12 @@ namespace Mocker.Infrastructure.Services
             var blobClient = _blobContainerClient.GetBlobClient(blobName);
             using var content = new MemoryStream(Encoding.Default.GetBytes(body));
             await blobClient.UploadAsync(content);
+        }
+
+        private async Task AddRequestToTableAsync(HttpRequestDetailsTableEntity requestDetailsTableEntity)
+        {
+            var insertOperation = TableOperation.Insert(requestDetailsTableEntity);
+            await _table.ExecuteAsync(insertOperation);
         }
 
         public async Task DeleteAllAsync()
@@ -101,23 +97,22 @@ namespace Mocker.Infrastructure.Services
         {
             if (requestDetails.BodyBlobName != null)
             {
-                return await DownloadBlobAsync(requestDetails);
+                return await DownloadBlobAsync(requestDetails.BodyBlobName);
             }
 
             return requestDetails.Body;
         }
 
-        private async Task<string> DownloadBlobAsync(HttpRequestDetailsTableEntity requestDetails)
+        private async Task<string> DownloadBlobAsync(string blobName)
         {
-            var blobClient = _blobContainerClient.GetBlobClient(requestDetails.BodyBlobName);
-            BlobDownloadInfo data = await blobClient.DownloadAsync();
+            var blobClient = _blobContainerClient.GetBlobClient(blobName);
+            BlobDownloadInfo blob = await blobClient.DownloadAsync();
             using var stream = new MemoryStream();
-            await data.Content.CopyToAsync(stream);
+            await blob.Content.CopyToAsync(stream);
             stream.Position = 0;
             using var streamReader = new StreamReader(stream);
-            var body = await streamReader.ReadToEndAsync();
-
-            return body;
+            
+            return await streamReader.ReadToEndAsync();
         }
     }
 }

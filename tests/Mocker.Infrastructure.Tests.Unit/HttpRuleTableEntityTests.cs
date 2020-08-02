@@ -30,6 +30,7 @@ namespace Mocker.Infrastructure.Tests.Unit
         private readonly HttpMethod _filterMethod = HttpMethod.Get;
         private readonly HttpStatusCode _actionStatusCode = HttpStatusCode.OK;
         private readonly int _actionDelay = 500;
+        private const string _actionBodyBlobName = "0fdc960d-3282-4c91-a32d-733f491f4f39";
 
         [Fact]
         public void HttpRequestDetailsTableEntityImplementsTableEntity()
@@ -65,11 +66,13 @@ namespace Mocker.Infrastructure.Tests.Unit
         public void CreatesHttpRuleTableEntityWithHttpActionProperties()
         {
             var actual = BuildHttpRuleTableEntity();
+            actual.HttpActionBodyBlobName = _actionBodyBlobName;
 
             Assert.Equal(_actionStatusCode.ToString(), actual.HttpActionStatusCode);
             Assert.Equal(_actionBody, actual.HttpActionBody);
             Assert.Equal(JsonSerializer.Serialize(_actionHeaders), actual.HttpActionHeaders);
             Assert.Equal(_actionDelay, actual.HttpActionDelay);
+            Assert.Equal(_actionBodyBlobName, actual.HttpActionBodyBlobName);
         }
 
         private HttpRuleTableEntity BuildHttpRuleTableEntity()

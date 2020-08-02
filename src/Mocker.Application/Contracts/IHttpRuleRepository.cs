@@ -10,6 +10,6 @@ namespace Mocker.Application.Contracts
 
         Task RemoveAllAsync();
 
-        Task<List<HttpRule>> GetAllAsync();
+        Task<IEnumerable<HttpRule>> GetAllAsync();
     }
 }
