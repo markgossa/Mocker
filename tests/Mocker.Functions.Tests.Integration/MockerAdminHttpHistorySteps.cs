@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -19,6 +20,7 @@ namespace Mocker.Functions.Tests.Integration
         private readonly HttpClient _httpClient;
         private readonly Uri _mockerAdminHttpHistoryUrl;
         private readonly Uri _mockerBaseUrl;
+        private readonly string _largeRequestBody;
         private List<HttpHistoryItem> _httpHistory;
 
         public MockerAdminHttpHistorySteps(AppSettingsHelper settings)
@@ -26,6 +28,9 @@ namespace Mocker.Functions.Tests.Integration
             _httpClient = new HttpClient();
             _mockerBaseUrl = new Uri(settings.MockerBaseUrl);
             _mockerAdminHttpHistoryUrl = new Uri($"{settings.MockerBaseUrl}/mockeradmin/http/history");
+
+            using var streamReader = new StreamReader("Data\\LargeActionBody.txt");
+            _largeRequestBody = streamReader.ReadToEnd();
         }
 
         [Given(@"There is no HTTP history")]
@@ -34,6 +39,7 @@ namespace Mocker.Functions.Tests.Integration
         [Given(@"I have sent (.*) to the HTTP mock using the (.*) HTTP method (.*) times")]
         public async Task GivenIHaveCalledTheHttpMockAsync(string data, string method, int count)
         {
+            data = data == "a large request body" ? _largeRequestBody : data;
             for (var i = 0; i < count; i++)
             {
                 await SendRequest(data, method, null, null);
@@ -120,6 +126,15 @@ namespace Mocker.Functions.Tests.Integration
             foreach (var httpRequest in _httpHistory)
             {
                 Assert.InRange(httpRequest.Timestamp, DateTime.UtcNow.AddSeconds(-2), DateTime.UtcNow.AddSeconds(2));
+            }
+        }
+
+        [Then(@"the large request body should be correct")]
+        public void ThenTheBodyShouldBeCorrect()
+        {
+            foreach (var httpRequest in _httpHistory)
+            {
+                Assert.Equal(_largeRequestBody, httpRequest.Body);
             }
         }
 

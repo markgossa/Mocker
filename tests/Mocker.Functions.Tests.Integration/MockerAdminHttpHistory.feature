@@ -56,3 +56,9 @@ Scenario: Saves and retrieves HTTP history by HTTP method and correct timestamp 
 	| httpMethod | body |
 	| GET        |      |
 	| POST       | 5    |
+
+Scenario: Saves and retrieves HTTP history (large request) by HTTP method
+	Given I have sent a large request body to the HTTP mock using the POST HTTP method 2 times
+	When I query for those POST requests by HTTP method
+	Then the result should have 2 requests
+	And the large request body should be correct
