@@ -10,6 +10,8 @@ namespace Mocker.Application.Contracts
 
         Task RemoveAllAsync();
 
-        Task<IEnumerable<HttpRule>> GetAllAsync();
+        Task<IEnumerable<HttpRule>> GetCachedRulesAsync();
+
+        Task<HttpRule?> GetRuleDetailsAsync(int id);
     }
 }

@@ -6,6 +6,7 @@ using Mocker.Domain.Models.Http;
 using Mocker.Infrastructure.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -70,28 +71,25 @@ namespace Mocker.Infrastructure.Services
             _nextHttpRuleId = 1;
         }
 
-        public async Task<IEnumerable<HttpRule>> GetAllAsync()
-        {
-            var tasks = new List<Task<HttpRule>>();
-            foreach (var httpRule in _httpRuleTableEntityCache)
-            {
-                tasks.Add(GetRulesWithBlobActionBody(httpRule));
-            }
+        public async Task<IEnumerable<HttpRule>> GetCachedRulesAsync() => await Task.Run(() => _httpRuleTableEntityCache.Select(r => MapToHttpRule(r)));
 
-            return await Task.WhenAll(tasks);
+        public async Task<HttpRule?> GetRuleDetailsAsync(int id)
+        {
+            var ruleEntity = _httpRuleTableEntityCache.Where(r => r.Id == id).FirstOrDefault(r => r.Id == id);
+            return ruleEntity != null ? MapToHttpRule(await AddBlobActionBody(ruleEntity)) : null;
         }
 
-        private async Task<HttpRule> GetRulesWithBlobActionBody(HttpRuleTableEntity httpRuleTableEntity)
+        private List<HttpRuleTableEntity> PopulateHttpRuleCache() => _table.ExecuteQuery(new TableQuery<HttpRuleTableEntity>()).ToList();
+
+        private async Task<HttpRuleTableEntity> AddBlobActionBody(HttpRuleTableEntity httpRuleTableEntity)
         {
             if (httpRuleTableEntity.HttpActionBodyBlobName != null)
             {
                 httpRuleTableEntity.HttpActionBody = await DownloadBlobAsync(httpRuleTableEntity.HttpActionBodyBlobName);
             }
 
-            return MapToHttpRule(httpRuleTableEntity);
+            return httpRuleTableEntity;
         }
-
-        private List<HttpRuleTableEntity> PopulateHttpRuleCache() => _table.ExecuteQuery(new TableQuery<HttpRuleTableEntity>()).ToList();
 
         private async Task AddBodyToBlobAsync(string body, string blobName)
         {

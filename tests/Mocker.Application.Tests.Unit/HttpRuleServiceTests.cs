@@ -42,22 +42,51 @@ namespace Mocker.Application.Tests.Unit
         [Fact]
         public async Task GetsAllRules()
         {
-            _mockHttpRuleRepository.Setup(m => m.GetAllAsync()).Returns(Task.FromResult(
+            _mockHttpRuleRepository.Setup(m => m.GetCachedRulesAsync()).Returns(Task.FromResult(
                 (IEnumerable<HttpRule>) new List<HttpRule> { BuildHttpRule() }));
+            SetUpRuleDetailsMock();
 
             var rules = await _sut.GetAllAsync();
 
-            _mockHttpRuleRepository.Verify(m => m.GetAllAsync());
+            _mockHttpRuleRepository.Verify(m => m.GetCachedRulesAsync());
 
             Assert.Single(rules);
             Assert.Contains(rules, r => r.HttpFilter.Body == "Hello world!");
+            Assert.Contains(rules, r => r.HttpAction.Body == "Hi back!");
         }
 
+        [Fact]
+        public async Task GetsAllRuleFullDetails()
+        {
+            _mockHttpRuleRepository.Setup(m => m.GetCachedRulesAsync()).Returns(Task.FromResult(
+                (IEnumerable<HttpRule>)new List<HttpRule> { BuildHttpRulePartiallyCached() }));
+            SetUpRuleDetailsMock();
+
+            var rules = await _sut.GetAllAsync();
+
+            _mockHttpRuleRepository.Verify(m => m.GetCachedRulesAsync());
+            _mockHttpRuleRepository.Verify(m => m.GetRuleDetailsAsync(It.IsAny<int>()));
+
+            Assert.Single(rules);
+            Assert.Contains(rules, r => r.HttpFilter.Body == "Hello world!");
+            Assert.Contains(rules, r => r.HttpAction.Body == "Hi back!");
+        }
+
+        private void SetUpRuleDetailsMock() => _mockHttpRuleRepository.Setup(m => m.GetRuleDetailsAsync(It.Is<int>(i => i == 1)))
+            .Returns(Task.FromResult<HttpRule?>(BuildHttpRule()));
         private static HttpRule BuildHttpRule()
         {
             var httpFilter = new HttpFilter(HttpMethod.Get, "Hello world!");
             var httpAction = new HttpAction(HttpStatusCode.OK, "Hi back!");
-            var httpRule = new HttpRule(httpFilter, httpAction);
+            var httpRule = new HttpRule(httpFilter, httpAction, 1);
+            return httpRule;
+        }
+
+        private static HttpRule BuildHttpRulePartiallyCached()
+        {
+            var httpFilter = new HttpFilter(HttpMethod.Get, "Hello world!");
+            var httpAction = new HttpAction(HttpStatusCode.OK, null);
+            var httpRule = new HttpRule(httpFilter, httpAction, 1);
             return httpRule;
         }
     }

@@ -18,13 +18,15 @@ namespace Mocker.Application.Services
 
         public async Task<HttpAction> Process(HttpRequestDetails httpRequestDetails)
         {
-            var httpAction = (await _httpRuleRepository.GetAllAsync())
+            var firstMathingHttpRule = (await _httpRuleRepository.GetCachedRulesAsync())
                 .Where(r => IsNullOrMatchingMethod(r, httpRequestDetails)
                 && IsNullOrMatchingBody(r, httpRequestDetails)
                 && IsNullOrMatchingRoute(r, httpRequestDetails)
                 && IsNullOrMatchingHeader(r, httpRequestDetails)
                 && IsNullOrMatchingQuery(r, httpRequestDetails)
-                ).FirstOrDefault()?
+                ).FirstOrDefault();
+
+            var httpAction = (await _httpRuleRepository.GetRuleDetailsAsync(firstMathingHttpRule?.Id ?? 0))?
                 .HttpAction ?? BuildDefaultHttpAction();
 
             await ApplyHttpActionDelay(httpAction);

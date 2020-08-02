@@ -1,6 +1,7 @@
 ﻿using Mocker.Application.Contracts;
 using Mocker.Domain.Models.Http;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Mocker.Application.Services
@@ -18,6 +19,17 @@ namespace Mocker.Application.Services
 
         public async Task RemoveAllAsync() => await _httpRuleRepository.RemoveAllAsync();
 
-        public async Task<IEnumerable<HttpRule>> GetAllAsync() => await _httpRuleRepository.GetAllAsync();
+        public async Task<IEnumerable<HttpRule>> GetAllAsync()
+        {
+            var cachedRules = await _httpRuleRepository.GetCachedRulesAsync();
+            var getRuleDetailsTasks = new List<Task<HttpRule?>>();
+            foreach (var cachedRule in cachedRules)
+            {
+                getRuleDetailsTasks.Add(_httpRuleRepository.GetRuleDetailsAsync(cachedRule.Id));
+            }
+
+            var rules = await Task.WhenAll(getRuleDetailsTasks);
+            return rules as IEnumerable<HttpRule> ?? new List<HttpRule>();
+        }
     }
 }
