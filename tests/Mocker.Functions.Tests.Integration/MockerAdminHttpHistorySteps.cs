@@ -29,7 +29,7 @@ namespace Mocker.Functions.Tests.Integration
             _mockerBaseUrl = new Uri(settings.MockerBaseUrl);
             _mockerAdminHttpHistoryUrl = new Uri($"{settings.MockerBaseUrl}/mockeradmin/http/history");
 
-            using var streamReader = new StreamReader("Data\\LargeActionBody.txt");
+            using var streamReader = new StreamReader("Data\\LargeBody.txt");
             _largeRequestBody = streamReader.ReadToEnd();
         }
 

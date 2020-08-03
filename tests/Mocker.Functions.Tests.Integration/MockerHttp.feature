@@ -78,3 +78,13 @@ Scenario: Applies rules based on complex filter and handles matching requests wi
 	When I add a complex rule which filters on method, body, headers, route and query with 2000 delay
 	And I send a matching complex request
 	Then I should receive the correct complex response with correct response properties with 2000 delay
+
+Scenario: Applies rules with large response body based on method
+	Given There are no HTTP rules in the rules database
+	When I add a rule based on <filterMethod> method into the rule database which returns a large response body
+	And I send a <filterMethod> request to route null with body IgnoreMe
+	Then I should receive a response with a large response body
+	Examples:
+	| filterMethod |
+	| GET          |
+	| POST         |

@@ -12,6 +12,7 @@ using Xunit;
 using Mocker.Application.Models;
 using System.Linq;
 using System.Diagnostics;
+using System.IO;
 
 namespace Mocker.Functions.Tests.Integration
 {
@@ -21,6 +22,7 @@ namespace Mocker.Functions.Tests.Integration
         private readonly HttpClient _httpClient;
         private readonly Uri _mockerBaseUrl;
         private readonly Uri _mockerAdminHttpRulesUrl;
+        private readonly string _largeResponseBody;
         private HttpResponseMessage _mockerResponse;
         private long _mockerResponseTime;
 
@@ -29,6 +31,9 @@ namespace Mocker.Functions.Tests.Integration
             _httpClient = new HttpClient();
             _mockerAdminHttpRulesUrl = new Uri($"{settings.MockerBaseUrl}/mockeradmin/http/rules");
             _mockerBaseUrl = new Uri(settings.MockerBaseUrl);
+
+            using var streamReader = new StreamReader("Data\\LargeBody.txt");
+            _largeResponseBody = streamReader.ReadToEnd();
         }
 
         [When(@"I add a rule based on (.*) method into the rule database which returns (.*)")]
@@ -42,8 +47,8 @@ namespace Mocker.Functions.Tests.Integration
                 },
                 Action = new HttpRuleActionRequest
                 {
-                    Body = actionBody
-                }
+                    Body = actionBody == "a large response body" ? _largeResponseBody : actionBody
+        }
             };
             await AddNewRule(ruleRequest);
         }
@@ -139,7 +144,11 @@ namespace Mocker.Functions.Tests.Integration
         public async Task WhenISendARequest(string method, string route, string body) => await SendRequestAsync(method, route, body);
 
         [Then(@"I should receive a response with (.*)")]
-        public async Task ThenIShouldReceiveAResponseWith(string expectedBody) => Assert.Equal(expectedBody, await _mockerResponse.Content.ReadAsStringAsync());
+        public async Task ThenIShouldReceiveAResponseWith(string expectedBody)
+        {
+            expectedBody = expectedBody == "a large response body" ? _largeResponseBody : expectedBody;
+            Assert.Equal(expectedBody, await _mockerResponse.Content.ReadAsStringAsync());
+        }
 
         [When(@"I add a header-based rule to the rule database which returns (.*)")]
         public async Task WhenIAddAHeader_BasedRuleToTheRuleDatabaseWhichReturns(string actionBody)

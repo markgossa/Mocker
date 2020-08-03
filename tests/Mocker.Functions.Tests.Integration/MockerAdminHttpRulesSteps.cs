@@ -24,7 +24,7 @@ namespace Mocker.Functions.Tests.Integration
             _httpClient = new HttpClient();
             _mockerAdminHttpRulesUrl = new Uri($"{settings.MockerBaseUrl}/mockeradmin/http/rules");
             
-            using var streamReader = new StreamReader("Data\\LargeActionBody.txt");
+            using var streamReader = new StreamReader("Data\\LargeBody.txt");
             _largeActionBody = streamReader.ReadToEnd();
         }
 
