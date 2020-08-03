@@ -43,19 +43,6 @@ namespace Mocker.Infrastructure.Services
             await Task.WhenAll(addToTableAndBlobTasks);
         }
 
-        private async Task AddBodyToBlobAsync(string body, string blobName)
-        {
-            var blobClient = _blobContainerClient.GetBlobClient(blobName);
-            using var content = new MemoryStream(Encoding.Default.GetBytes(body));
-            await blobClient.UploadAsync(content);
-        }
-
-        private async Task AddRequestToTableAsync(HttpRequestDetailsTableEntity requestDetailsTableEntity)
-        {
-            var insertOperation = TableOperation.Insert(requestDetailsTableEntity);
-            await _table.ExecuteAsync(insertOperation);
-        }
-
         public async Task DeleteAllAsync()
         {
             var allRows = _table.ExecuteQuery(new TableQuery<HttpRequestDetailsTableEntity>());
@@ -72,10 +59,6 @@ namespace Mocker.Infrastructure.Services
             await Task.WhenAll(deleteTasks);
         }
 
-        private Dictionary<string, List<string>> DeserializeHeaders(string? json) =>
-            JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json)
-                ?? new Dictionary<string, List<string>>();
-
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
             var httpRequestDetailEntities = _table.CreateQuery<HttpRequestDetailsTableEntity>()
@@ -87,10 +70,23 @@ namespace Mocker.Infrastructure.Services
             {
                 var body = await GetRequestBody(entity);
                 httpRequestDetails.Add(new HttpRequestDetails(new HttpMethod(entity.Method), entity.Route, body,
-                    DeserializeHeaders(entity.Headers), null, entity.ReceivedTime));
+                    DeserializeHeaders(entity.Headers), DeserializeQuery(entity.Query), entity.ReceivedTime));
             }
 
             return httpRequestDetails;
+        }
+
+        private async Task AddBodyToBlobAsync(string body, string blobName)
+        {
+            var blobClient = _blobContainerClient.GetBlobClient(blobName);
+            using var content = new MemoryStream(Encoding.Default.GetBytes(body));
+            await blobClient.UploadAsync(content);
+        }
+
+        private async Task AddRequestToTableAsync(HttpRequestDetailsTableEntity requestDetailsTableEntity)
+        {
+            var insertOperation = TableOperation.Insert(requestDetailsTableEntity);
+            await _table.ExecuteAsync(insertOperation);
         }
 
         private async Task<string?> GetRequestBody(HttpRequestDetailsTableEntity requestDetails)
@@ -102,6 +98,14 @@ namespace Mocker.Infrastructure.Services
 
             return requestDetails.Body;
         }
+
+        private Dictionary<string, List<string>> DeserializeHeaders(string? json) =>
+           JsonSerializer.Deserialize<Dictionary<string, List<string>>>(json)
+               ?? new Dictionary<string, List<string>>();
+
+        private Dictionary<string, string> DeserializeQuery(string? json) =>
+            JsonSerializer.Deserialize<Dictionary<string, string>>(json)
+                ?? new Dictionary<string, string>();
 
         private async Task<string> DownloadBlobAsync(string blobName)
         {
