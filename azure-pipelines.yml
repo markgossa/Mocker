@@ -155,3 +155,26 @@ stages:
                   inputs:
                     testAssemblyVer2: '**\*tests.integration*.dll'
                     searchFolder: '$(Agent.BuildDirectory)\app'
+
+                
+  - stage: Release
+    # dependsOn: Test
+    # condition: |
+    #   and(
+    #     ne(variables['Build.Reason'], 'PullRequest'),
+    #     eq(variables['Build.SourceBranch'], 'refs\heads\master')
+    #   )
+    jobs:
+      - deployment: Release
+        environment: PROD
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: Docker@2
+                  inputs:
+                    containerRegistry: 'Docker Hub - MarkGossa'
+                    repository: 'mocker'
+                    command: 'buildAndPush'
+                    Dockerfile: '**/Dockerfile'
+                    addPipelineData: false
