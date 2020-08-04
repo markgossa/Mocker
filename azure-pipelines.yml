@@ -88,75 +88,80 @@ stages:
           pathtoPublish: 'deployment\terraform'
           ArtifactName: 'terraform'
 
-  - stage: Test
-    # dependsOn: Build
-    # condition: |
-    #   and(
-    #     ne(variables['Build.Reason'], 'PullRequest'),
-    #     eq(variables['Build.SourceBranch'], 'refs\heads\develop')
-    #   )
-    jobs:
-      - deployment: Test
-        environment: TEST
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: TerraformInstaller@0
-                  displayName: Install Terraform
-                  inputs:
-                    terraformVersion: '$(terraformVersion)'
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts: Docker'
+        inputs:
+          pathtoPublish: 'Dockerfile'
+          ArtifactName: 'docker'
 
-                - task: TerraformCLI@0
-                  displayName: Terraform Init
-                  inputs:
-                    command: 'init'
-                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
-                    backendType: 'azurerm'
-                    backendServiceArm: 'Visual Studio Enterprise Subscription'
-                    backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
-                    backendAzureRmStorageAccountName: '$(terraform_storage_account_name)'
-                    backendAzureRmContainerName: 'mocker-terraform-state'
-                    backendAzureRmKey: '$(terraform_storage_account_key)'
+  # - stage: Test
+  #   # dependsOn: Build
+  #   # condition: |
+  #   #   and(
+  #   #     ne(variables['Build.Reason'], 'PullRequest'),
+  #   #     eq(variables['Build.SourceBranch'], 'refs\heads\develop')
+  #   #   )
+  #   jobs:
+  #     - deployment: Test
+  #       environment: TEST
+  #       strategy:
+  #         runOnce:
+  #           deploy:
+  #             steps:
+  #               - task: TerraformInstaller@0
+  #                 displayName: Install Terraform
+  #                 inputs:
+  #                   terraformVersion: '$(terraformVersion)'
 
-                - powershell: |
-                    Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
-                    (Invoke-WebRequest 'https://api.ipify.org').Content
-                  displayName: Get build agent IP
+  #               - task: TerraformCLI@0
+  #                 displayName: Terraform Init
+  #                 inputs:
+  #                   command: 'init'
+  #                   workingDirectory: '$(Agent.BuildDirectory)\terraform'
+  #                   backendType: 'azurerm'
+  #                   backendServiceArm: 'Visual Studio Enterprise Subscription'
+  #                   backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
+  #                   backendAzureRmStorageAccountName: '$(terraform_storage_account_name)'
+  #                   backendAzureRmContainerName: 'mocker-terraform-state'
+  #                   backendAzureRmKey: '$(terraform_storage_account_key)'
 
-                - task: TerraformCLI@0
-                  displayName: Terraform Plan
-                  inputs:
-                    command: 'plan'
-                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
-                    environmentServiceName: 'Visual Studio Enterprise Subscription'
-                    commandOptions: '-out tfplan -var ip_address=$(ip_address)'
+  #               - powershell: |
+  #                   Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
+  #                   (Invoke-WebRequest 'https://api.ipify.org').Content
+  #                 displayName: Get build agent IP
 
-                - task: TerraformCLI@0
-                  displayName: Terraform Apply
-                  inputs:
-                    command: 'apply'
-                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
-                    environmentServiceName: 'Visual Studio Enterprise Subscription'
-                    commandOptions: '-auto-approve tfplan'
+  #               - task: TerraformCLI@0
+  #                 displayName: Terraform Plan
+  #                 inputs:
+  #                   command: 'plan'
+  #                   workingDirectory: '$(Agent.BuildDirectory)\terraform'
+  #                   environmentServiceName: 'Visual Studio Enterprise Subscription'
+  #                   commandOptions: '-out tfplan -var ip_address=$(ip_address)'
 
-                - task: AzureRmWebAppDeployment@4
-                  displayName: Deploy Mocker
-                  inputs:
-                    ConnectionType: 'AzureRM'
-                    azureSubscription: 'Visual Studio Enterprise Subscription'
-                    appType: 'functionApp'
-                    WebAppName: 'app-mocker-automated-tests-1234'
-                    packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
-                    AppSettings: -AzureWebJobsDisableHomepage true
+  #               - task: TerraformCLI@0
+  #                 displayName: Terraform Apply
+  #                 inputs:
+  #                   command: 'apply'
+  #                   workingDirectory: '$(Agent.BuildDirectory)\terraform'
+  #                   environmentServiceName: 'Visual Studio Enterprise Subscription'
+  #                   commandOptions: '-auto-approve tfplan'
 
-                - task: VSTest@2
-                  displayName: Run Automation Tests
-                  inputs:
-                    testAssemblyVer2: '**\*tests.integration*.dll'
-                    searchFolder: '$(Agent.BuildDirectory)\app'
+  #               - task: AzureRmWebAppDeployment@4
+  #                 displayName: Deploy Mocker
+  #                 inputs:
+  #                   ConnectionType: 'AzureRM'
+  #                   azureSubscription: 'Visual Studio Enterprise Subscription'
+  #                   appType: 'functionApp'
+  #                   WebAppName: 'app-mocker-automated-tests-1234'
+  #                   packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
+  #                   AppSettings: -AzureWebJobsDisableHomepage true
 
-                
+  #               - task: VSTest@2
+  #                 displayName: Run Automation Tests
+  #                 inputs:
+  #                   testAssemblyVer2: '**\*tests.integration*.dll'
+  #                   searchFolder: '$(Agent.BuildDirectory)\app'
+
   - stage: Release
     # dependsOn: Test
     # condition: |
@@ -176,5 +181,5 @@ stages:
                     containerRegistry: 'Docker Hub - MarkGossa'
                     repository: 'mocker'
                     command: 'buildAndPush'
-                    Dockerfile: '**/Dockerfile'
+                    Dockerfile: '$(Agent.BuildDirectory)\docker\Dockerfile'
                     addPipelineData: false
