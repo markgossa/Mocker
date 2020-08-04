@@ -62,7 +62,7 @@ namespace Mocker.Infrastructure.Services
         public async Task<List<HttpRequestDetails>> FindAsync(HttpMockHistoryFilter httpMockHistoryFilter)
         {
             var httpRequestDetailEntities = _table.CreateQuery<HttpRequestDetailsTableEntity>()
-                .Where(r => r.Method == httpMockHistoryFilter.Method.ToString()
+                .Where(r => r.Method == httpMockHistoryFilter.Method.ToString().ToUpper()
                     && r.ReceivedTime > DateTime.UtcNow.Add(-httpMockHistoryFilter.TimeFrame));
 
             var httpRequestDetails = new List<HttpRequestDetails>();

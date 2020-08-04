@@ -2,7 +2,6 @@
 using Microsoft.Azure.Cosmos.Table;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.WindowsAzure.Storage.Blob;
 using Mocker.Application.Contracts;
 using Mocker.Application.Services;
 using Mocker.Domain.Models.Http;
