@@ -155,3 +155,4 @@ stages:
                     command: 'destroy'
                     workingDirectory: '$(Agent.BuildDirectory)\terraform'
                     environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-var ip_address=$(ip_address)'
