@@ -11,9 +11,5 @@ namespace Mocker.Functions.Models
         public Dictionary<string, string>? Query { get; set; }
         public string? Route { get; set; }
         public DateTime Timestamp { get; set; }
-
-        public HttpHistoryItem()
-        {
-        }
     }
 }
