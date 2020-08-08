@@ -121,6 +121,20 @@ namespace Mocker.Functions.Tests.Unit
         }
 
         [Fact]
+        public void ValidateReturnsFalseIfEmptyHttpRuleAction()
+        {
+            var newRule = new HttpRuleRequest
+            {
+                Filter = new HttpRuleFilterRequest(),
+                Action = new HttpRuleActionRequest()
+            };
+
+            var actual = _sut.Validate(newRule, out _);
+
+            Assert.False(actual);
+        }
+
+        [Fact]
         public void ValidateReturnsTrueIfValidHttpRuleRequest()
         {
             var newRule = new HttpRuleRequest()

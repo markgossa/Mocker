@@ -3,6 +3,7 @@ using Mocker.Domain.Models.Http;
 using Mocker.Functions.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -71,7 +72,18 @@ namespace Mocker.Functions.Services
         public bool Validate(HttpRuleRequest httpRuleRequest, out List<ValidationResult> validationResults)
         {
             validationResults = new List<ValidationResult>();
-            return Validator.TryValidateObject(httpRuleRequest, new ValidationContext(httpRuleRequest), validationResults);
+            var isValid = Validator.TryValidateObject(httpRuleRequest, new ValidationContext(httpRuleRequest), validationResults);
+            var isEmptyAction = httpRuleRequest.Action?.Headers is null
+                && httpRuleRequest.Action?.Delay == 0
+                && httpRuleRequest.Action?.StatusCode is new HttpStatusCode()
+                && httpRuleRequest.Action?.Body is null;
+            
+            if (isEmptyAction)
+            {
+                validationResults.Add(new ValidationResult("Please specify an action property. At least one property should be specified."));
+            }
+
+            return isValid && !isEmptyAction;
         }
     }
 }
