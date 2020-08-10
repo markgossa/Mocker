@@ -20,4 +20,10 @@
     <ProjectReference Include="..\..\src\Mocker.Functions\Mocker.Functions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Data\LargeBody.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

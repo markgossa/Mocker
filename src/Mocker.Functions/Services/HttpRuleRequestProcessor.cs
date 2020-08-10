@@ -72,18 +72,38 @@ namespace Mocker.Functions.Services
         public bool Validate(HttpRuleRequest httpRuleRequest, out List<ValidationResult> validationResults)
         {
             validationResults = new List<ValidationResult>();
-            var isValid = Validator.TryValidateObject(httpRuleRequest, new ValidationContext(httpRuleRequest), validationResults);
+            return ValidateHttpRuleRequest(httpRuleRequest, validationResults) 
+                && !ValidateActionProperties(httpRuleRequest, validationResults) 
+                && !ValidateFilterBodyLength(httpRuleRequest, validationResults);
+        }
+
+        private bool ValidateHttpRuleRequest(HttpRuleRequest httpRuleRequest, List<ValidationResult> validationResults) =>
+            Validator.TryValidateObject(httpRuleRequest, new ValidationContext(httpRuleRequest), validationResults);
+
+        private static bool ValidateActionProperties(HttpRuleRequest httpRuleRequest, List<ValidationResult> validationResults)
+        {
             var isEmptyAction = httpRuleRequest.Action?.Headers is null
                 && httpRuleRequest.Action?.Delay == 0
                 && httpRuleRequest.Action?.StatusCode is new HttpStatusCode()
                 && httpRuleRequest.Action?.Body is null;
-            
+
             if (isEmptyAction)
             {
                 validationResults.Add(new ValidationResult("Please specify an action property. At least one property should be specified."));
             }
 
-            return isValid && !isEmptyAction;
+            return isEmptyAction;
+        }
+
+        private static bool ValidateFilterBodyLength(HttpRuleRequest httpRuleRequest, List<ValidationResult> validationResults)
+        {
+            var isTooLargeFilterBody = httpRuleRequest.Filter != null && httpRuleRequest.Filter.Body?.Length > 30000;
+            if (isTooLargeFilterBody)
+            {
+                validationResults.Add(new ValidationResult("Filter body max length: 30000 characters"));
+            }
+
+            return isTooLargeFilterBody;
         }
     }
 }

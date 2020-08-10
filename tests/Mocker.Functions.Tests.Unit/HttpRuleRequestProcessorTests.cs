@@ -4,6 +4,7 @@ using Mocker.Functions.Models;
 using Mocker.Functions.Services;
 using Moq;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -127,6 +128,29 @@ namespace Mocker.Functions.Tests.Unit
             {
                 Filter = new HttpRuleFilterRequest(),
                 Action = new HttpRuleActionRequest()
+            };
+
+            var actual = _sut.Validate(newRule, out _);
+
+            Assert.False(actual);
+        }
+
+        [Fact]
+        public void ValidateReturnsFalseIfHttpRuleFilterTooLarge()
+        {
+            using var streamReader = new StreamReader("Data\\LargeBody.txt");
+            var largeBody = streamReader.ReadToEnd();
+
+            var newRule = new HttpRuleRequest
+            {
+                Filter = new HttpRuleFilterRequest
+                {
+                    Body = largeBody
+                },
+                Action = new HttpRuleActionRequest
+                {
+                    StatusCode = HttpStatusCode.OK
+                }
             };
 
             var actual = _sut.Validate(newRule, out _);

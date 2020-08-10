@@ -17,6 +17,14 @@ Simply create a rule which defines the response you want based on the request bo
 * [Understanding the HTTP Rule Engine](#understanding-the-http-rule-engine)
   * [Rule processing order](#rule-processing-order)
   * [Working with large rule bodies](#working-with-large-rule-bodies)
+* [HTTP Request History](#http-request-history)
+  * [Query HTTP Request History](#query-http-request-history)
+  * [Delete all HTTP Request History](#delete-all-http-request-history)
+* [Deployment](#deployment)
+  * [Function App deployment](#function-app-deployment)
+  * [Container deployment](#container-deployment)
+  * [Optional settings](#optional-settings)
+* [Future development](#future-development)
 
 ## Getting started
 
@@ -371,7 +379,7 @@ Example complex rule:
 }
 ```
 
-#### C# Rule Request Classes
+#### C# HTTP Rule Request Classes
 
 The below C# classes can be used to generate the JSON requests of the correct schema above. Also see the [C# example](#complex-example-using-c#) above.
 
@@ -407,7 +415,69 @@ To delete all rules, send an HTTP DELETE request to `http://<MyMockerUrl>/mocker
 
 ### Get all rules
 
-To get all rules, send an HTTP GET request to `http://<MyMockerUrl>/mockeradmin/http/rule`.
+To get all rules, send an HTTP GET request to `http://<MyMockerUrl>/mockeradmin/http/rule`. Example output is below:
+
+```Json
+{
+    "rules": [
+        {
+            "id": 1,
+            "filter": {
+                "body": "Hello world",
+                "headers": null,
+                "method": null,
+                "query": {
+                    "objecttype": "contact"
+                },
+                "route": "hello"
+            },
+            "action": {
+                "body": "hi back!",
+                "delay": 500,
+                "statusCode": 200,
+                "headers": {
+                    "Result": [
+                        "success"
+                    ]
+                }
+            }
+        },
+        {
+            "id": 2,
+            "filter": {
+                "body": "Hey world",
+                "headers": null,
+                "method": null,
+                "query": {
+                    "objecttype": "contact"
+                },
+                "route": "hello"
+            },
+            "action": {
+                "body": "Hello back!",
+                "delay": 500,
+                "statusCode": 200,
+                "headers": {
+                    "Result": [
+                        "success"
+                    ]
+                }
+            }
+        }
+    ]
+}
+```
+
+#### C# HTTP Rule Response Class
+
+If you are using C#, you can deserialize this JSON response using the class below
+
+```C#
+public class HttpRuleResponse
+{
+    public List<HttpRuleRequest> Rules { get; set; }
+}
+```
 
 ## Understanding the HTTP Rule Engine
 
@@ -417,6 +487,145 @@ Rules are evaluated in the order they are added to Mocker. For this reason, the 
 
 ### Working with large rule bodies
 
-Any large filter and action bodies of over 30000 characters will be stored in blob storage in the same storage account.
+Large action bodies of over 30000 characters will be stored in blob storage in the same storage account and will be processed as normal. Note that this body is not cached in memory so retrieving a large amount of data may mean there is additional processing time required.
 
-For large body filters, these will not be evaluated if they are over 30000 characters long. If this is the case, use one of the other filters. Large action bodies will be processed as normal.
+For large filter bodies, the max length is 30000 characters. If filtering on a large body is required, use one of the other filters e.g. route, headers, method and query string.
+
+## HTTP Request History
+
+Mocker keeps a record of all HTTP requests it receives so you can query this if there is the need to check a particular request was sent to the API.
+
+### Query HTTP Request History
+
+To query HTTP requests, send an HTTP GET request to `http://localhost:7071/mockeradmin/http/history` with the required query parameters, as below:
+
+| Parameter | Required? | Description |
+|-|-|-|
+| Body | No | Specify the body to search for. This must be URL encoded. |
+| Header | No | Specify the headers to search for e.g. `header=key1=value1,key2=value2` |
+| Method | Yes | Specify the method to search for e.g. `POST` |
+| Route | No | Specify the route to search for e.g. `customer/add` |
+| Timeframe | No | Specify a time span to narrow down the search e.g. `00:10:00` for 10mins. The default is 5mins. |
+
+#### Example
+
+This PowerShell example finds all requests which match the criteria:
+
+* Method: POST
+* Route: customer/add
+* Body: "{"Name": "Mark"}"
+* Headers: AuthKey = Password1, Details=Full
+* TimeFrame: 10mins
+
+```PowerShell
+Invoke-WebRequest -Uri "http://localhost:7071/mockeradmin/http/history?method=post&route=customer/add&body=%7B%22Name%22%3A+%22Mark%22%7D&headers=AuthKey=Password1,Details=Full&timeframe=00:10:00"
+```
+
+Example response:
+
+```Json
+[
+    {
+        "Body": "{\"Name\": \"Mark\"}",
+        "Headers": {
+            "Cache-Control": [
+                "no-cache"
+            ],
+            "Connection": [
+                "keep-alive"
+            ],
+            "Content-Type": [
+                "application/json"
+            ],
+            "Accept": [
+                "*/*"
+            ],
+            "Accept-Encoding": [
+                "gzip, deflate, br"
+            ],
+            "Host": [
+                "localhost:7071"
+            ],
+            "User-Agent": [
+                "PostmanRuntime/7.26.2"
+            ],
+            "Content-Length": [
+                "16"
+            ],
+            "AuthKey": [
+                "Password1"
+            ],
+            "Details": [
+                "Full"
+            ],
+            "Postman-Token": [
+                "4147f460-4e01-4109-bb0e-1b6a28ca5279"
+            ]
+        },
+        "Method": "POST",
+        "Query": {},
+        "Route": "customer/add",
+        "Timestamp": "2020-08-08T23:03:46.0055018Z"
+    }
+]
+```
+
+If the HTTP request body is over 30000 characters long, this is stored in blob storage and it cannot be queried. In this case, use another query parameter to find requests then use another method to find the request you need.
+
+#### C# HTTP History Response Class
+
+If using C#, you can deserialize the JSON response to `List<HttpHistoryItem>` using the class below. Further details are in the [C# example](#complex-example-using-c#) above.
+
+```C#
+public class HttpHistoryItem
+{
+    public string Body { get; set; }
+    public Dictionary<string, List<string>> Headers { get; set; }
+    public string Method { get; set; }
+    public Dictionary<string, string> Query { get; set; }
+    public string Route { get; set; }
+    public DateTime Timestamp { get; set; }
+}
+```
+
+### Delete all HTTP Request History
+
+To delete all HTTP request history, send an HTTP DELETE request to `http://<MyMockerUrl>/mockeradmin/http/history`.
+
+## Deployment
+
+### Function App deployment
+
+You can deploy Mocker as a normal Function App. The only required Azure resources are:
+
+* Function App
+* App Service Plan
+* Storage Account (used for both the fucntion app and Mocker)
+
+Requirements:
+
+* Function App version 3
+* Application Setting: `AzureWebJobsDisableHomepage` set to `true`
+
+### Container deployment
+
+To deploy in a container, use the dockerfile in the root of the repo. The below environment variables must be set:
+
+| Setting | Description |
+| --- | --- |
+| AzureWebJobsDisableHomepage | Must be set to true |
+| AzureWebJobStorage | Storage account connection string. Used for storing Mocker data. |
+
+### Optional settings
+
+The below settings can be specified as environment variables (or application settings):
+
+| Setting | Default | Description |
+| --- | --- | --- |
+| HttpHistoryTable | MockerHttpHistory | The name of the Azure Table used for HTTP Request History |
+| HttpRuleTable | MockerHttpRule | The name of the Azure Table used for HTTP Rules |
+
+## Future development
+
+* Ability to handle file transfer over API, i.e. rules that are triggered based on attached file name and can return a custom file
+* Ability to search HTTP history by query parameters

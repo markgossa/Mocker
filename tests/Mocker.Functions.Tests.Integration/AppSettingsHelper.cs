@@ -12,7 +12,7 @@ namespace Mocker.Functions.Tests.Integration
         {
             _configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", false)
-                .AddJsonFile("local.settings.json", true)
+                .AddJsonFile("local.appsettings.json", true)
                 .Build();
         }
     }

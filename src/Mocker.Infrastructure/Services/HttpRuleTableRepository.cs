@@ -75,7 +75,7 @@ namespace Mocker.Infrastructure.Services
 
         public async Task<HttpRule?> GetRuleDetailsAsync(int id)
         {
-            var ruleEntity = _httpRuleTableEntityCache.Where(r => r.Id == id).FirstOrDefault(r => r.Id == id);
+            var ruleEntity = _httpRuleTableEntityCache.FirstOrDefault(r => r.Id == id);
             return ruleEntity != null ? MapToHttpRule(await AddBlobActionBody(ruleEntity)) : null;
         }
 
