@@ -360,4 +360,4 @@ TerraformModules
 tfplan
 
 # Local automation test settings
-local.settings.json
+local.appsettings.json

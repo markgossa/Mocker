@@ -1,5 +1,7 @@
 # Mocker
 
+[![Build Status](https://dev.azure.com/markgossa/Mocker/_apis/build/status/Mocker?branchName=develop)](https://dev.azure.com/markgossa/Mocker/_build/latest?definitionId=26&branchName=develop) [![Build Status](https://dev.azure.com/markgossa/Mocker/_apis/build/status/Mocker?branchName=master)](https://dev.azure.com/markgossa/Mocker/_build/latest?definitionId=26&branchName=master)
+
 An API to mock responses from HTTP APIs to help with testing.
 
 Simply create a rule which defines the response you want based on the request body, header, query and method in a received request. The response can be configured with custom headers, body, HTTP Status Code and delay.
