@@ -1,0 +1,158 @@
+trigger:
+  - master
+  - develop
+  
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  - name: terraformVersion
+    value: '0.12.29'
+  - name: BuildConfiguration
+    value: Release
+
+stages:
+  - stage: Build
+    jobs:
+    - job: Build
+      steps:
+      
+      - task: DotNetCoreCLI@2
+        displayName: Build App
+        inputs:
+          command: 'build'
+          projects: '**\Mocker.Functions.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+
+      - task: DotNetCoreCLI@2
+        displayName: Test App
+        inputs:
+          command: 'test'
+          projects: '**\*Tests.Unit\*.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+          publishTestResults: true
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish App
+        inputs:
+          command: 'publish'
+          projects: '**\Mocker.Functions.csproj'
+          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
+          zipAfterPublish: true
+          publishWebProjects: false
+
+      - task: DotNetCoreCLI@2
+        displayName: Build Automation Tests
+        inputs:
+          command: 'build'
+          projects: '**\Mocker.Functions.Tests.Integration.csproj'
+          arguments: '--configuration $(BuildConfiguration)'
+
+      - task: DotNetCoreCLI@2
+        displayName: Publish Automation Tests
+        inputs:
+          command: 'publish'
+          projects: '**\Mocker.Functions.Tests.Integration.csproj'
+          arguments: '--configuration $(BuildConfiguration) --output $(build.ArtifactStagingDirectory) --no-build'
+          zipAfterPublish: false
+          publishWebProjects: false
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts: App'
+        inputs:
+          pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'app'
+
+      - task: TerraformInstaller@0
+        displayName: Install Terraform
+        inputs:
+          terraformVersion: '$(terraformVersion)'
+
+      - task: TerraformCLI@0
+        displayName: Terraform Init
+        inputs:
+          command: 'init'
+          workingDirectory: '$(System.DefaultWorkingDirectory)\deployment\terraform'
+          commandOptions: '-backend=false'
+          
+      - task: TerraformCLI@0
+        displayName: Terraform Validate
+        inputs:
+          command: 'validate'
+          workingDirectory: '$(System.DefaultWorkingDirectory)\deployment\terraform'
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish Artifacts: Terraform'
+        inputs:
+          pathtoPublish: 'deployment\terraform'
+          ArtifactName: 'terraform'
+
+  - stage: Test
+    jobs:
+      - deployment: Test
+        environment: TEST
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: TerraformInstaller@0
+                  displayName: Install Terraform
+                  inputs:
+                    terraformVersion: '$(terraformVersion)'
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Init
+                  inputs:
+                    command: 'init'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
+                    backendType: 'azurerm'
+                    backendServiceArm: 'Visual Studio Enterprise Subscription'
+                    backendAzureRmResourceGroupName: '$(terraform_storage_account_resource_group)'
+                    backendAzureRmStorageAccountName: '$(terraform_storage_account_name)'
+                    backendAzureRmContainerName: 'mocker-terraform-state'
+                    backendAzureRmKey: '$(terraform_storage_account_key)'
+
+                - powershell: |
+                    Write-Host "##vso[task.setvariable variable=ip_address]$((Invoke-WebRequest 'https://api.ipify.org').Content)/32"
+                    (Invoke-WebRequest 'https://api.ipify.org').Content
+                  displayName: Get build agent IP
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Plan
+                  inputs:
+                    command: 'plan'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
+                    environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-out tfplan -var ip_address=$(ip_address)'
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Apply
+                  inputs:
+                    command: 'apply'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
+                    environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-auto-approve tfplan'
+
+                - task: AzureRmWebAppDeployment@4
+                  displayName: Deploy Mocker
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Visual Studio Enterprise Subscription'
+                    appType: 'functionApp'
+                    WebAppName: 'app-mocker-automated-tests-1234'
+                    packageForLinux: '$(Agent.BuildDirectory)\**\Mocker.Functions.zip'
+                    AppSettings: -AzureWebJobsDisableHomepage true
+
+                - task: VSTest@2
+                  displayName: Run Automation Tests
+                  inputs:
+                    testAssemblyVer2: '**\*tests.integration*.dll'
+                    searchFolder: '$(Agent.BuildDirectory)\app'
+
+                - task: TerraformCLI@0
+                  displayName: Terraform Destroy
+                  inputs:
+                    command: 'destroy'
+                    workingDirectory: '$(Agent.BuildDirectory)\terraform'
+                    environmentServiceName: 'Visual Studio Enterprise Subscription'
+                    commandOptions: '-var ip_address=$(ip_address)'
